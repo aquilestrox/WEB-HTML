@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor Pro | Cinematic Portfolio 2026</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div id="cursor-dot"></div>
+    <div id="cursor-outline"></div>
+
+    <header id="header-wrapper">
+        <nav id="dynamic-island">
+            <div class="island-content">
+                <a href="#hero" class="logo">Aquiles</a>
+                <ul class="nav-links">
+                    <li><a href="#about">Sobre Mí</a></li>
+                    <li><a href="#portfolio">Portfolio</a></li>
+                    <li><a href="#skills">Skills</a></li>
+                </ul>
+                <a href="#contact" class="btn-island">Contacto</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero">
+            <div class="hero-container">
+                <span class="badge">Post-Producción de Élite</span>
+                <h1 class="main-title">Editando<br><span class="gradient-text">Historias Visuales</span></h1>
+                <p class="sub-text">Adobe Premiere Pro & Photoshop Expert. Transformo frames en piezas cinematográficas.</p>
+                
+                <div class="hero-btns">
+                    <a href="#portfolio" class="btn-glow-blue">Ver Portfolio</a>
+                    <a href="#about" class="btn-outline-glass">Saber más</a>
+                </div>
+
+                <div class="perspective-box">
+                    <div id="monitor-3d">
+                        <div class="monitor-frame">
+                            <div class="screen-content">
+                                <img src="https://images.unsplash.com/photo-1764974033674-fe324b36c1e4?w=1920&q=80" alt="Workstation">
+                            </div>
+                        </div>
+                        <div class="monitor-neck"></div>
+                        <div class="monitor-base"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="container">
+            <div class="about-card-premium">
+                <div class="about-visual">
+                    <img src="https://images.unsplash.com/photo-1722884263480-bcd44c0f9f55?w=800" class="img-pro" alt="Editor Profile">
+                </div>
+                <div class="about-content">
+                    <h2 class="massive-title">Cabiar & <br><span class="gradient-text">Color de Élite</span></h2>
+                    <p class="description">Más de un año esculpiendo emociones a través del color y el ritmo. No solo edito; creo experiencias visuales que retienen a la audiencia.</p>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-num gradient-text">1+</span>
+                            <p>Un año de experencia</p>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-num gradient-text">1+<span>
+                            <p>Clientes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+<section id="portfolio" class="portfolio-container">
+    <h2 class="massive-title">Mis <span class="gradient-text">Trabajos</span></h2>
+    
+    <div class="portfolio-filters">
+        <button class="filter-btn active" data-filter="largos">Todos</button>
+        <button class="filter-btn" data-filter="shorts">Shorts</button>
+    </div>
+
+    <div class="video-grid">
+        
+        <div class="video-card" data-category="largos">
+            <div class="thumb-container horizontal white-bg">
+                <span class="ver-youtube-text">Ver en YouTube ↗</span>
+            </div>
+            <div class="video-details">
+                <h3>Se el primero y contactame!</h3>
+            </div>
+        </div>
+
+        <div class="video-card" data-category="largos">
+            <div class="thumb-container horizontal white-bg">
+                <span class="ver-youtube-text">Ver en YouTube ↗</span>
+            </div>
+            <div class="video-details">
+                <h3>Se el primero y contactame!</h3>
+            </div>
+        </div>
+
+        <div class="video-card" data-category="shorts" style="display: none;">
+            <div class="thumb-container vertical white-bg">
+                <span class="ver-youtube-text">Short ↗</span>
+            </div>
+            <div class="video-details">
+              <h3>Se el primero y contactame!</h3>
+            </div>
+        </div>
+
+        <div class="video-card" data-category="shorts" style="display: none;">
+            <div class="thumb-container vertical white-bg">
+                <span class="ver-youtube-text">Short ↗</span>
+            </div>
+            <div class="video-details">
+                <h3>Se el primero y contactame!</h3>
+            </div>
+        </div>
+
+    </div>
+</section>
+        <section id="skills" class="container">
+            <div class="skills-flex">
+                <div class="skill-card-glass pr-hover">
+                    <div class="app-icon-3d pr-logo">Pr</div>
+                    <h3>Adobe Premiere Pro</h3>
+                    <p>Color Grading, Multicam & Sound Design.</p>
+                </div>
+                <div class="skill-card-glass ps-hover">
+                    <div class="app-icon-3d ps-logo">Ps</div>
+                    <h3>Adobe Photoshop</h3>
+                    <p>Thumbnails de alto CTR & Retoque Digital.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="contact" class="container">
+            <div class="contact-card-premium">
+                <div class="contact-info">
+                    <h2 class="massive-title">¿Hablamos?<br><span class="gradient-text">Proyecto</span></h2>
+                    <p>hola@editorpro.com</p>
+                </div>
+                <form id="contact-form">
+                    <div class="form-row">
+                        <input type="text" placeholder="Nombre" required>
+                        <input type="email" placeholder="Email" required>
+                    </div>
+                    <textarea placeholder="Cuéntame tu visión..." rows="4" required></textarea>
+                    <button type="submit" id="submit-btn" class="btn-glow-blue">Enviar Mensaje</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p class="logo">EDITOR PRO</p>
+        <p>© 2026 Cinematic Post-Production.</p>
+    </footer>
+    
+
+    <script src="script.js"></script>
+</body>
+</html>
+// --- LÓGICA DEL RATÓN PREMIUM (GPU OPTIMIZED) ---
+const dot = document.getElementById('cursor-dot');
+const outline = document.getElementById('cursor-outline');
+
+let mouseX = 0, mouseY = 0; 
+let outlineX = 0, outlineY = 0; 
+
+document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+
+    // Uso de translate3d para mejor rendimiento
+    dot.style.transform = `translate3d(${mouseX - 3}px, ${mouseY - 3}px, 0)`;
+
+    const isHoverable = e.target.closest('a, button, input, textarea, .skill-card-glass');
+    document.body.classList.toggle('cursor-active', !!isHoverable);
+});
+
+function animateOutline() {
+    // Lerp suavizado al 12% para efecto cinematográfico
+    outlineX += (mouseX - outlineX) * 0.12;
+    outlineY += (mouseY - outlineY) * 0.12;
+
+    outline.style.transform = `translate3d(${outlineX - 15}px, ${outlineY - 15}px, 0)`;
+
+    requestAnimationFrame(animateOutline);
+}
+animateOutline();
+
+// --- MONITOR 3D SMOOTH MOTION ---
+const monitor = document.getElementById('monitor-3d');
+const hero = document.getElementById('hero');
+
+hero.addEventListener('mousemove', (e) => {
+    const { width, height, left, top } = hero.getBoundingClientRect();
+    
+    const relX = (e.clientX - left) / width - 0.5;
+    const relY = (e.clientY - top) / height - 0.5;
+
+    // Límites controlados para no romper la estética
+    const rotateY = relX * 25; 
+    const rotateX = relY * -25;
+
+    monitor.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+});
+
+hero.addEventListener('mouseleave', () => {
+    monitor.style.transform = `rotateY(0deg) rotateX(0deg)`;
+});
+
+// --- DINAMISMO NAVBAR ---
+window.addEventListener('scroll', () => {
+    const header = document.getElementById('header-wrapper');
+    header.classList.toggle('scrolled', window.scrollY > 50);
+}, { passive: true });
+
+// --- FORMULARIO FEEDBACK ---
+const form = document.getElementById('contact-form');
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('submit-btn');
+    const originalText = btn.innerText;
+    
+    btn.innerText = "¡Enviado!";
+    btn.style.background = "#28a745";
+    btn.style.boxShadow = "0 0 20px rgba(40, 167, 69, 0.4)";
+    
+    form.reset();
+    setTimeout(() => {
+        btn.innerText = originalText;
+        btn.style.background = "";
+        btn.style.boxShadow = "";
+    }, 3000);
+    
+});
+document.addEventListener('DOMContentLoaded', () => {
+
+    // 1. LÓGICA DE FILTRADO
+    const botones = document.querySelectorAll('.filter-btn');
+    const tarjetas = document.querySelectorAll('.video-card');
+
+    botones.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Cambiar clase active
+            botones.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const filtro = btn.getAttribute('data-filter');
+
+            // Mostrar/Ocultar con lógica estricta
+            tarjetas.forEach(card => {
+                if (card.getAttribute('data-category') === filtro) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+
+    // 2. LÓGICA DE FORMULARIO (PARA QUE NO DE ERROR)
+    const formulario = document.querySelector('form');
+    if (formulario) {
+        formulario.addEventListener('submit', (e) => {
+            e.preventDefault();
+            console.log("Formulario enviado");
+        });
+    }
+
+});
+:root { 
+    --bg: #000; 
+    --blue: #0071e3; 
+    --text: #f5f5f7; 
+    --border: rgba(255,255,255,0.1); 
+    --island-bg: rgba(20,20,20,0.8);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; cursor: none !important; }
+
+body { 
+    background: var(--bg); 
+    color: var(--text); 
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+    overflow-x: hidden; 
+    line-height: 1.5;
+}
+#cursor-dot, #cursor-outline {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    border-radius: 50%;
+    z-index: 10000;
+}
+
+#cursor-dot { 
+    width: 6px; 
+    height: 6px; 
+    background: #fff; 
+}
+
+#cursor-outline { 
+    width: 30px; 
+    height: 30px; 
+    border: 2px solid rgba(255,255,255,0.5); 
+    transition: width 0.3s ease, height 0.3s ease, background 0.3s ease;
+}
+/* NAV ISLAND */
+#header-wrapper { position: fixed; top: 0; width: 100%; display: flex; justify-content: center; padding: 20px; z-index: 9000; pointer-events: none; }
+#dynamic-island { 
+    pointer-events: auto; 
+    background: var(--island-bg); 
+    backdrop-filter: blur(20px); 
+    border: 1px solid var(--border); 
+    border-radius: 40px; 
+    width: 100%; 
+    max-width: 800px; 
+    height: 60px; 
+    display: flex; 
+    align-items: center; 
+    padding: 0 25px; 
+    transition: max-width 0.6s cubic-bezier(0.16, 1, 0.3, 1), height 0.6s cubic-bezier(0.16, 1, 0.3, 1); 
+}
+
+#header-wrapper.scrolled #dynamic-island { max-width: 480px; height: 50px; background: #000; }
+.island-content { width: 100%; display: flex; justify-content: space-between; align-items: center; }
+.logo { font-weight: 800; letter-spacing: 1px; text-decoration: none; color: #fff; font-size: 14px; }
+.nav-links { display: flex; gap: 20px; list-style: none; }
+.nav-links a { color: #888; text-decoration: none; font-size: 13px; transition: 0.3s; }
+.nav-links a:hover { color: #fff; }
+.btn-island { background: #fff; color: #000; text-decoration: none; padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 12px; }
+
+/* HERO */
+#hero { padding: 160px 20px 80px; text-align: center; min-height: 100vh; }
+.badge { background: rgba(255,255,255,0.05); padding: 6px 15px; border-radius: 20px; font-size: 12px; border: 1px solid var(--border); display: inline-block; margin-bottom: 20px; }
+.gradient-text { background: linear-gradient(180deg, #fff 40%, #666 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.main-title { font-size: clamp(40px, 8vw, 90px); font-weight: 900; letter-spacing: -3px; line-height: 1.1; }
+.sub-text { color: #888; margin-top: 20px; font-size: 18px; max-width: 600px; margin-inline: auto; }
+
+.hero-btns { display: flex; gap: 15px; justify-content: center; margin: 40px 0; }
+.btn-glow-blue { background: var(--blue); color: #fff; text-decoration: none; padding: 15px 35px; border-radius: 30px; font-weight: 600; box-shadow: 0 10px 25px rgba(0,113,227,0.3); border: none; transition: 0.3s; }
+.btn-outline-glass { border: 1px solid var(--border); color: #fff; text-decoration: none; padding: 15px 35px; border-radius: 30px; transition: 0.3s; background: rgba(255,255,255,0.02); }
+
+/* MONITOR 3D */
+.perspective-box { perspective: 1500px; margin-top: 60px; padding-bottom: 40px; }
+#monitor-3d { display: inline-block; width: 100%; max-width: 850px; transform-style: preserve-3d; transition: transform 0.1s ease-out; }
+.monitor-frame { background: #1a1a1a; border: 10px solid #282828; border-radius: 24px; overflow: hidden; box-shadow: 0 40px 80px rgba(0,0,0,0.6); }
+.screen-content img { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; }
+.monitor-base { width: 180px; height: 12px; background: #222; margin: 0 auto; border-radius: 0 0 12px 12px; }
+
+/* ABOUT & CARDS */
+.container { max-width: 1100px; margin: 0 auto; padding: 100px 20px; }
+.about-card-premium { display: grid; grid-template-columns: 1fr 1.2fr; gap: 60px; align-items: center; background: rgba(10,10,10,0.5); padding: 50px; border-radius: 40px; border: 1px solid var(--border); }
+.img-pro { width: 100%; border-radius: 30px; filter: grayscale(0.5); }
+.massive-title { font-size: 48px; font-weight: 800; margin-bottom: 20px; line-height: 1.2; }
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 40px; }
+.stat-num { font-size: 40px; font-weight: 900; display: block; }
+
+/* SKILLS */
+.skills-flex { display: flex; gap: 25px; }
+.skill-card-glass { flex: 1; background: #0a0a0a; border: 1px solid var(--border); padding: 50px; border-radius: 35px; text-align: center; transition: 0.4s; }
+.app-icon-3d { width: 70px; height: 70px; margin: 0 auto 20px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 28px; }
+.pr-logo { background: linear-gradient(135deg, #31015c, #00005b); color: #9999ff; border: 1px solid #3333ff; }
+.ps-logo { background: linear-gradient(135deg, #001e36, #001c2b); color: #31a8ff; border: 1px solid #00a8ff; }
+
+/* CONTACT */
+.contact-card-premium { background: #080808; padding: 60px; border-radius: 50px; border: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr; gap: 50px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+input, textarea { background: #121212; border: 1px solid var(--border); padding: 18px; border-radius: 14px; color: #fff; width: 100%; margin-bottom: 15px; font-size: 15px; outline: none; }
+input:focus, textarea:focus { border-color: var(--blue); }
+
+.footer { padding: 60px 20px; text-align: center; border-top: 1px solid var(--border); }
+.footer p { color: #555; font-size: 13px; margin-top: 10px; }
+
+@media (max-width: 768px) {
+    .about-card-premium, .contact-card-premium { grid-template-columns: 1fr; }
+    .skills-flex { flex-direction: column; }
+    .nav-links { display: none; }
+}
+/* Contenedor principal para centrar todo */
+.portfolio-container {
+    max-width: 1100px; /* Esto evita que los videos se estiren al infinito */
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* Arreglo de los Botones y el Glow */
+.portfolio-filters {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+.filter-btn {
+    background: #111;
+    color: #fff;
+    border: 1px solid #333;
+    padding: 10px 22px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* El Glow blanco cuando están activos o pasas el ratón */
+.filter-btn.active, .filter-btn:hover {
+    background: #fff;
+    color: #000;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+    transform: translateY(-2px);
+}
+
+/* Rejilla de vídeos controlada */
+.video-grid {
+    display: grid;
+    /* Crea 3 columnas si hay espacio, si no, se ajusta */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+    gap: 20px;
+}
+
+.video-card {
+    background: #0a0a0a;
+    border-radius: 15px;
+    overflow: hidden;
+    border: 1px solid #222;
+}
+
+.thumb-container.white-bg {
+    width: 100%;
+    aspect-ratio: 16 / 9; /* Mantiene la forma de video de YouTube */
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ver-youtube-text {
+    color: #000;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+/* 1. Limitamos el ancho de todo el bloque de trabajos */
+.portfolio-container {
+    max-width: 500px; /* Prueba con este valor para que no ocupe toda la pantalla */
+    margin: 0 auto;    /* Centra el bloque horizontalmente */
+    padding: 10px;
+}
+
+/* 2. Ajustamos la rejilla */
+.video-grid {
+    display: grid;
+    /* 'repeat(3, 1fr)' obliga a que siempre haya 3 columnas del mismo tamaño */
+    /* O puedes usar 'minmax' si quieres que sea más flexible */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+    gap: 10px; /* Espacio entre los recuadros */
+}
+/* Contenedor Principal */
+.portfolio-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+/* Botones con Glow */
+.portfolio-filters {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+.filter-btn {
+    background: #111;
+    color: #fff;
+    border: 1px solid #333;
+    padding: 10px 25px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.filter-btn.active {
+    background: #fff;
+    color: #000;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+/* Rejilla */
+.video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    align-items: start;
+}
+
+.video-card {
+    background: #0a0a0a;
+    border-radius: 15px;
+    overflow: hidden;
+    border: 1px solid #222;
+}
+
+/* Formato Horizontal */
+.thumb-container.horizontal {
+    aspect-ratio: 16 / 9;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Formato Vertical (Shorts) */
+.thumb-container.vertical {
+    aspect-ratio: 9 / 16;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 260px; /* Tamaño real de Short */
+    margin: 0 auto;
+}
+
+.ver-youtube-text {
+    color: #000;
+    font-weight: bold;
+}
+
+.video-details {
+    padding: 15px;
+    text-align: left;
+}
