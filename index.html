@@ -1,296 +1,303 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ae Web Engine Ultimate - Zoom, Presets & KFs</title>
+    <title>After Effects Engine: Pro Composer & Graph Editor</title>
     <style>
-        /* =========================================================================
-           VARIABLES ESTILO AFTER EFFECTS & PLUGINS
-           ========================================================================= */
+        /* =========================================================
+           CORE SYSTEM VARIABLES & DARK MODE AE PALETTE
+           ========================================================= */
         :root {
-            --bg-base: #141414;
+            --bg-base: #101010;
             --bg-panel: #232323;
-            --bg-header: #323232;
-            --bg-hover: #383838;
-            --border: #1a1a1a;
-            --border-light: #444444;
-            --text-main: #cccccc;
-            --text-bright: #ffffff;
-            --ae-blue: #2d8ceb;
-            --kf-diamond: #e5b92e;
-            --kf-selected: #ffffff;
-            --playhead: #f03030;
-            --comp-bg: #111;
+            --bg-head: #2a2a2a;
+            --bg-track: #1b1b1b;
+            --border-drk: #141414;
+            --border-lgt: #3a3a3a;
+            --text-base: #cccccc;
+            --text-high: #ffffff;
+            --accent: #2d8ceb;
+            --accent-hov: #1a74ce;
+            --accent-plugin: #823ab0;
+            --kf-dim: #e5b92e;
+            --graph-grid: rgba(255, 255, 255, 0.05);
+            --graph-line: #52a8ff;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-        body { font-family: 'Segoe UI', Tahoma, Helvetica, sans-serif; background: var(--bg-base); color: var(--text-main); font-size: 11px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 11px; background: var(--bg-base); color: var(--text-base); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+        /* Smooth custom scrollbars */
         ::-webkit-scrollbar { width: 10px; height: 10px; }
         ::-webkit-scrollbar-track { background: var(--bg-base); }
-        ::-webkit-scrollbar-thumb { background: #444; border-radius: 5px; border: 2px solid var(--bg-base); }
+        ::-webkit-scrollbar-thumb { background: #4a4a4a; border-radius: 5px; border: 2px solid var(--bg-base); }
         ::-webkit-scrollbar-thumb:hover { background: #666; }
 
-        /* HEADER & TOP MENU */
-        .app-menu { height: 26px; background: #1a1a1a; display: flex; align-items: center; padding: 0 10px; border-bottom: 1px solid #000; font-size: 12px; gap: 15px; z-index: 1000; position:relative; }
-        .logo-ae { font-weight: bold; color: #fff; border-right: 1px solid #444; padding-right: 10px; }
-        .menu-item { padding: 4px 8px; cursor: pointer; color: #aaa; position: relative; }
-        .menu-item:hover { color: #fff; background: var(--bg-panel); }
-        .dropdown { display: none; position: absolute; top: 100%; left: 0; background: var(--bg-panel); border: 1px solid #000; width: 180px; box-shadow: 2px 2px 10px rgba(0,0,0,0.8); z-index: 1000; }
-        .menu-item:hover .dropdown { display: block; }
-        .dropdown-item { padding: 8px 15px; color: #ccc; }
-        .dropdown-item:hover { background: var(--ae-blue); color: #fff; }
-        .sep { height: 1px; background: var(--border-light); margin: 2px 0; }
+        /* =========================================================
+           MENU & HEADER
+           ========================================================= */
+        header { display: flex; align-items: center; padding: 0 10px; height: 26px; background: #181818; border-bottom: 1px solid var(--border-drk); z-index: 10; gap: 15px;}
+        .logo { color: #fff; font-weight: bold; padding-right: 15px; border-right: 1px solid #333; }
+        .menu { padding: 4px 8px; color: #aaa; cursor: pointer; position: relative;}
+        .menu:hover { color: #fff; background: var(--bg-panel); }
+        .ddown { display: none; position: absolute; top: 100%; left: 0; background: var(--bg-panel); border: 1px solid #111; box-shadow: 2px 2px 8px rgba(0,0,0,0.8); z-index: 1000; min-width: 150px; }
+        .menu:hover .ddown { display: block; }
+        .ditem { padding: 8px 12px; color: #ccc; display: flex; justify-content: space-between; align-items: center; }
+        .ditem:hover { background: var(--accent); color: #fff; }
 
-        .toolbar { height: 35px; background: var(--bg-panel); border-bottom: 1px solid #000; display: flex; align-items: center; padding: 0 10px; gap: 5px; z-index: 10; }
-        .tool-btn { width: 28px; height: 28px; display: flex; justify-content: center; align-items: center; cursor: pointer; background: transparent; border: 1px solid transparent; border-radius: 3px; }
-        .tool-btn svg { fill: #ccc; width: 16px; height: 16px; }
-        .tool-btn:hover { background: var(--bg-hover); }
-        .tool-btn.active { background: #111; border-color: var(--ae-blue); }
-        .tool-btn.active svg { fill: var(--ae-blue); }
+        .toolbar { display: flex; align-items: center; height: 35px; background: var(--bg-panel); border-bottom: 1px solid var(--border-drk); padding: 0 10px; gap: 5px; }
+        .tool { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 3px; cursor: pointer; border: 1px solid transparent; }
+        .tool svg { width: 16px; height: 16px; fill: #aaa; }
+        .tool:hover { background: var(--bg-head); }
+        .tool.active { background: #111; border-color: var(--accent); }
+        .tool.active svg { fill: var(--accent); }
 
-        /* WORKSPACE */
+        /* =========================================================
+           WORKSPACE (3 COLUMNS)
+           ========================================================= */
         .workspace { display: flex; flex: 1; overflow: hidden; background: #000; }
-        .panel { display: flex; flex-direction: column; background: var(--bg-panel); border: 1px solid #111; overflow: hidden; }
-        
-        .tabs { height: 24px; background: var(--bg-header); display: flex; border-bottom: 1px solid #111; }
-        .tab { padding: 4px 15px; color: #aaa; border-right: 1px solid #111; cursor: pointer; }
-        .tab.active { background: var(--bg-panel); color: #fff; border-bottom: 2px solid var(--ae-blue); }
+        .col { display: flex; flex-direction: column; background: var(--bg-panel); border: 1px solid var(--border-drk); }
+        .col-tabs { height: 24px; background: var(--bg-head); display: flex; border-bottom: 1px solid var(--border-drk); }
+        .tab { padding: 4px 15px; border-right: 1px solid var(--border-drk); cursor: pointer; color: #999; }
+        .tab.active { background: var(--bg-panel); color: #fff; border-bottom: 2px solid var(--accent); padding-bottom: 2px;}
 
-        .left-panel { width: 260px; }
-        .center-panel { flex: 1; background: var(--comp-bg); position: relative; }
-        .right-panel { width: 260px; }
+        /* CANVAS ENGINE (3D Render View) */
+        .viewport { flex: 1; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #252525, #000); overflow: hidden; perspective: 1200px; }
+        .comp { width: 800px; height: 450px; background: #0c0c0c; position: relative; box-shadow: 0 0 50px #000; border: 1px solid #222; transform-style: preserve-3d; }
+        .lyr-view { position: absolute; transform-style: preserve-3d; display: flex; align-items: center; justify-content: center; text-align: center; cursor: pointer; }
+        .lyr-view.selected { outline: 1px dashed rgba(255,255,255,0.7); z-index: 100 !important; }
+        
+        .btn { padding: 8px; width: 100%; border: none; background: #333; color: #fff; cursor: pointer; text-align: center; margin-bottom: 5px; border-radius: 2px;}
+        .btn:hover { background: #444; }
+        .btn-comp { background: linear-gradient(90deg, #711bb8, #973cd6); border: 1px solid #4a107a; font-weight: bold; margin-top:10px; }
+        .btn-comp:hover { filter: brightness(1.2); }
 
-        /* COMPOSITION 3D ENGINE */
-        .comp-viewport { flex: 1; display: flex; justify-content: center; align-items: center; overflow: hidden; background: radial-gradient(circle at center, #262626 0%, #050505 100%); perspective: 1200px; }
-        #canvas { width: 800px; height: 450px; background: #080808; position: relative; transform-style: preserve-3d; box-shadow: 0 0 40px rgba(0,0,0,1); border: 1px solid rgba(255,255,255,0.05); overflow: visible;}
-        
-        .layer-item { position: absolute; transform-style: preserve-3d; cursor: move; display: flex; justify-content: center; align-items: center; text-align: center;}
-        .layer-item.selected { outline: 1px solid #fff; z-index: 99 !important; }
+        /* =========================================================
+           TIMELINE HIERARCHY & ZOOMABLE TRACKS
+           ========================================================= */
+        .timeline { height: 35vh; min-height: 250px; display: flex; flex-direction: column; background: var(--bg-panel); border-top: 2px solid #000; position:relative; }
+        .tl-ctrls { height: 32px; background: var(--bg-head); border-bottom: 1px solid #111; display: flex; align-items: center; padding: 0 10px; gap: 15px; }
+        .tc-box { font-family: 'Consolas', monospace; color: var(--accent); background: #000; padding: 3px 8px; border: 1px inset #222; border-radius: 3px; font-size: 14px; font-weight: bold; }
+        .zoom-slider { -webkit-appearance: none; width: 150px; height: 5px; background: #555; outline: none; border-radius: 3px; }
+        .zoom-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 13px; height: 13px; border-radius: 50%; background: #ccc; cursor: ew-resize; }
 
-        /* CONTROLES EXTRA */
-        .btn-panel { width: 100%; padding: 8px; background: #333; color: #ccc; border: 1px solid #222; cursor: pointer; text-align: left; }
-        .btn-panel:hover { background: #444; color: #fff; }
+        .tl-main { display: flex; flex: 1; overflow: hidden; position: relative; }
         
-        .btn-plugin { background: linear-gradient(180deg, #b044f5 0%, #6c239d 100%); border:1px solid #48146a; color:#fff; font-weight:bold; width:100%; padding:10px; cursor:pointer; text-align:center; border-radius:3px; margin-top:5px; box-shadow: 0 2px 5px rgba(0,0,0,0.5);}
-        .btn-plugin:hover { filter: brightness(1.2); }
+        /* Hierarchy Table Left */
+        .tl-tree { width: 380px; background: var(--bg-panel); border-right: 1px solid #000; z-index: 50; overflow-y: auto; overflow-x: hidden; }
+        .tr-head { display: flex; height: 24px; background: #1a1a1a; font-weight: bold; color: #888; border-bottom: 1px solid #000; }
+        .th-c { border-right: 1px solid #111; display: flex; align-items: center; padding-left: 5px; }
+        
+        .t-row { display: flex; height: 22px; align-items: center; border-bottom: 1px solid #1f1f1f; cursor: pointer; }
+        .lyr-row { background: #232323; } .lyr-row.active { background: #353535; color: #fff; }
+        .grp-row { background: #1c1c1c; padding-left: 40px; color: var(--accent); }
+        .prp-row { background: #181818; padding-left: 55px; color: #aaa; }
+        .prp-row.graph-active { background: rgba(45, 140, 235, 0.2); border-right: 3px solid var(--accent); color: #fff; }
+        
+        .ic { width: 22px; display: flex; align-items: center; justify-content: center; }
+        .xp { font-size: 9px; margin-right: 5px; transition: transform 0.1s; } .xp.op { transform: rotate(90deg); color: #fff; }
+        .val-scrub { margin-left: auto; margin-right: 10px; font-family: monospace; color: var(--accent); cursor: ew-resize; }
 
-        /* =========================================================================
-           TIMELINE & HIERARCHY
-           ========================================================================= */
-        .timeline { height: 40vh; min-height: 250px; display: flex; flex-direction: column; background: #1a1a1a; border-top: 1px solid #000; }
-        .tl-toolbar { height: 32px; background: var(--bg-header); display: flex; align-items: center; padding: 0 15px; gap: 20px; border-bottom: 1px solid #000; }
-        .timecode { font-family: monospace; font-size: 15px; color: var(--ae-blue); background: #111; padding: 3px 8px; border-radius: 2px; border: 1px inset #222; }
+        /* TRACK CONTAINER RIGHT (ZOOMABLE) */
+        .tl-view { flex: 1; overflow-x: auto; overflow-y: hidden; background: var(--bg-track); position: relative; }
+        .tl-scroll { position: relative; height: 100%; background: repeating-linear-gradient(90deg, transparent, transparent 99px, #262626 99px, #262626 100px); }
+        .ruler { height: 24px; background: #222; border-bottom: 1px solid #111; pointer-events: none; }
+        .playhead { position: absolute; left: 0%; top: 0; width: 1px; height: 100vh; background: var(--playhead); z-index: 100; pointer-events: none; }
+        .playhead-cap { position: absolute; top: 0; left: -5px; width: 11px; height: 15px; background: var(--playhead); cursor: ew-resize; pointer-events: all; clip-path: polygon(0 0, 100% 0, 100% 60%, 50% 100%, 0 60%); }
         
-        /* ZOOM SLIDER */
-        .zoom-controls { display: flex; align-items: center; gap: 8px; color: #888; }
-        .zoom-slider { -webkit-appearance: none; width: 120px; height: 4px; background: #444; outline: none; border-radius: 2px; }
-        .zoom-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: #ccc; cursor: ew-resize; }
-        .zoom-slider::-webkit-slider-thumb:hover { background: #fff; }
+        .tk-row { height: 22px; position: relative; border-bottom: 1px solid #222; }
+        .lyr-bar { position: absolute; height: 14px; top: 4px; border-radius: 2px; box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.6); }
+        .lyr-bar.selected { filter: brightness(1.4); border: 1px solid #fff; }
+        
+        /* Keyframes */
+        .kf-dim { position: absolute; top: 11px; width: 9px; height: 9px; background: var(--kf-dim); transform: translate(-50%,-50%) rotate(45deg); cursor: pointer; z-index: 20; box-shadow: 1px 1px 2px #000, inset 0 0 0 1px rgba(0,0,0,0.5); }
+        .kf-dim.selected { background: #fff; box-shadow: 0 0 5px #fff, inset 0 0 0 1px #f00; z-index: 30;}
 
-        .tl-body { display: flex; flex: 1; overflow: hidden; position: relative; }
-        .tl-left { width: 380px; background: var(--bg-panel); border-right: 1px solid #000; overflow-y: auto; overflow-x: hidden; z-index: 50; }
-        
-        .th-row { display: flex; height: 24px; background: #262626; border-bottom: 1px solid #1a1a1a; font-weight: bold; color: #888; align-items: center; }
-        .t-cell { display: flex; align-items: center; border-right: 1px solid #1a1a1a; padding-left: 5px; height: 100%; }
-        .t-icon { width: 22px; justify-content: center; padding: 0; cursor: pointer; }
-        
-        .row { display: flex; height: 22px; align-items: center; border-bottom: 1px solid #1a1a1a; cursor: pointer; }
-        .layer-row { background: #222; } .layer-row:hover { background: #333; } .layer-row.active { background: #3c3c3c; color: #fff; }
-        .group-row { background: #1c1c1c; padding-left: 45px; color: var(--ae-blue); }
-        .prop-row { background: #151515; padding-left: 60px; color: #aaa; }
-        
-        .exp { font-size: 9px; margin-right: 5px; transition: 0.1s; color: #aaa;} .exp.open { transform: rotate(90deg); color:#fff; }
-        
-        /* NUMBER SCRUBBING */
-        .scrub { color: var(--ae-blue); font-family: monospace; font-size: 11px; cursor: ew-resize; margin-left: auto; margin-right: 10px; font-weight:bold; }
-        
-        /* --- TL RIGHT: LA ZONA ESCALABLE (ZOOM) --- */
-        .tl-right-wrapper { flex: 1; overflow-x: auto; overflow-y: hidden; background: #1e1e1e; position: relative; }
-        /* SCROLL CONTENT ES EL QUE CRECE CON EL ZOOM */
-        .tl-content { position: relative; height: 100%; background: repeating-linear-gradient(90deg, transparent, transparent 99px, #2a2a2a 99px, #2a2a2a 100px); }
-        
-        .ruler { height: 24px; background: #2a2a2a; border-bottom: 1px solid #111; position: sticky; top: 0; z-index: 40; pointer-events: none;}
-        /* Ticks matemáticos para la regla */
-        .ruler-ticks { width: 100%; height: 100%; background-image: repeating-linear-gradient(90deg, #555, #555 1px, transparent 1px, transparent 5%); }
+        /* =========================================================
+           GRAPH EDITOR OVERLAY (THE MAGICAL BEZIER CURVE EDITOR)
+           ========================================================= */
+        #graph-editor { display: none; position: absolute; top: 24px; left: 0; width: 100%; height: calc(100% - 24px); background: #161616; z-index: 90; }
+        /* Cuadricula fondo */
+        #graph-editor { background-image: linear-gradient(var(--graph-grid) 1px, transparent 1px), linear-gradient(90deg, var(--graph-grid) 1px, transparent 1px); background-size: 20px 20px, 20px 20px; }
+        .svg-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: visible; }
+        .g-line { fill: none; stroke: var(--graph-line); stroke-width: 2px; }
+        .g-point { fill: #fff; stroke: var(--graph-line); stroke-width: 2px; cursor: pointer; r: 4; }
+        .g-handle-line { stroke: #555; stroke-width: 1px; stroke-dasharray: 2 2; }
+        .g-handle { fill: var(--accent-plugin); stroke: #fff; stroke-width: 1.5px; cursor: crosshair; r: 5; }
 
-        .playhead-line { position: absolute; top: 0; left: 0%; width: 1px; height: 100vh; background: var(--playhead); z-index: 60; pointer-events: none; }
-        .playhead-head { position: absolute; top: 0; left: -5px; width: 11px; height: 15px; background: var(--playhead); cursor: ew-resize; pointer-events: all; clip-path: polygon(0 0, 100% 0, 100% 60%, 50% 100%, 0 60%); }
-
-        .t-track { height: 22px; border-bottom: 1px solid #222; position: relative; }
+        /* =========================================================
+           COMPOSER PLUGIN MODAL UI
+           ========================================================= */
+        #pl-modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:2000; align-items:center; justify-content:center; }
+        .pl-win { width: 700px; height: 500px; background: #161616; border: 1px solid #444; border-radius: 8px; box-shadow: 0 20px 60px #000; display: flex; flex-direction: column; overflow: hidden; }
+        .pl-head { background: linear-gradient(90deg, #180922 0%, #3e1b52 100%); padding: 15px 20px; display: flex; justify-content: space-between; border-bottom: 1px solid #6b2e8f; align-items: center;}
+        .pl-title { color: #fff; font-weight: 800; font-size: 16px; display: flex; align-items: center; gap: 10px; letter-spacing: 1px;}
+        .pl-title svg { fill: #fff; width: 20px; height: 20px; }
+        .pl-close { color: rgba(255,255,255,0.5); font-size: 20px; cursor: pointer; font-weight: bold; }
+        .pl-close:hover { color: #fff; }
         
-        /* Bar IN / OUT Limits */
-        .layer-bar { position: absolute; height: 14px; top: 4px; border-radius: 2px; box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.5); border: 1px solid rgba(0,0,0,0.8); }
-        .layer-bar.selected { filter: brightness(1.4); border-color: #fff; }
-
-        /* KEYFRAMES: ESTADO NORMAL Y ESTADO SELECCIONADO PARA BORRAR */
-        .kf { position: absolute; top: 11px; width: 9px; height: 9px; background: var(--kf-diamond); transform: translate(-50%, -50%) rotate(45deg); cursor: pointer; z-index: 20; border: 1px solid #000; box-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
-        .kf:hover { transform: translate(-50%, -50%) rotate(45deg) scale(1.3); background: #fff; z-index: 25;}
-        .kf.selected { background: var(--kf-selected); box-shadow: 0 0 6px #fff, inset 0 0 4px #000; border-color: #f00;}
-
-        /* =========================================================================
-           COMPOSER PLUGIN (MODAL ANIMATION COMPOSER)
-           ========================================================================= */
-        #plugin-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:2000; }
-        .plugin-window { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); width:650px; height:450px; background:#1e1e1e; border:1px solid #444; border-radius:6px; box-shadow: 0 20px 60px rgba(0,0,0,0.9); z-index:2001; flex-direction:column; overflow:hidden;}
-        
-        .pl-header { background: linear-gradient(90deg, #180922 0%, #2f1242 100%); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #48146a; }
-        .pl-title { color: #fff; font-weight: bold; font-size: 15px; display:flex; align-items:center; gap:10px; }
-        .pl-close { color: #aaa; cursor: pointer; font-size: 18px; font-weight: bold; } .pl-close:hover { color: #fff; }
-
         .pl-body { display: flex; flex: 1; }
-        .pl-sidebar { width: 180px; background: #181818; border-right: 1px solid #333; padding: 10px 0; overflow-y:auto;}
-        .pl-folder { padding: 8px 15px; color: #aaa; cursor: pointer; display: flex; align-items: center; gap: 8px; border-left: 3px solid transparent;}
-        .pl-folder.active { background: #2a2a2a; color: #fff; border-left-color: #b044f5; }
+        .pl-nav { width: 180px; background: #121212; border-right: 1px solid #222; }
+        .pl-cat { padding: 12px 15px; color: #888; border-left: 3px solid transparent; cursor: pointer; font-weight: 600; display: flex; gap: 8px; align-items: center;}
+        .pl-cat.act { color: #fff; background: #1a1a1a; border-left-color: #a749f2; }
         
-        .pl-content { flex: 1; padding: 15px; background: #222; overflow-y: auto; display:grid; grid-template-columns: 1fr 1fr; gap:15px; align-content: start;}
-        
-        .preset-card { background: #2a2a2a; border: 1px solid #333; border-radius: 4px; padding: 12px; transition: 0.2s;}
-        .preset-card:hover { border-color: #555; background: #333; }
-        .preset-name { color: #fff; font-weight: bold; margin-bottom: 8px; font-size: 12px;}
-        .preset-actions { display: flex; gap: 5px; }
-        .btn-apply { flex:1; background: #444; color: #fff; border:none; padding:6px; border-radius:3px; cursor:pointer; font-size:10px; font-weight:bold;}
-        .btn-apply.in { background: #2b5c3b; border: 1px solid #3d8f57; } .btn-apply.in:hover { background: #3d8f57; }
-        .btn-apply.out { background: #7a3131; border: 1px solid #ad4747; } .btn-apply.out:hover { background: #ad4747; }
+        .pl-grid { flex: 1; padding: 20px; overflow-y: auto; display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; align-content: start; background: #1b1b1b; }
+        .pr-card { background: #252525; border: 1px solid #333; border-radius: 6px; padding: 15px; display: flex; flex-direction: column; gap: 10px; transition: 0.2s;}
+        .pr-card:hover { border-color: #555; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .pr-name { color: #fff; font-weight: bold; font-size: 13px; }
+        .pr-desc { color: #888; font-size: 10px; line-height: 1.4; flex:1;}
+        .pr-btn-grp { display: flex; gap: 5px; }
+        .btn-inj { flex: 1; padding: 8px; border: none; border-radius: 4px; font-weight: bold; color: #fff; cursor: pointer; font-size: 10px; }
+        .btn-inj.in { background: #235233; border: 1px solid #327549; } .btn-inj.in:hover { background: #327549; }
+        .btn-inj.out { background: #752828; border: 1px solid #a33838; } .btn-inj.out:hover { background: #a33838; }
 
-        /* ICONOS SVG UTILES */
-        .svg-lock { fill:currentColor; width:10px; height:10px; } .svg-eye { fill:currentColor; width:12px; height:12px; }
     </style>
 </head>
 <body>
 
-    <!-- MENUS Y HERRAMIENTAS -->
-    <div class="app-menu">
-        <div class="logo-ae">Ae Ultimate</div>
-        <div class="menu-item">File</div>
-        <div class="menu-item">Edit
-            <div class="dropdown">
-                <div class="dropdown-item" onclick="Engine.splitLayer()">✂️ Split Layer (C)</div>
-                <div class="dropdown-item" onclick="Engine.deleteSelectedKeyframes()">🗑 Delete Keyframes (Del)</div>
+    <!-- MENÚ -->
+    <header>
+        <div class="logo">Ae Ultra</div>
+        <div class="menu">File</div>
+        <div class="menu">Edit
+            <div class="ddown">
+                <div class="ditem" onclick="App.split()"><span>Split Layer</span> <span style="color:#666;">[C]</span></div>
+                <div class="ditem" onclick="App.deleteKF()"><span>Delete Selected KFs</span> <span style="color:#666;">[Del]</span></div>
             </div>
         </div>
-        <div class="menu-item">Layer
-            <div class="dropdown">
-                <div class="dropdown-item" onclick="Engine.addLayer('solid')">⬛ New Solid Shape</div>
-                <div class="dropdown-item" onclick="Engine.addLayer('text')">🔤 New Text Base</div>
+        <div class="menu">Animation
+            <div class="ddown">
+                <div class="ditem" onclick="UI.openPlugin()">✨ Open Composer...</div>
             </div>
         </div>
+    </header>
+
+    <!-- HERRAMIENTAS Y GRAPH TOGGLE -->
+    <div class="toolbar">
+        <div class="tool active" onclick="UI.setTool('v')"><svg viewBox="0 0 24 24"><path d="M7,2l12,11.2l-5.8,0.5l3.3,7.3l-2.2,1.1l-3.2-7.4l-4.4,4.5V2z"/></svg></div>
+        <div class="tool" onclick="UI.setTool('h')"><svg viewBox="0 0 24 24"><path d="M21,9c0-1.6-1.3-3-3-3V5c0-1.6-1.3-3-3-3s-3,1.3-3,3v1C11.5,5.4,10.8,5,10,5C8.3,5,7,6.3,7,8v2.2C6.4,10.1,5.7,10,5,10c-1.6,0-3,1.3-3,3v6c0,2.8,2.2,5,5,5h8c2.8,0,5-2.2,5-5V9z"/></svg></div>
+        <div style="width: 1px; height: 20px; background: #333; margin: 0 10px;"></div>
+        <!-- GRAPH EDITOR TOGGLE -->
+        <div class="tool" id="btn-graph" onclick="App.toggleGraph()" title="Graph Editor / Bézier Curve Builder">
+            <svg viewBox="0 0 24 24"><path d="M2,20 h20 v2 H2 V20 z M4,16 c4,0 4,-10 8,-10 s4,10 8,10 v2 c-5.5,0 -5.5,-12 -8,-12 s-2.5,12 -8,12 V16 z"/></svg>
+        </div>
+        <span style="color:#666; margin-left:10px;">Select a property and open Graph Editor to draw curves!</span>
     </div>
 
-    <div class="toolbar" id="toolbar">
-        <button class="tool-btn active" id="tool-v" onclick="UI.setTool('v')"><svg viewBox="0 0 24 24"><path d="M7,2l12,11.2l-5.8,0.5l3.3,7.3l-2.2,1.1l-3.2-7.4l-4.4,4.5V2z"/></svg></button>
-        <button class="tool-btn" id="tool-h" onclick="UI.setTool('h')"><svg viewBox="0 0 24 24"><path d="M21,9c0-1.6-1.3-3-3-3V5c0-1.6-1.3-3-3-3s-3,1.3-3,3v1C11.5,5.4,10.8,5,10,5C8.3,5,7,6.3,7,8v2.2C6.4,10.1,5.7,10,5,10c-1.6,0-3,1.3-3,3v6c0,2.8,2.2,5,5,5h8c2.8,0,5-2.2,5-5V9z"/></svg></button>
-    </div>
-
-    <!-- WORKSPACE COMPOSICIÓN -->
+    <!-- PANELES DE ESPACIO DE TRABAJO -->
     <div class="workspace">
-        <aside class="panel left-panel">
-            <div class="tabs"><div class="tab active">Project</div></div>
-            <div style="padding:15px; color:#888;">
-                • Shortcut <kbd>Espacio</kbd>: Play<br>
-                • Shortcut <kbd>C</kbd>: Cortar (Split)<br>
-                • Haz Click en un Rombo y dale a <kbd>Supr</kbd> para borrar KFs.<br><br>
-                Usa el <b>Zoom Slider</b> abajo a la izquierda en la Timeline.
+        <div class="col" style="width:260px;">
+            <div class="col-tabs"><div class="tab active">Project Assets</div></div>
+            <div style="padding:15px;">
+                <button class="btn" onclick="App.addLyr('solid')">+ Block Element</button>
+                <button class="btn" onclick="App.addLyr('text')">+ Typo Element</button>
+                <div style="margin-top:20px; color:#aaa; font-size: 12px; line-height: 1.6;">
+                    <b>💡 Novedades Pro:</b><br>
+                    • <b>Icono Gráfico Arriba:</b> Transforma el Timeline en modo Editor de Nodos.<br>
+                    • Arrastra los <b>tiradores azules</b> en el gráfico para deformar la animación de un preset.<br>
+                    • Usa <b>Space</b> para reproducir a 60fps.<br>
+                </div>
             </div>
-            <button class="btn-panel" style="border-top:1px solid #111; margin-top:auto;" onclick="Engine.addLayer('solid')">+ Create Demo Block</button>
-        </aside>
+        </div>
 
-        <main class="panel center-panel">
-            <div class="tabs"><div class="tab active">Composition 1</div></div>
-            <div class="comp-viewport" id="viewport">
-                <div id="canvas"></div>
-            </div>
-        </main>
+        <div class="col" style="flex:1;">
+            <div class="col-tabs"><div class="tab active">Master Composition</div></div>
+            <div class="viewport"><div class="comp" id="comp-box"></div></div>
+        </div>
 
-        <aside class="panel right-panel">
-            <div style="flex:0.6; border-bottom:1px solid #000;">
-                <div class="tabs"><div class="tab active">Preview</div></div>
+        <div class="col" style="width:280px;">
+            <div style="flex: 0.6; border-bottom: 1px solid #000; display:flex; flex-direction:column;">
+                <div class="col-tabs"><div class="tab active">Controls</div></div>
                 <div style="padding:15px;">
-                    <button class="btn-panel" id="btn-play" style="font-weight:bold; color:var(--ae-blue); text-align:center;" onclick="Engine.togglePlay()">▶ Play Animation (Space)</button>
-                    <!-- EL BOTÓN DEL PLUGIN COMPOSER -->
-                    <button class="btn-plugin" onclick="Composer.open()">✨ FX COMPOSER</button>
+                    <button class="btn" style="background:var(--accent);font-weight:bold;" id="btn-play" onclick="App.togglePlay()">▶ Play Animation (Space)</button>
+                    <button class="btn btn-comp" onclick="UI.openPlugin()">✨ PREMIERE COMPOSER</button>
                 </div>
             </div>
-            <div style="flex:1;">
-                <div class="tabs"><div class="tab active">Info & Logs</div></div>
-                <div style="padding:15px; font-family:monospace; color:#666;" id="debug-log">
-                    Engine Initialized.<br>Native Zoom rendering OK.
+            <div style="flex: 1; display:flex; flex-direction:column;">
+                <div class="col-tabs"><div class="tab active">Physics Math Logs</div></div>
+                <div style="padding:15px; color:#555; font-family:monospace;" id="log">
+                    Engine V3 Ready.<br>Waiting for graph drawing...
                 </div>
             </div>
-        </aside>
+        </div>
     </div>
 
-    <!-- TIMELINE CON ZOOM -->
+    <!-- LA TIMELINE (PANELES ÁRBOL, KEYFRAMES Y GRÁFICO SUPERPUESTO) -->
     <div class="timeline">
-        <div class="tl-toolbar">
-            <div class="timecode" id="timecode">00:00:00:00</div>
-            <!-- SCALER -->
-            <div class="zoom-controls">
-                <span style="font-size: 16px;">➖</span>
-                <input type="range" class="zoom-slider" id="zoom-slider" min="0.5" max="5" step="0.1" value="1" oninput="Engine.setZoom(this.value)">
-                <span style="font-size: 16px;">➕</span>
-            </div>
+        <div class="tl-ctrls">
+            <div class="tc-box" id="time-display">00:00:00:00</div>
+            <input type="range" class="zoom-slider" min="0.5" max="6" step="0.1" value="1" oninput="App.setZoom(this.value)" title="Timeline Zoom">
         </div>
 
-        <div class="tl-body">
-            <!-- TABLA DE JERARQUÍAS -->
-            <div class="tl-left" id="tl-left-hierarchy"></div>
+        <div class="tl-main">
+            <!-- Arbol Izquierdo -->
+            <div class="tl-tree" id="tl-left"></div>
 
-            <!-- CONTENEDOR ESCALABLE (NUEVO SISTEMA DE SCROLL CON ZOOM) -->
-            <div class="tl-right-wrapper" id="tl-wrapper" onmousedown="Engine.onTimelineDrag(event)">
-                <!-- Aquí se aplica el % de ancho variable para el Zoom -->
-                <div class="tl-content" id="tl-scroll-content">
-                    <div class="ruler"><div class="ruler-ticks"></div></div>
-                    <div class="playhead-line" id="playhead"><div class="playhead-head"></div></div>
-                    <div id="tl-tracks-container"></div>
+            <!-- Contenedor Derecho (Desplazable según Zoom) -->
+            <div class="tl-view" onmousedown="App.scrubTime(event)">
+                <div class="tl-scroll" id="tl-right">
+                    <div class="ruler"></div>
+                    <div class="playhead" id="playhead"><div class="playhead-cap"></div></div>
+                    <!-- CONTENEDOR DE LOS TRACKS NORMALES -->
+                    <div id="tk-container"></div>
+                    
+                    <!-- EL LIENZO SUPERPUESTO PARA EL GRAPH EDITOR (Visibilidad Dinámica) -->
+                    <div id="graph-editor">
+                        <svg class="svg-canvas" id="svg-graph"></svg>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL "PREMIERE COMPOSER" (SIMULADOR PLUGIN) -->
-    <div id="plugin-overlay" onclick="Composer.close()"></div>
-    <div class="plugin-window" id="plugin-window">
-        <div class="pl-header">
-            <div class="pl-title">✨ PRESET COMPOSER STUDIO</div>
-            <div class="pl-close" onclick="Composer.close()">✖</div>
-        </div>
-        <div class="pl-body">
-            <div class="pl-sidebar">
-                <div class="pl-folder active">📁 Fades & Trans</div>
-                <div class="pl-folder">📁 2D Slides</div>
-                <div class="pl-folder">📁 3D Pops</div>
-                <div class="pl-folder">📁 Bounces</div>
+    <!-- EL PLUGIN MODAL FLOTANTE (COMPOSER UI) -->
+    <div id="pl-modal" onclick="UI.closePlugin(event)">
+        <div class="pl-win" onclick="event.stopPropagation()">
+            <div class="pl-head">
+                <div class="pl-title">
+                    <svg viewBox="0 0 24 24"><path d="M12,2L2,12l10,10l10-10L12,2z M12,4.8L19.2,12L12,19.2L4.8,12L12,4.8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    MOTION COMPOSER SUITE
+                </div>
+                <div class="pl-close" onclick="UI.closePlugin()">✖</div>
             </div>
-            <div class="pl-content">
-                <!-- Preset Cards Injectadas por JS -->
-                <div class="preset-card">
-                    <div class="preset-name">Smooth Fade</div>
-                    <div class="preset-actions">
-                        <button class="btn-apply in" onclick="Composer.apply('fade', 'in')">IN</button>
-                        <button class="btn-apply out" onclick="Composer.apply('fade', 'out')">OUT</button>
-                    </div>
+            <div class="pl-body">
+                <div class="pl-nav">
+                    <div class="pl-cat act">🚀 Express Trans</div>
+                    <div class="pl-cat">🧬 Spring Physics</div>
+                    <div class="pl-cat">🌀 3D Tumbles</div>
                 </div>
-                <div class="preset-card">
-                    <div class="preset-name">Slide Bottom (Elastic)</div>
-                    <div class="preset-actions">
-                        <button class="btn-apply in" onclick="Composer.apply('slide_up', 'in')">IN</button>
-                        <button class="btn-apply out" onclick="Composer.apply('slide_up', 'out')">OUT</button>
+                <div class="pl-grid">
+                    <div class="pr-card">
+                        <div class="pr-name">Velocity Slide Base</div>
+                        <div class="pr-desc">Movimiento clásico horizontal. Inyecta Curvas Cúbicas de interpolación de aceleración.</div>
+                        <div class="pr-btn-grp">
+                            <button class="btn-inj in" onclick="Composer.inject('slideX', 'in')">IN</button>
+                            <button class="btn-inj out" onclick="Composer.inject('slideX', 'out')">OUT</button>
+                        </div>
                     </div>
-                </div>
-                <div class="preset-card">
-                    <div class="preset-name">Pop Scale Overshoot</div>
-                    <div class="preset-actions">
-                        <button class="btn-apply in" onclick="Composer.apply('pop', 'in')">IN</button>
-                        <button class="btn-apply out" onclick="Composer.apply('pop', 'out')">OUT</button>
+                    <div class="pr-card">
+                        <div class="pr-name">Boom Pop! (Overshoot)</div>
+                        <div class="pr-desc">Crecimiento de escala violento que sobrepasa el límite 100% (Curve Y-Busting).</div>
+                        <div class="pr-btn-grp">
+                            <button class="btn-inj in" onclick="Composer.inject('pop', 'in')">IN</button>
+                            <button class="btn-inj out" onclick="Composer.inject('pop', 'out')">OUT</button>
+                        </div>
                     </div>
-                </div>
-                <div class="preset-card">
-                    <div class="preset-name">Spin Z 360 Flip</div>
-                    <div class="preset-actions">
-                        <button class="btn-apply in" onclick="Composer.apply('spinZ', 'in')">IN</button>
-                        <button class="btn-apply out" onclick="Composer.apply('spinZ', 'out')">OUT</button>
+                    <div class="pr-card">
+                        <div class="pr-name">Elastic Drop (Newton)</div>
+                        <div class="pr-desc">Caída desde Y negativo creando múltiples rebotes simulados matemáticamente.</div>
+                        <div class="pr-btn-grp">
+                            <button class="btn-inj in" onclick="Composer.inject('drop', 'in')">IN</button>
+                        </div>
+                    </div>
+                    <div class="pr-card">
+                        <div class="pr-name">3D Twist Spin Entrance</div>
+                        <div class="pr-desc">Active entorno 3D. Entra rotando en X, Y, Z con una suavización extrema Ease In.</div>
+                        <div class="pr-btn-grp">
+                            <button class="btn-inj in" onclick="Composer.inject('spin3D', 'in')">IN</button>
+                            <button class="btn-inj out" onclick="Composer.inject('spin3D', 'out')">OUT</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -298,179 +305,150 @@
     </div>
 
     <script>
-        /**
-         * ==========================================
-         * 1. STATE & CORE METADATA
-         * ==========================================
-         */
+        /** =========================================================================
+         *   MATEMÁTICAS PURAS DEL ENGINE (Cubic Bézier Solver para Animación Real)
+         *  ========================================================================= */
+        const MathCore = {
+            // Newton-Raphson: Para una curva (x1,y1,x2,y2) donde X es tiempo [0..1] e Y es multiplicador
+            solveBezier(p1x, p1y, p2x, p2y, targetX) {
+                if(p1x===p1y && p2x===p2y) return targetX; // Si es puramente lineal (0,0,1,1) bypass
+                let t = targetX;
+                for(let i=0; i<8; i++) {
+                    let fx = 3*Math.pow(1-t,2)*t*p1x + 3*(1-t)*t*t*p2x + Math.pow(t,3) - targetX;
+                    let dx = 3*Math.pow(1-t,2)*p1x + 6*(1-t)*t*(p2x-p1x) + 3*t*t*(1-p2x);
+                    if(Math.abs(fx) < 0.001) break;
+                    if(dx===0) break;
+                    t -= fx / dx;
+                }
+                t = Math.max(0, Math.min(1, t)); // Limitar t
+                // Con T hallado, obtener progreso Y de la curva (puede salirse de 0 y 1 permitiendo OVERSHOOT y Rebotes)
+                return 3*Math.pow(1-t,2)*t*p1y + 3*(1-t)*t*t*p2y + Math.pow(t,3);
+            }
+        };
+
+        /** =========================================================================
+         *   STATE & MODELOS
+         *  ========================================================================= */
         const State = {
-            duration: 10000, fps: 60, timeMs: 0,
-            playing: false, tool: 'v',
-            layerIdx: 0, layers:[],
-            selectedId: null,
-            zoom: 1.0,           // NUEVO: Escala del timeline (1 = 100%, 5 = 500%)
-            selectedKfs:[]      // NUEVO: Array de Keyframes físicos seleccionados
+            T: 10000, FPS: 60, time: 0, play: false, 
+            layers:[], counter: 0, sel: null, selKfs:[],
+            zoom: 1.0, tool: 'v',
+            
+            // NUEVO: SISTEMA GRAPH EDITOR
+            graphMode: false,
+            graphActiveProp: null // Ej: { lyrId: 'Lx', propKey: 'scale' }
         };
 
-        const PROPS = {
-            x: { label: 'X Pos', unit: 'px', def: 400 },
-            y: { label: 'Y Pos', unit: 'px', def: 225 },
-            z: { label: 'Z Pos', unit: 'px', def: 0, is3D: true },
-            scale: { label: 'Scale', unit: '%', def: 100 },
-            rotX: { label: 'Rot X', unit: '°', def: 0, is3D: true },
-            rotY: { label: 'Rot Y', unit: '°', def: 0, is3D: true },
-            rotZ: { label: 'Rot Z', unit: '°', def: 0 },
-            opacity: { label: 'Opacity', unit: '%', def: 100 }
+        const META = {
+            x: {n:'X Position', u:'px', d:400},
+            y: {n:'Y Position', u:'px', d:225},
+            z: {n:'Z Position', u:'px', d:0, req3D:true},
+            scale: {n:'Scale', u:'%', d:100},
+            rotX: {n:'X Rotation', u:'°', d:0, req3D:true},
+            rotY: {n:'Y Rotation', u:'°', d:0, req3D:true},
+            rotZ: {n:'Z Rotation', u:'°', d:0},
+            opacity: {n:'Opacity', u:'%', d:100}
         };
 
-        // Easing Matemático Mejorado
-        const EASE = {
-            linear: t => t,
-            easeOutExp: t => t === 1 ? 1 : 1 - Math.pow(2, -10 * t),
-            easeOutBack: t => { const c1=1.70158, c3=c1+1; return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2); },
-            easeInOut: t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
-        };
+        const PALETTE =['#85a085', '#a0859c', '#497491', '#8f4646'];
 
-        const COLORS =['#85a085', '#a0859c', '#497491', '#8f4646', '#a09485'];
-
-        /**
-         * ==========================================
-         * 2. MOTOR LÓGICO
-         * ==========================================
-         */
-        const Engine = {
+        /** =========================================================================
+         *   ENGINE CONTROLLER
+         *  ========================================================================= */
+        const App = {
             init() {
-                this.addLayer('text', "MOTION DESIGN");
-                this.addLayer('solid');
-                State.layers[1].expanded = true; State.layers[1].expTF = true;
-                this.select(State.layers[0].id);
-                UI.renderFull();
+                this.addLyr('solid', 'Base Layer Block');
+                State.layers[0].exp = true; State.layers[0].expT = true;
+                UI.renderTree(); UI.syncView();
             },
 
-            addLayer(type, nameStr) {
-                State.layerIdx++;
+            addLyr(type, txt) {
+                State.counter++;
                 const l = {
                     id: 'L_' + Date.now() + Math.random(),
-                    idx: State.layerIdx, type: type,
-                    name: nameStr || `Layer ${State.layerIdx}`,
-                    col: type==='solid' ? '#b02a2a' : '#ffffff',
-                    tag: COLORS[State.layerIdx % COLORS.length],
-                    txt: type==='text' ? nameStr : '',
-                    visible: true, locked: false, is3D: false,
-                    expanded: false, expTF: false,
-                    in: 0, out: State.duration,  // Limits for cutting/rendering
-                    props: {}
+                    num: State.counter, type: type, name: txt || (type==='solid'?'Solid Shape':'Typo'),
+                    col: type==='solid'?'#cf3838':'#fff', tag: PALETTE[State.counter%PALETTE.length],
+                    txt: type==='solid'?'':(txt||'AE ULTRA'),
+                    vis: true, lck: false, is3D: false,
+                    exp: false, expT: false,
+                    in: 0, out: State.T, props: {}
                 };
-                for(let k in PROPS) l.props[k] = { val: PROPS[k].def, sw: false, kfs:[], e: 'easeInOut' };
-                State.layers.unshift(l);
-                this.select(l.id);
-                UI.renderFull();
+                for(let k in META) l.props[k] = { val: META[k].d, sw: false, kfs:[] };
+                State.layers.unshift(l); this.select(l.id);
+            },
+            
+            select(id) { State.sel = id; State.selKfs =[]; UI.renderTree(); UI.syncView(); },
+            tSw(id, pk) { const l = State.layers.find(x=>x.id===id); l[pk]=!l[pk]; UI.renderTree(); UI.syncView(); },
+            
+            setProp(lId, pk, val) {
+                const p = State.layers.find(x=>x.id===lId).props[pk];
+                p.val = val; if(p.sw) this.makeKf(p, State.time, val);
+                UI.fastUpdate();
+            },
+            
+            toggleSW(lId, pk) {
+                const p = State.layers.find(x=>x.id===lId).props[pk]; p.sw = !p.sw;
+                if(p.sw) this.makeKf(p, State.time, p.val); else p.kfs=[];
+                UI.renderTree(); UI.syncView();
+            },
+            
+            makeKf(propRef, time, val, optCurveArray) {
+                // optCurveArray =[x1, y1, x2, y2]
+                const ex = propRef.kfs.findIndex(k => Math.abs(k.t - time) < 10);
+                // Por defecto, Ease Clásico Ae (Curva en S ligera: 0.33, 0.0, 0.67, 1.0)
+                const c = optCurveArray ||[0.33, 0.0, 0.67, 1.0]; 
+                if(ex >= 0) propRef.kfs[ex].val = val;
+                else propRef.kfs.push({ id:'K_'+Math.random(), t: time, val: val, bz: c });
+                propRef.kfs.sort((a,b)=>a.t - b.t);
+            },
+            
+            selKF(ev, lid, pkey, kid) {
+                ev.stopPropagation();
+                if(!ev.shiftKey) State.selKfs =[];
+                const ix = State.selKfs.findIndex(x => x.kid === kid);
+                if(ix>=0) State.selKfs.splice(ix, 1); else State.selKfs.push({lid, pkey, kid});
+                UI.renderTree(); // Solo forzar el remint para la UI rojo brillante
             },
 
-            select(id) { State.selectedId = id; State.selectedKfs =[]; UI.renderFull(); },
-
-            toggleSw(id, p) { 
-                const l = State.layers.find(x=>x.id===id); l[p]=!l[p]; UI.renderFull(); 
-            },
-
-            // --- KEYFRAME MAGIC ---
-            setStopwatch(id, pk) {
-                const p = State.layers.find(l=>l.id===id).props[pk];
-                p.sw = !p.sw;
-                if(p.sw) this.writeKF(p, State.timeMs, p.val); else p.kfs=[];
-                UI.renderFull();
-            },
-
-            toggleExplicitKF(id, pk) {
-                const p = State.layers.find(l=>l.id===id).props[pk];
-                if(!p.sw) p.sw = true;
-                const idx = p.kfs.findIndex(k => Math.abs(k.t - State.timeMs) < 10);
-                if(idx >= 0) p.kfs.splice(idx, 1); else this.writeKF(p, State.timeMs, p.val);
-                UI.renderFull();
-            },
-
-            writeKF(p, time, val, easeMode) {
-                const idx = p.kfs.findIndex(k => Math.abs(k.t - time) < 10);
-                if(idx >= 0) p.kfs[idx].val = val;
-                else p.kfs.push({ t: time, val: val, id: 'KF_'+Math.random(), e: easeMode || 'easeInOut' });
-                p.kfs.sort((a,b)=>a.t - b.t);
-            },
-
-            // --- SELECCIONAR Y BORRAR FÍSICAMENTE KFS (NUEVO) ---
-            selectKeyframe(ev, layerId, propKey, kfId) {
-                ev.stopPropagation(); // Evita mover la aguja de tiempo
-                // Control multi-selección con Shift si quisieras, aquí simple o toggle:
-                const idx = State.selectedKfs.findIndex(x => x.kfId === kfId);
-                if(ev.shiftKey) {
-                    if(idx>=0) State.selectedKfs.splice(idx,1);
-                    else State.selectedKfs.push({ layerId, propKey, kfId });
-                } else {
-                    State.selectedKfs =[{ layerId, propKey, kfId }];
-                }
-                UI.renderTL(); // Solo refescar visualización KF
-            },
-
-            deleteSelectedKeyframes() {
-                if(State.selectedKfs.length === 0) return;
-                State.selectedKfs.forEach(sel => {
-                    const prop = State.layers.find(l => l.id === sel.layerId).props[sel.propKey];
-                    prop.kfs = prop.kfs.filter(k => k.id !== sel.kfId);
+            deleteKF() {
+                if(!State.selKfs.length) return;
+                State.selKfs.forEach(sel => {
+                    const p = State.layers.find(l=>l.id===sel.lid).props[sel.pkey];
+                    p.kfs = p.kfs.filter(k=>k.id!==sel.kid);
                 });
-                State.selectedKfs =[];
-                UI.renderFull();
-                UI.log("Keyframes deleted physically.");
+                State.selKfs =[]; UI.renderTree(); UI.syncView();
             },
 
-            // --- SPLIT INTELIGENTE (AE REAL) ---
-            splitLayer() {
-                if(!State.selectedId) return UI.log("Error: Select a layer to cut.");
-                const idx = State.layers.findIndex(l => l.id === State.selectedId);
-                const original = State.layers[idx];
-
-                if(State.timeMs <= original.in || State.timeMs >= original.out) return;
-
-                const cutTime = State.timeMs;
-                
-                // Deep clone JS nativo rapido
-                const clone = JSON.parse(JSON.stringify(original));
-                State.layerIdx++;
-                clone.id = 'L_' + Date.now();
-                clone.idx = State.layerIdx;
-                clone.name = original.name + " (Cortada)";
-
-                // Matemáticas de Tiempo (AE divide limits)
-                original.out = cutTime;
-                clone.in = cutTime;
-
-                // AE Purge KFs: 
-                // La capa original (izquierda) borra los KFS a la derecha del corte.
-                // La clonada (derecha) borra los KFS a la izquierda.
-                for(let k in original.props) {
-                    original.props[k].kfs = original.props[k].kfs.filter(kf => kf.t <= cutTime);
-                    clone.props[k].kfs = clone.props[k].kfs.filter(kf => kf.t >= cutTime);
+            split() {
+                if(!State.sel) return;
+                const idx = State.layers.findIndex(x=>x.id===State.sel); const ori = State.layers[idx];
+                if(State.time <= ori.in || State.time >= ori.out) return;
+                const cut = State.time;
+                const cl = JSON.parse(JSON.stringify(ori)); State.counter++; cl.id = 'L_'+Date.now(); cl.num = State.counter; cl.name += ' (Corte)';
+                ori.out = cut; cl.in = cut;
+                for(let k in ori.props) {
+                    ori.props[k].kfs = ori.props[k].kfs.filter(k=>k.t <= cut);
+                    cl.props[k].kfs = cl.props[k].kfs.filter(k=>k.t >= cut);
                 }
-
-                State.layers.splice(idx, 0, clone);
-                this.select(clone.id);
-                UI.renderFull();
-                UI.log(`Layer Split at ${Math.round(cutTime)}ms`);
+                State.layers.splice(idx, 0, cl); this.select(cl.id); UI.renderTree(); UI.syncView();
             },
 
-            // Evalúa matemáticas de Béziers de interpolación
-            solveMath() {
+            // --- THE BEZIER MAGIC EVALUATOR ---
+            evaluateAnimation() {
                 State.layers.forEach(l => {
                     for(let k in l.props) {
-                        const p = l.props[k];
-                        if(!p.sw || p.kfs.length===0) continue;
-                        if(State.timeMs <= p.kfs[0].t) p.val = p.kfs[0].val;
-                        else if(State.timeMs >= p.kfs[p.kfs.length-1].t) p.val = p.kfs[p.kfs.length-1].val;
+                        const p = l.props[k]; if(!p.sw || !p.kfs.length) continue;
+                        if(State.time <= p.kfs[0].t) p.val = p.kfs[0].val;
+                        else if(State.time >= p.kfs[p.kfs.length-1].t) p.val = p.kfs[p.kfs.length-1].val;
                         else {
                             for(let i=0; i<p.kfs.length-1; i++) {
-                                if(State.timeMs >= p.kfs[i].t && State.timeMs < p.kfs[i+1].t) {
-                                    const k1=p.kfs[i], k2=p.kfs[i+1];
-                                    const prog = (State.timeMs - k1.t)/(k2.t - k1.t);
-                                    const func = EASE[k1.e] || EASE.easeInOut;
-                                    p.val = k1.val + (k2.val - k1.val) * func(prog);
+                                if(State.time >= p.kfs[i].t && State.time < p.kfs[i+1].t) {
+                                    const kA=p.kfs[i], kB=p.kfs[i+1];
+                                    const ratioT = (State.time - kA.t) / (kB.t - kA.t);
+                                    // Utilizar la curva Bézier Cúbica almacenada en el Keyframe actual hacia el siguiente!
+                                    const bz = kA.bz; 
+                                    const yProgress = MathCore.solveBezier(bz[0], bz[1], bz[2], bz[3], ratioT);
+                                    p.val = kA.val + (kB.val - kA.val) * yProgress;
                                     break;
                                 }
                             }
@@ -479,288 +457,337 @@
                 });
             },
 
-            // --- RENDER BUCLE / ZOOM ---
-            setZoom(val) {
-                State.zoom = parseFloat(val);
-                UI.renderTL(); // Remapear las anchuras instantáneamente
-                UI.updatePlayhead(); 
+            // TIMELINE CONTROLS
+            setZoom(z) { State.zoom = parseFloat(z); UI.renderTree(); UI.updateT(); if(State.graphMode) GraphEditor.draw(); },
+            scrubTime(e) {
+                if(State.play) this.togglePlay();
+                const trk = document.getElementById('tl-right');
+                const evF = (ev) => {
+                    const rect = trk.getBoundingClientRect();
+                    const rawX = ev.clientX - rect.left;
+                    State.time = (Math.max(0, Math.min(rawX, rect.width)) / rect.width) * State.T;
+                    this.evaluateAnimation(); UI.fastUpdate();
+                }; evF(e); window.onmousemove = evF; window.onmouseup = () => { window.onmousemove=null; window.onmouseup=null; UI.syncView(); }
             },
-
-            onTimelineDrag(e) {
-                if(State.playing) this.togglePlay();
-                const container = document.getElementById('tl-scroll-content');
-                // La gracia del zoom: click position mapeado contra su Ancho Actual Escala (State.zoom)
-                const scrub = (ev) => {
-                    const rect = container.getBoundingClientRect();
-                    // Distancia X de raton contra elemento contenedor que quizás está hecho scroll
-                    const x = ev.clientX - rect.left; 
-                    // Limitar sin salir del tiempo
-                    let cl = Math.max(0, Math.min(x, rect.width));
-                    State.timeMs = (cl / rect.width) * State.duration;
-                    this.solveMath(); UI.fastUI();
-                }; scrub(e);
-                window.onmousemove = scrub;
-                window.onmouseup = () => { window.onmousemove=null; window.onmouseup=null; UI.renderFull(); };
-            },
-
             loop(ts) {
-                if(!State.playing) return;
-                const dt = ts - (this.lastTs || ts); this.lastTs = ts;
-                State.timeMs += dt; if(State.timeMs > State.duration) State.timeMs = 0;
-                this.solveMath(); UI.fastUI();
-                this.req = requestAnimationFrame(this.loop.bind(this));
+                if(!State.play) return;
+                State.time += (ts - (this.lt || ts)); this.lt = ts;
+                if(State.time > State.T) State.time=0;
+                this.evaluateAnimation(); UI.fastUpdate();
+                this.af = requestAnimationFrame(this.loop.bind(this));
             },
             togglePlay() {
-                State.playing = !State.playing;
-                document.getElementById('btn-play').innerText = State.playing ? '⏸ Pause' : '▶ Play Animation (Space)';
-                if(State.playing) { this.lastTs = performance.now(); this.req = requestAnimationFrame(this.loop.bind(this)); State.selectedKfs=[]; }
-                else { cancelAnimationFrame(this.req); UI.renderFull(); }
+                State.play = !State.play; document.getElementById('btn-play').innerText = State.play ? "⏸ Pause" : "▶ Play Animation (Space)";
+                if(State.play) { this.lt = performance.now(); this.af = requestAnimationFrame(this.loop.bind(this)); }
+                else { cancelAnimationFrame(this.af); UI.syncView(); }
+            },
+
+            // GRAPH TOGGLE
+            toggleGraph() {
+                State.graphMode = !State.graphMode;
+                document.getElementById('btn-graph').classList.toggle('active', State.graphMode);
+                UI.renderTree(); UI.syncView();
             }
         };
 
-        /**
-         * ==========================================
-         * 3. EL COMPOSER (PLUGIN DE ANIMACIONES)
-         * ==========================================
-         */
+        /** =========================================================================
+         *   EL COMPOSER (Inyector Mágico de Curvas Extremas)
+         *  ========================================================================= */
         const Composer = {
-            open() { 
-                if(!State.selectedId) { UI.log("Warning: Select a layer to use Composer!"); return;}
-                document.getElementById('plugin-overlay').style.display = 'block';
-                document.getElementById('plugin-window').style.display = 'flex';
-            },
-            close() {
-                document.getElementById('plugin-overlay').style.display = 'none';
-                document.getElementById('plugin-window').style.display = 'none';
-            },
-            apply(presetName, typeInOut) {
-                const l = State.layers.find(x => x.id === State.selectedId);
-                const isIN = typeInOut === 'in';
-                // La referencia temporal absoluta dependiente del corte de capa IN y OUT!
-                const T0 = isIN ? l.in : (l.out - 800); // Entra desde IN, sale 800ms antes de OUT
-                const T1 = isIN ? l.in + 800 : l.out;
-
-                if (presetName === 'fade') {
-                    l.props.opacity.sw = true;
-                    Engine.writeKF(l.props.opacity, T0, isIN ? 0 : l.props.opacity.val, 'easeOutExp');
-                    Engine.writeKF(l.props.opacity, T1, isIN ? 100 : 0, 'easeOutExp');
-                } 
-                else if (presetName === 'slide_up') {
-                    l.props.y.sw = true;
-                    const bY = l.props.y.val;
-                    Engine.writeKF(l.props.y, T0, isIN ? bY + 300 : bY, isIN ? 'easeOutBack' : 'easeOutExp');
-                    Engine.writeKF(l.props.y, T1, isIN ? bY : bY + 300, isIN ? 'easeOutBack' : 'easeOutExp');
-                }
-                else if (presetName === 'pop') {
-                    l.props.scale.sw = true;
-                    Engine.writeKF(l.props.scale, T0, isIN ? 0 : 100, isIN ? 'easeOutBack' : 'easeOutExp');
-                    Engine.writeKF(l.props.scale, T1, isIN ? 100 : 0, isIN ? 'easeOutBack' : 'easeOutExp');
-                }
-                else if (presetName === 'spinZ') {
-                    l.is3D = true;
-                    l.props.rotZ.sw = true; l.props.scale.sw = true;
-                    Engine.writeKF(l.props.rotZ, T0, isIN ? -360 : 0, 'easeOutExp');
-                    Engine.writeKF(l.props.rotZ, T1, isIN ? 0 : 360, 'easeOutExp');
-                    Engine.writeKF(l.props.scale, T0, isIN ? 0 : 100, 'easeOutExp');
-                    Engine.writeKF(l.props.scale, T1, isIN ? 100 : 0, 'easeOutExp');
+            inject(preset, mode) {
+                if(!State.sel) return;
+                const l = State.layers.find(x=>x.id===State.sel); const isIn = mode==='in';
+                const T0 = isIn ? l.in : l.out-1000; const T1 = isIn ? l.in+1000 : l.out;
+                
+                if(preset==='slideX') {
+                    l.props.x.sw=true; const bv = l.props.x.val;
+                    // Injecting Smooth Fast Bezier[0.1, 1.0, 0.2, 1.0]
+                    App.makeKf(l.props.x, T0, isIn?bv-800:bv,[0.1, 1.0, 0.2, 1.0]); 
+                    App.makeKf(l.props.x, T1, isIn?bv:bv-800,[0.33, 0, 0.67, 1]); 
+                } else if(preset==='pop') {
+                    l.props.scale.sw=true;
+                    // BUSTING THE CURVE: OVERSHOOT CÚBICO[0.17, 0.89, 0.32, 1.5] (Sube del 100% y luego baja a reposar)
+                    App.makeKf(l.props.scale, T0, isIn?0:100,[0.17, 0.89, 0.32, 1.6]);
+                    App.makeKf(l.props.scale, T1, isIn?100:0,[0.33, 0, 0.67, 1]);
+                } else if(preset==='spin3D') {
+                    l.is3D=true; l.props.z.sw=true; l.props.rotX.sw=true; l.props.rotZ.sw=true; l.props.scale.sw=true;
+                    const crv = [0, 0.75, 0.15, 1]; // Slow down dramatically
+                    App.makeKf(l.props.z, T0, isIn?-2000:0, crv); App.makeKf(l.props.z, T1, isIn?0:2000, crv);
+                    App.makeKf(l.props.rotX, T0, isIn?180:0, crv); App.makeKf(l.props.rotX, T1, isIn?0:180, crv);
+                    App.makeKf(l.props.rotZ, T0, isIn?-270:0, crv); App.makeKf(l.props.rotZ, T1, isIn?0:270, crv);
+                    App.makeKf(l.props.scale, T0, isIn?0:100, crv); App.makeKf(l.props.scale, T1, isIn?100:0, crv);
+                } else if(preset==='drop') {
+                    l.props.y.sw=true;
+                    // Elastic Custom approximation handles
+                    App.makeKf(l.props.y, T0, l.props.y.val - 500,[0.5, 0, 1, 0.5]);
+                    App.makeKf(l.props.y, T1, l.props.y.val, [0.33,0,0.67,1]);
                 }
                 
-                // Mostrar resultados de la Inyección
-                l.expanded = true; l.expTF = true;
-                UI.log(`Applied Composer: ${presetName.toUpperCase()} [${typeInOut.toUpperCase()}]`);
-                this.close();
-                Engine.solveMath(); UI.renderFull();
+                l.exp = true; l.expT = true;
+                UI.closePlugin(); App.evaluateAnimation(); UI.renderTree(); UI.syncView();
             }
         };
 
-        /**
-         * ==========================================
-         * 4. UI RENDER ENGINE SUPER RÁPIDO
-         * ==========================================
-         */
-        const UI = {
-            log(msg) { document.getElementById('debug-log').innerHTML = msg + "<br>" + document.getElementById('debug-log').innerHTML.split('<br>').slice(0,3).join('<br>'); },
-            setTool(t) { State.tool = t; document.querySelectorAll('.tool-btn').forEach(b=>b.classList.remove('active')); document.getElementById('tool-'+t)?.classList.add('active'); },
+        /** =========================================================================
+         *   GRAPH EDITOR NATIVE (La pieza Maestra: Dibuja Bezier con interacciones)
+         *  ========================================================================= */
+        const GraphEditor = {
+            
+            draw() {
+                const svg = document.getElementById('svg-graph'); svg.innerHTML = '';
+                if(!State.graphMode || !State.graphActiveProp) {
+                    document.getElementById('graph-editor').style.display = 'none';
+                    document.getElementById('tk-container').style.display = 'block';
+                    return;
+                }
+                document.getElementById('graph-editor').style.display = 'block';
+                document.getElementById('tk-container').style.display = 'none';
 
-            renderFull() {
-                Engine.solveMath();
-                this.renderComp();
-                this.renderTL();
-                this.updatePlayhead();
+                const W = document.getElementById('tl-right').offsetWidth;
+                const H = document.getElementById('graph-editor').offsetHeight;
+                
+                const {lId, pk} = State.graphActiveProp;
+                const lyr = State.layers.find(x=>x.id===lId); if(!lyr) return;
+                const kfs = lyr.props[pk].kfs; if(kfs.length < 2) return; // Se necesitan 2 kfs
+
+                // MATH NORMALIZACIÓN: Sacar Mínimos y Máximos para adaptar al alto
+                let mV = Math.min(...kfs.map(k=>k.val)); let xV = Math.max(...kfs.map(k=>k.val));
+                if (mV === xV) { mV -= 100; xV += 100; } // Si son iguales damos un margen sintético
+                const pad = 30; // pixels padding top & bottom
+                const ranY = xV - mV; 
+                // Formula to map raw Y to Screen Pixels (Flipado porque en Y baja de la pantalla)
+                const toScreenY = (raw) => H - pad - ((raw - mV) / ranY) * (H - 2*pad);
+                const toScreenX = (time) => (time / State.T) * W;
+
+                let htmlContent = '';
+
+                // DIBUJAR PUNTOS Y LÍNEAS!
+                for(let i=0; i<kfs.length-1; i++) {
+                    const k1 = kfs[i]; const k2 = kfs[i+1];
+                    const px1 = toScreenX(k1.t); const py1 = toScreenY(k1.val);
+                    const px2 = toScreenX(k2.t); const py2 = toScreenY(k2.val);
+                    
+                    // La curva de k1 nos dice como ir hasta k2 (bx, by son de 0..1 en Progresion Temporal y Valor Absoluto progresado!)
+                    const bz = k1.bz; 
+                    
+                    // X mapea directamente de tiempo, Y mapea directamente de % diferencia valor (bz=1 es todo el salto, bz=0 es nada del salto)
+                    // ¿Y qué pasa si py1 == py2? Necesitamos un Offset absoluto gráfico en pantalla
+                    let offsetY = (py2 - py1); 
+                    if(offsetY === 0) offsetY = 100; // Fake 100px gap visual for overshoot if straight line!
+
+                    const c1x = px1 + bz[0] * (px2 - px1);
+                    const c1y = py1 + bz[1] * offsetY;
+                    const c2x = px1 + bz[2] * (px2 - px1);
+                    const c2y = py1 + bz[3] * offsetY;
+
+                    // El PATH SVG Curvado
+                    htmlContent += `<path class="g-line" d="M ${px1} ${py1} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${px2} ${py2}" />`;
+
+                    // Lineas Punteadas Guía hacia los Handles
+                    htmlContent += `<line class="g-handle-line" x1="${px1}" y1="${py1}" x2="${c1x}" y2="${c1y}" />`;
+                    htmlContent += `<line class="g-handle-line" x1="${px2}" y1="${py2}" x2="${c2x}" y2="${c2y}" />`;
+
+                    // Puntos KFS base
+                    htmlContent += `<circle class="g-point" cx="${px1}" cy="${py1}" />`;
+                    htmlContent += `<circle class="g-point" cx="${px2}" cy="${py2}" />`;
+
+                    // HANDLES (Tiradores Intercambiables de Bezier!) => Injectados como SVG String y bindearemos su lógica luego.
+                    htmlContent += `<circle class="g-handle" data-idx="${i}" data-handle="1" cx="${c1x}" cy="${c1y}" />`;
+                    htmlContent += `<circle class="g-handle" data-idx="${i}" data-handle="2" cx="${c2x}" cy="${c2y}" />`;
+                }
+
+                svg.innerHTML = htmlContent;
+
+                // ACTIVAR LÓGICA DE DRAG A LOS HANDLES BÉZIER PARA MODIFICAR LAS VARIABLES REALES!
+                svg.querySelectorAll('.g-handle').forEach(hnd => {
+                    hnd.onmousedown = (e) => {
+                        e.stopPropagation(); e.preventDefault();
+                        const idx = parseInt(hnd.getAttribute('data-idx'));
+                        const isH1 = hnd.getAttribute('data-handle') === '1';
+                        
+                        // Variables base físicas del SVG y el KFS
+                        const kA = kfs[idx]; const kB = kfs[idx+1];
+                        const rect = svg.getBoundingClientRect();
+                        const sP1X = toScreenX(kA.t), sP1Y = toScreenY(kA.val);
+                        const sP2X = toScreenX(kB.t), sP2Y = toScreenY(kB.val);
+                        let sGapX = sP2X - sP1X; if(sGapX===0) sGapX = 1; // Secure Div
+                        let sGapY = sP2Y - sP1Y; if(sGapY===0) sGapY = 100;
+
+                        document.onmousemove = (ev) => {
+                            let mx = ev.clientX - rect.left; let my = ev.clientY - rect.top;
+                            
+                            // Revertir Pixel Mouse en Bézier Unit! [0...1...]
+                            let rx = (mx - sP1X) / sGapX; 
+                            rx = Math.max(0, Math.min(1, rx)); // X SIEMPRE DEBE QUEDAR EN TIEMPO ADELANTE 0..1!
+
+                            let ry = (my - sP1Y) / sGapY; // Y Puede ser negativa (Overshoot rebote!!!)
+                            
+                            if(isH1) { kA.bz[0] = rx; kA.bz[1] = ry; }
+                            else { kA.bz[2] = rx; kA.bz[3] = ry; }
+                            
+                            // Refresh
+                            GraphEditor.draw();
+                            App.evaluateAnimation(); UI.fastUpdate();
+                        };
+                        document.onmouseup = () => { document.onmousemove=null; document.onmouseup=null; };
+                    };
+                });
+            }
+        };
+
+        /** =========================================================================
+         *   DOM & UI MANAGER
+         *  ========================================================================= */
+        const UI = {
+            setTool(t) { State.tool = t; document.querySelectorAll('.tool').forEach(x=>x.classList.remove('active')); event.currentTarget.classList.add('active'); },
+            openPlugin() { document.getElementById('pl-modal').style.display='flex'; },
+            closePlugin(e) { if(e && e.target.id !== 'pl-modal') return; document.getElementById('pl-modal').style.display='none'; },
+
+            updateT() {
+                const r = document.getElementById('playhead'); r.style.left = ((State.time/State.T)*100)+'%';
+                const f = Math.floor((State.time/1000)*State.FPS);
+                document.getElementById('time-display').innerText = `00:00:0${Math.floor(State.time/1000)}:${(f%State.FPS).toString().padStart(2,'0')}`;
             },
 
-            // Para Scrub/Play Loop ultraoptimo (evita quemar strings HTML del left-panel jerarquico)
-            fastUI() {
-                this.renderComp();
-                this.updatePlayhead();
-                State.layers.forEach(l => {
+            fastUpdate() {
+                this.updateT();
+                const cvs = document.getElementById('comp-box'); cvs.innerHTML='';
+                [...State.layers].reverse().forEach(l => {
+                    if(!l.vis || State.time < l.in || State.time > l.out) return;
+                    const d = document.createElement('div'); d.className = `lyr-view ${l.id===State.sel?'selected':''}`;
+                    const p = l.props;
+                    let tf = `translate3d(${p.x.val}px,${p.y.val}px,${l.is3D?p.z.val:0}px) `;
+                    if(l.is3D) tf += `rotateX(${p.rotX.val}deg) rotateY(${p.rotY.val}deg) `;
+                    tf += `rotateZ(${p.rotZ.val}deg) scale(${p.scale.val/100})`;
+                    d.style.transform = tf; d.style.opacity = p.opacity.val/100;
+                    if(l.type==='solid') { d.style.width='100px'; d.style.height='100px'; d.style.background=l.col;}
+                    else { d.innerText=l.txt; d.style.color=l.col; d.style.fontSize='40px'; d.style.fontWeight='bold'; d.style.whiteSpace='nowrap';}
+                    
+                    // Native Screen Interaction
+                    d.onmousedown = (e) => {
+                        e.stopPropagation(); App.select(l.id);
+                        if(State.tool!=='v' || l.lck) return;
+                        let sX=e.clientX, sY=e.clientY, xO=p.x.val, yO=p.y.val;
+                        window.onmousemove=ev=>{ 
+                            p.x.val = xO+(ev.clientX-sX); p.y.val=yO+(ev.clientY-sY);
+                            if(p.x.sw) App.makeKf(p.x, State.time, p.x.val);
+                            if(p.y.sw) App.makeKf(p.y, State.time, p.y.val);
+                            UI.fastUpdate();
+                        };
+                        window.onmouseup=()=>{window.onmousemove=null; window.onmouseup=null; UI.syncView();}
+                    }
+                    cvs.appendChild(d);
+                });
+
+                // Updates Scrubbers text instantly without dom rebuilt
+                State.layers.forEach(l=>{
                     for(let k in l.props) {
-                        const sNode = document.getElementById(`val_${l.id}_${k}`);
-                        if(sNode) sNode.innerText = l.props[k].val.toFixed(1) + PROPS[k].unit;
+                        const sb = document.getElementById(`v_${l.id}_${k}`);
+                        if(sb) sb.innerText = l.props[k].val.toFixed(1) + META[k].u;
                     }
                 });
             },
 
-            updatePlayhead() {
-                // Cálculo simple gracias a que el Contenedor Scalable lo maneja todo
-                const percent = (State.timeMs / State.duration) * 100;
-                document.getElementById('playhead').style.left = percent + '%';
+            renderTree() {
+                const tr = document.getElementById('tl-left');
+                const tK = document.getElementById('tk-container');
+                document.getElementById('tl-right').style.width = (State.zoom * 100) + '%';
                 
-                let fs = Math.floor((State.timeMs / 1000) * State.fps);
-                document.getElementById('timecode').innerText = `00:00:0${Math.floor(State.timeMs/1000)}:${(fs%State.fps).toString().padStart(2,'0')}`;
-            },
-
-            renderComp() {
-                const cp = document.getElementById('canvas'); cp.innerHTML='';
-                [...State.layers].reverse().forEach(l => {
-                    if(!l.visible || State.timeMs < l.in || State.timeMs >= l.out) return;
-                    
-                    const el = document.createElement('div');
-                    el.className = `layer-item ${l.id===State.selectedId?'selected':''}`;
-                    const p = l.props;
-                    
-                    let tr = `translate3d(${p.x.val}px, ${p.y.val}px, ${l.is3D?p.z.val:0}px) `;
-                    if(l.is3D) tr += `rotateX(${p.rotX.val}deg) rotateY(${p.rotY.val}deg) `;
-                    tr += `rotateZ(${p.rotZ.val}deg) scale(${p.scale.val/100})`;
-                    
-                    el.style.transform = tr; el.style.opacity = p.opacity.val/100;
-                    
-                    if(l.type==='solid') { el.style.width='100px'; el.style.height='100px'; el.style.background=l.col; }
-                    else { el.innerText = l.txt; el.style.color=l.col; el.style.fontSize='40px'; el.style.fontWeight='bold'; el.style.whiteSpace='nowrap';}
-                    
-                    // Native screen Drag (Scrub Mágico en Screen)
-                    el.onmousedown = (e) => {
-                        e.stopPropagation(); Engine.select(l.id);
-                        if(State.tool!=='v' || l.locked) return;
-                        let sX=e.clientX, sY=e.clientY, bX=p.x.val, bY=p.y.val;
-                        window.onmousemove = ev => {
-                            p.x.val = bX + (ev.clientX - sX); p.y.val = bY + (ev.clientY - sY);
-                            if(p.x.sw) Engine.writeKF(p.x, State.timeMs, p.x.val);
-                            if(p.y.sw) Engine.writeKF(p.y, State.timeMs, p.y.val);
-                            UI.fastUI();
-                        };
-                        window.onmouseup = () => { window.onmousemove=null; window.onmouseup=null; UI.renderFull(); };
-                    };
-                    cp.appendChild(el);
-                });
-            },
-
-            renderTL() {
-                const tL = document.getElementById('tl-left-hierarchy');
-                const tR = document.getElementById('tl-tracks-container');
+                let isGr = State.graphMode;
                 
-                // SISTEMA ZOOM CSS NATIVO
-                // El div interno toma N veces el % original. Ej: Si Zoom = 2.5, Width = 250%. El overflow en padre permite scroll.
-                document.getElementById('tl-scroll-content').style.width = (State.zoom * 100) + '%';
-
-                tL.innerHTML = `<div class="th-row">
-                    <div class="t-cell t-icon"></div><div class="t-cell t-icon"></div>
-                    <div class="t-cell" style="width:20px;">#</div><div class="t-cell" style="flex:1;">Source Name</div>
-                    <div class="t-cell t-icon" style="width:30px; font-size:14px;" title="3D Layer">🧊</div>
-                </div>`;
-                tR.innerHTML = '';
+                tr.innerHTML = `<div class="tr-head"><div class="th-c ic"></div><div class="th-c ic"></div><div class="th-c" style="width:20px;">#</div><div class="th-c" style="flex:1;">Source Lyr</div><div class="th-c ic">🧊</div></div>`;
+                tK.innerHTML = '';
 
                 State.layers.forEach(l => {
-                    // LEFT: Panel Jerarquico Superior
-                    const lRow = document.createElement('div');
-                    lRow.className = `row layer-row ${l.id===State.selectedId?'active':''}`;
-                    lRow.onclick = () => Engine.select(l.id);
-                    lRow.innerHTML = `
-                        <div class="t-cell t-icon" style="color:${l.visible?'#fff':'#444'};" onclick="Engine.toggleSw('${l.id}','visible');event.stopPropagation();">👁️</div>
-                        <div class="t-cell t-icon" style="color:${l.locked?'#fff':'#444'};" onclick="Engine.toggleSw('${l.id}','locked');event.stopPropagation();">🔒</div>
-                        <div class="t-cell" style="width:20px; background:${l.tag}; color:#fff; justify-content:center;">${l.idx}</div>
-                        <div class="t-cell" style="flex:1;">
-                            <span class="exp ${l.expanded?'open':''}" onclick="Engine.toggleSw('${l.id}','expanded');event.stopPropagation();">▶</span> ${l.name}
-                        </div>
-                        <div class="t-cell t-icon" style="width:30px; color:${l.is3D?'var(--ae-blue)':'#444'};" onclick="Engine.toggleSw('${l.id}','is3D');event.stopPropagation();">🧊</div>
+                    const row = document.createElement('div'); row.className=`t-row lyr-row ${l.id===State.sel?'active':''}`;
+                    row.onclick=()=>App.select(l.id);
+                    row.innerHTML=`
+                        <div class="th-c ic" onclick="App.tSw('${l.id}','vis');event.stopPropagation();" style="color:${l.vis?'#fff':'#333'}">👁</div>
+                        <div class="th-c ic" onclick="App.tSw('${l.id}','lck');event.stopPropagation();" style="color:${l.lck?'#fff':'#333'}">🔒</div>
+                        <div class="th-c" style="width:20px;background:${l.tag};color:#fff;justify-content:center;">${l.num}</div>
+                        <div class="th-c" style="flex:1;"><span class="xp ${l.exp?'op':''}" onclick="App.tSw('${l.id}','exp');event.stopPropagation();">▶</span>${l.name}</div>
+                        <div class="th-c ic" onclick="App.tSw('${l.id}','is3D');event.stopPropagation();" style="color:${l.is3D?'var(--accent)':'#333'}">⚙️</div>
                     `;
-                    tL.appendChild(lRow);
+                    tr.appendChild(row);
 
-                    // RIGHT: Track de capa que refleja Cortar Capa
-                    const TRMain = document.createElement('div'); TRMain.className = 't-track';
-                    const wp = ((l.out - l.in)/State.duration)*100; const xp = (l.in/State.duration)*100;
-                    TRMain.innerHTML = `<div class="layer-bar ${l.id===State.selectedId?'selected':''}" style="background:${l.tag}; left:${xp}%; width:${wp}%;"></div>`;
-                    tR.appendChild(TRMain);
+                    const brR = document.createElement('div'); brR.className='tk-row';
+                    const wp = ((l.out-l.in)/State.T)*100, xp=(l.in/State.T)*100;
+                    brR.innerHTML=`<div class="lyr-bar ${l.id===State.sel?'selected':''}" style="background:${l.tag};left:${xp}%;width:${wp}%;"></div>`;
+                    tK.appendChild(brR);
 
-                    if(l.expanded) {
-                        tL.innerHTML += `<div class="row group-row"><span class="exp ${l.expTF?'open':''}" onclick="Engine.toggleSw('${l.id}','expTF')">▶</span> Transform</div>`;
-                        tR.innerHTML += `<div class="t-track"></div>`;
-
-                        if(l.expTF) {
+                    if(l.exp) {
+                        tr.innerHTML+=`<div class="t-row grp-row"><span class="xp ${l.expT?'op':''}" onclick="App.tSw('${l.id}','expT');">▶</span> Transform</div>`;
+                        tK.innerHTML+=`<div class="tk-row"></div>`;
+                        
+                        if(l.expT) {
                             for(let pk in l.props) {
-                                if(PROPS[pk].is3D && !l.is3D) continue;
-                                const p = l.props[pk];
-                                const hasKF = p.kfs.some(k=>Math.abs(k.t - State.timeMs)<10);
+                                if(META[pk].req3D && !l.is3D) continue;
+                                const p = l.props[pk]; const hkf = p.kfs.some(k=>Math.abs(k.t-State.time)<10);
+                                const isGrSel = (State.graphActiveProp && State.graphActiveProp.lId === l.id && State.graphActiveProp.propKey === pk);
                                 
-                                const pRow = document.createElement('div'); pRow.className = 'row prop-row';
-                                pRow.innerHTML = `
-                                    <div class="t-icon" style="margin-right:5px; color:${p.sw?'var(--ae-blue)':'#555'};" onclick="Engine.setStopwatch('${l.id}','${pk}')">⏱</div>
-                                    <div class="t-icon" style="color:${hasKF?'var(--ae-blue)':'#666'};" onclick="Engine.toggleExplicitKF('${l.id}','${pk}')">${hasKF?'♦':'♢'}</div>
-                                    <div>${PROPS[pk].label}</div>
-                                    <div class="scrub" id="val_${l.id}_${pk}">${p.val.toFixed(1)}${PROPS[pk].unit}</div>
+                                const pR = document.createElement('div'); pR.className=`t-row prp-row ${isGrSel?'graph-active':''}`;
+                                pR.innerHTML=`
+                                    <div class="ic" style="margin-right:5px; color:${p.sw?'var(--accent)':'#555'}" onclick="App.toggleSW('${l.id}','${pk}')">⏱</div>
+                                    <div class="ic" style="color:${hkf?'var(--accent)':'#555'}" onclick="App.toggleExplicitKF('${l.id}','${pk}')">${hkf?'♦':'♢'}</div>
+                                    <div style="flex:1;">${META[pk].n}</div>
+                                    <div class="val-scrub" id="v_${l.id}_${pk}">${p.val.toFixed(1)}${META[pk].u}</div>
                                 `;
-                                tL.appendChild(pRow);
+                                
+                                // SETTING UP GRAPH EDITING IF IN GRAPH MODE
+                                if (State.graphMode) {
+                                    pR.onclick = () => { State.graphActiveProp = { lId: l.id, propKey: pk }; UI.renderTree(); GraphEditor.draw(); };
+                                    pR.style.cursor = 'pointer';
+                                }
+                                tr.appendChild(pR);
 
-                                // Arrastrar números (Scrub Event Mágico JS)
-                                const sc = pRow.querySelector('.scrub');
-                                sc.onmousedown = e => {
-                                    e.preventDefault(); if(State.playing) Engine.togglePlay();
-                                    let sX=e.clientX, bV=p.val;
-                                    window.onmousemove = ev => {
-                                        p.val = bV + (ev.clientX - sX) * (pk==='scale'||pk==='opacity'?0.5:1);
-                                        if(pk==='opacity') p.val=Math.max(0,Math.min(100,p.val));
-                                        if(p.sw) Engine.writeKF(p, State.timeMs, p.val);
-                                        UI.fastUI();
-                                    };
-                                    window.onmouseup=()=>{window.onmousemove=null; window.onmouseup=null; UI.renderFull();}
-                                };
-
-                                // RIGHT TRACK con Diamantes Clickables Reales Físicos!
-                                const TRSub = document.createElement('div'); TRSub.className = 't-track';
+                                const tk = document.createElement('div'); tk.className='tk-row';
                                 if(p.sw) {
-                                    p.kfs.forEach(k => {
-                                        // Ocultar si está fuera de los bordes del Clip de Capa cortada!
-                                        if (k.t >= l.in && k.t <= l.out) {
+                                    p.kfs.forEach(kf=>{
+                                        if(kf.t >= l.in && kf.t <= l.out) {
                                             const d = document.createElement('div');
-                                            // Check si el id físico del keyframe está en array seleccionados
-                                            const isSelected = State.selectedKfs.some(skf => skf.kfId === k.id);
-                                            
-                                            d.className = `kf ${isSelected ? 'selected' : ''}`;
-                                            d.style.left = `${(k.t/State.duration)*100}%`;
-                                            d.title = `Val: ${k.val.toFixed(2)}`;
-                                            
-                                            // Click físico a diamante para Borrar luego!
-                                            d.onmousedown = (ev) => Engine.selectKeyframe(ev, l.id, pk, k.id);
-                                            TRSub.appendChild(d);
+                                            const iksf = State.selKfs.some(x=>x.kid===kf.id);
+                                            d.className = `kf-dim ${iksf?'selected':''}`;
+                                            d.style.left = `${(kf.t/State.T)*100}%`;
+                                            d.onmousedown=ev=>App.selKF(ev,l.id,pk,kf.id);
+                                            tk.appendChild(d);
                                         }
                                     });
                                 }
-                                tR.appendChild(TRSub);
+                                tK.appendChild(tk);
+
+                                // Number scrubbing event logic
+                                const sn = pR.querySelector('.val-scrub');
+                                sn.onmousedown = (e) => {
+                                    if(State.graphMode) return; // Prevent number changing if just activating graph
+                                    e.preventDefault(); if(State.play) App.togglePlay();
+                                    const ix = e.clientX, iv = p.val;
+                                    window.onmousemove = ev => {
+                                        p.val = iv + (ev.clientX-ix)*(pk==='scale'||pk==='opacity'?0.5:1);
+                                        if(p.sw) App.makeKf(p, State.time, p.val);
+                                        UI.fastUpdate();
+                                    };
+                                    window.onmouseup=()=>{window.onmousemove=null;window.onmouseup=null; UI.syncView();}
+                                };
                             }
                         }
                     }
                 });
-            }
+            },
+
+            syncView() { this.fastUpdate(); this.renderTree(); GraphEditor.draw(); }
         };
 
-        // EVENTOS TECLADO AVANZADOS DE AE
+        // KEYBINDS OVERRIDE GLOBAL
         window.addEventListener('keydown', e => {
-            if(e.target.tagName==='INPUT') return;
-            const lowKey = e.key.toLowerCase();
-            
-            if(lowKey === ' ' || lowKey==='spacebar') { e.preventDefault(); Engine.togglePlay(); }
-            else if(lowKey === 'c') { e.preventDefault(); Engine.splitLayer(); }
-            else if(e.key === 'Delete' || e.key === 'Backspace') { 
-                e.preventDefault(); 
-                if(State.selectedKfs.length > 0) Engine.deleteSelectedKeyframes(); 
-            }
-            else if(lowKey === 'v') UI.setTool('v');
-            else if(lowKey === 'h') UI.setTool('h');
+            const tk = e.key.toLowerCase(); if(e.target.tagName==='INPUT') return;
+            if(tk === ' ' || tk==='spacebar') { e.preventDefault(); App.togglePlay(); }
+            else if(tk === 'c') { e.preventDefault(); App.split(); }
+            else if(e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); App.deleteKF(); }
+            else if(tk === 'v') UI.setTool('v'); else if(tk === 'h') UI.setTool('h');
         });
 
-        // START!
-        window.onload = () => Engine.init();
-
+        // INIT EXEC
+        window.onload = () => App.init();
     </script>
 </body>
 </html>
