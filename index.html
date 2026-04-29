@@ -1,13 +1,711 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>After Effects Web Clone</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>After Effects Engine - Ultimate Presets & Shortcuts</title>
+    <style>
+        /* =========================================================================
+           VARIABLES CC (After Effects CC Pro)
+           ========================================================================= */
+        :root {
+            --ae-bg-app: #141414;
+            --ae-bg-panel: #232323;
+            --ae-bg-header: #323232;
+            --ae-bg-hover: #383838;
+            --ae-border: #141414;
+            --ae-border-light: #444444;
+            --ae-text-light: #e0e0e0;
+            --ae-text-muted: #888888;
+            --ae-text-blue: #3d8ced;
+            --ae-blue-bg: #144983;
+            --ae-timeline-bg: #1e1e1e;
+            --ae-track-bg: #2b2b2b;
+            --ae-playhead: #f03030;
+            --kf-diamond: #e5b92e;
+            --header-h: 24px;
+            --tool-h: 36px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Helvetica, Arial, sans-serif; background: var(--ae-bg-app); color: var(--ae-text-light); font-size: 11px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; user-select: none; }
+        
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: var(--ae-bg-app); border-left: 1px solid var(--ae-border); }
+        ::-webkit-scrollbar-thumb { background: #4a4a4a; border-radius: 5px; border: 2px solid var(--ae-bg-app); }
+        ::-webkit-scrollbar-thumb:hover { background: #666; }
+
+        /* =========================================================================
+           TOP MENUS & DROPDOWNS
+           ========================================================================= */
+        .app-menu { height: var(--header-h); background: #1a1a1a; display: flex; align-items: center; padding: 0 10px; border-bottom: 1px solid #000; font-size: 12px; gap: 15px; position: relative; z-index: 500;}
+        .menu-logo { font-weight: bold; color: #fff; padding-right: 10px; border-right: 1px solid #444; }
+        
+        /* Dropdowns nativos estilo AE */
+        .menu-item { position: relative; padding: 4px 8px; color: var(--ae-text-muted); cursor: pointer; }
+        .menu-item:hover { color: #fff; background: var(--ae-bg-panel); }
+        .dropdown { display: none; position: absolute; top: 100%; left: 0; background: var(--ae-bg-panel); border: 1px solid #000; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); width: 200px; padding: 5px 0; z-index: 999; }
+        .menu-item:hover .dropdown { display: block; }
+        .dropdown-item { padding: 6px 15px; color: var(--ae-text-light); display: flex; justify-content: space-between; }
+        .dropdown-item:hover { background: var(--ae-text-blue); color: #fff; }
+        .shortcut-hint { color: #aaa; font-size: 10px; }
+        .dropdown-separator { height: 1px; background: #444; margin: 4px 0; }
+
+        .toolbar { height: var(--tool-h); background: var(--ae-bg-panel); border-bottom: 1px solid #000; display: flex; align-items: center; padding: 0 10px; gap: 4px; z-index: 10; }
+        .tool-btn { width: 28px; height: 28px; background: transparent; border: 1px solid transparent; border-radius: 3px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.1s; }
+        .tool-btn svg { fill: #ccc; width: 16px; height: 16px; }
+        .tool-btn:hover { background: var(--ae-bg-hover); }
+        .tool-btn.active { background: #1a1a1a; border-color: var(--ae-text-blue); }
+        .tool-btn.active svg { fill: var(--ae-text-blue); }
+
+        /* =========================================================================
+           WORKSPACE (PANELS, CANVAS, 3D)
+           ========================================================================= */
+        .workspace { display: flex; flex: 1; overflow: hidden; }
+        .panel { display: flex; flex-direction: column; background: var(--ae-bg-panel); border: 1px solid var(--ae-border); overflow: hidden; }
+        
+        .tabs { height: 26px; background: var(--ae-bg-header); display: flex; border-bottom: 1px solid var(--ae-border); }
+        .tab { padding: 4px 15px; color: var(--ae-text-muted); border-right: 1px solid var(--ae-border); cursor: pointer; display: flex; align-items: center; }
+        .tab.active { background: var(--ae-bg-panel); color: #fff; border-bottom: 2px solid var(--ae-text-blue); padding-bottom: 2px;}
+
+        .left-panel { width: 280px; flex-shrink: 0; }
+        .center-panel { flex: 1; background: #111; }
+        .right-panel { width: 280px; flex-shrink: 0; }
+
+        .viewport { flex: 1; overflow: hidden; display: flex; justify-content: center; align-items: center; background: radial-gradient(circle at center, #2a2a2a 0%, #0d0d0d 100%); perspective: 1200px; }
+        #composition { width: 800px; height: 450px; background: #050505; position: relative; overflow: visible; transform-style: preserve-3d; outline: 1px solid rgba(255,255,255,0.1); box-shadow: 0 0 50px rgba(0,0,0,0.9); }
+        #composition::before { content:''; position:absolute; top:50%; width:100%; height:1px; background:rgba(0,255,0,0.3); z-index:900; pointer-events:none; }
+        #composition::after { content:''; position:absolute; left:50%; height:100%; width:1px; background:rgba(0,255,0,0.3); z-index:900; pointer-events:none; }
+        
+        .layer-item-3d { position: absolute; display: flex; justify-content: center; align-items: center; transform-style: preserve-3d; cursor: move; }
+        .layer-item-3d.selected { outline: 1px dashed #fff; z-index: 100 !important; }
+
+        /* =========================================================================
+           TIMELINE ADVANCED
+           ========================================================================= */
+        .timeline { height: 35vh; min-height: 250px; display: flex; flex-direction: column; background: var(--ae-timeline-bg); border-top: 1px solid #000; }
+        .tl-controls { height: 32px; background: var(--ae-bg-header); border-bottom: 1px solid #111; display: flex; align-items: center; padding: 0 15px; }
+        .time-display { font-family: 'Consolas', monospace; font-size: 16px; color: var(--ae-text-blue); background: #111; padding: 2px 6px; border: 1px inset #222; border-radius: 2px; font-weight: bold;}
+        
+        .tl-main { display: flex; flex: 1; overflow: hidden; position: relative; }
+        .tl-left { width: 450px; background: var(--ae-bg-panel); border-right: 1px solid #000; display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; z-index:10;}
+        .tl-head-row { display: flex; height: 24px; background: #262626; border-bottom: 1px solid #1a1a1a; font-weight: bold; color: var(--ae-text-muted); }
+        .th-cell { display: flex; align-items: center; border-right: 1px solid #1a1a1a; padding-left: 6px; }
+        .th-cell.icon { width: 24px; justify-content: center; padding: 0; cursor: pointer; }
+        
+        .row-layer { display: flex; height: 22px; background: #232323; border-bottom: 1px solid #1a1a1a; align-items: center; cursor: pointer; }
+        .row-layer:hover { background: var(--ae-bg-hover); }
+        .row-layer.active { background: #363636; color: #fff; }
+        
+        .row-prop-group { display: flex; height: 22px; background: #1c1c1c; border-bottom: 1px solid #1a1a1a; padding-left: 50px; cursor: pointer; color: var(--ae-text-blue); align-items: center;}
+        .row-prop { display: flex; height: 22px; background: #181818; border-bottom: 1px solid #1a1a1a; padding-left: 65px; color: #aaa; align-items: center; }
+        
+        .expander { width: 14px; height: 14px; display: inline-block; cursor: pointer; text-align: center; color: #aaa; font-size: 10px;}
+        .expander.open { transform: rotate(90deg); color: #fff;}
+        .svg-icon { fill: currentColor; width: 12px; height: 12px; }
+
+        .btn-kf { width: 14px; height: 14px; margin-right: 5px; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; user-select: none; }
+        .val-scrubber { cursor: ew-resize; color: var(--ae-text-blue); margin-left: auto; margin-right: 10px; font-family: monospace; font-size: 11px; font-weight:bold; }
+        
+        .tl-right { flex: 1; background: var(--ae-timeline-bg); overflow-x: auto; overflow-y: hidden; position: relative; }
+        .ruler { height: 24px; background: #262626; border-bottom: 1px solid #1a1a1a; position: sticky; top: 0; z-index: 10; display: flex; align-items: flex-end; padding-left: 5px; }
+        
+        .playhead-stick { position: absolute; left: 0%; top: 0; height: 100vh; width: 1px; background: var(--ae-playhead); z-index: 100; pointer-events: none; }
+        .playhead-head { position: absolute; top: 0; left: -5px; width: 11px; height: 14px; background: var(--ae-playhead); cursor: ew-resize; pointer-events: all; border-radius: 2px 2px 4px 4px; clip-path: polygon(0 0, 100% 0, 100% 60%, 50% 100%, 0 60%); }
+
+        .track-row { height: 22px; border-bottom: 1px solid #222; position: relative; background: repeating-linear-gradient(90deg, transparent, transparent 49px, #262626 49px, #262626 50px); }
+        
+        /* Time Bar con principio y final limitados (IN/OUT POINT) */
+        .time-bar { position: absolute; height: 16px; top: 3px; border-radius: 2px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.2); }
+        .time-bar.active { outline: 1px solid #fff; filter: brightness(1.2); }
+
+        .kf-diamond { position: absolute; top: 11px; width: 9px; height: 9px; background: var(--kf-diamond); border: 1px solid #000; transform: translate(-50%, -50%) rotate(45deg); cursor: pointer; z-index: 10; box-shadow: 0 0 3px rgba(0,0,0,0.8); }
+        .kf-diamond:hover { transform: translate(-50%, -50%) rotate(45deg) scale(1.4); background: #fff; }
+
+        /* =========================================================================
+           SHORTCUTS MANAGER MODAL
+           ========================================================================= */
+        #modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index: 1000; }
+        #modal-shortcuts { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #222; border: 1px solid #444; width: 400px; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,1); z-index: 1001; border-radius: 4px;}
+        .modal-title { color: #fff; font-size: 16px; border-bottom: 1px solid #444; padding-bottom: 10px; margin-bottom: 15px; }
+        .sc-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding: 8px 0; }
+        .sc-name { color: #ccc; }
+        .sc-input { background: #111; color: var(--ae-text-blue); border: 1px solid #555; padding: 4px 10px; cursor: pointer; text-align: center; border-radius: 3px; font-weight: bold; width: 100px; font-size: 12px; }
+        .sc-input.listening { background: var(--ae-text-blue); color: #fff; border-color: #fff; box-shadow: 0 0 10px var(--ae-text-blue); }
+        .modal-btn { background: var(--ae-text-blue); color: #fff; border: none; padding: 6px 15px; margin-top: 20px; cursor: pointer; border-radius: 3px; font-weight: bold; width: 100%;}
+        .modal-btn:hover { background: #509ff1; }
+    </style>
+</head>
+<body>
+
+    <!-- ================= MENUS ================= -->
+    <div class="app-menu">
+        <div class="menu-logo">Ae Web Pro</div>
+        <div class="menu-item">File</div>
+        <div class="menu-item">Edit
+            <div class="dropdown">
+                <div class="dropdown-item" onclick="Engine.splitLayer()"><span>Split Layer (Cortar)</span><span class="shortcut-hint" id="hint-cut"></span></div>
+                <div class="dropdown-separator"></div>
+                <div class="dropdown-item" onclick="UI.openShortcuts()"><span>Keyboard Shortcuts...</span></div>
+            </div>
+        </div>
+        <div class="menu-item">Composition</div>
+        <div class="menu-item">Layer
+            <div class="dropdown">
+                <div class="dropdown-item" onclick="Engine.addLayer('solid')">New > Solid</div>
+                <div class="dropdown-item" onclick="Engine.addLayer('text')">New > Text</div>
+            </div>
+        </div>
+        <div class="menu-item">Animation
+            <div class="dropdown">
+                <div class="dropdown-item" style="color:#aaa;">-- Apply Presets --</div>
+                <div class="dropdown-item" onclick="Engine.applyPreset('fade')">Fade In</div>
+                <div class="dropdown-item" onclick="Engine.applyPreset('pop')">Pop / Bounce In</div>
+                <div class="dropdown-item" onclick="Engine.applyPreset('spin')">Spin Entrance 3D</div>
+                <div class="dropdown-separator"></div>
+                <div class="dropdown-item" onclick="Engine.addKeyframeToSelected()">Add Keyframe <span class="shortcut-hint" id="hint-kf"></span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= TOOLBAR ================= -->
+    <div class="toolbar" id="main-toolbar">
+        <button class="tool-btn active" id="tool-v" onclick="UI.setTool('v')"><svg viewBox="0 0 24 24"><path d="M7,2l12,11.2l-5.8,0.5l3.3,7.3l-2.2,1.1l-3.2-7.4l-4.4,4.5V2z"/></svg></button>
+        <button class="tool-btn" id="tool-h" onclick="UI.setTool('h')"><svg viewBox="0 0 24 24"><path d="M21,9c0-1.6-1.3-3-3-3V5c0-1.6-1.3-3-3-3s-3,1.3-3,3v1C11.5,5.4,10.8,5,10,5C8.3,5,7,6.3,7,8v2.2C6.4,10.1,5.7,10,5,10c-1.6,0-3,1.3-3,3v6c0,2.8,2.2,5,5,5h8c2.8,0,5-2.2,5-5V9z"/></svg></button>
+    </div>
+
+    <!-- ================= WORKSPACE ================= -->
+    <div class="workspace">
+        <aside class="panel left-panel">
+            <div class="tabs"><div class="tab active">Project</div></div>
+            <div style="padding:15px; color:#ccc; font-size:12px; line-height: 1.8;">
+                • Añade capas desde "Layer"<br>
+                • Presets desde menú "Animation"<br>
+                • Configura atajos en "Edit"<br>
+            </div>
+        </aside>
+
+        <main class="panel center-panel">
+            <div class="tabs"><div class="tab active">Composition 1</div></div>
+            <div class="viewport" id="viewport">
+                <div id="composition"></div>
+            </div>
+        </main>
+
+        <aside class="panel right-panel">
+            <div style="flex: 0.5;">
+                <div class="tabs"><div class="tab active">Info</div></div>
+                <div style="padding:15px; font-family:monospace; color:#888;">Render Mode: 60fps Native<br>Vector Engine</div>
+            </div>
+            <div style="flex: 1;">
+                <div class="tabs"><div class="tab active">Controls</div></div>
+                <div style="padding:15px;">
+                    <button style="width:100%; padding:8px; background:#144983; color:#fff; border:1px solid #111; cursor:pointer; font-weight:bold; font-size:12px; border-radius:2px;" id="btn-play-big" onclick="Engine.togglePlay()">▶ Play Timeline</button>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- ================= TIMELINE ================= -->
+    <div class="timeline">
+        <div class="tl-controls">
+            <div class="time-display" id="time-display">00:00:00:00</div>
+        </div>
+        <div class="tl-main">
+            <div class="tl-left" id="tl-hierarchy"></div>
+            <div class="tl-right" id="tl-tracks" onmousedown="Engine.scrubTimeline(event)">
+                <div class="ruler"></div>
+                <div class="playhead-stick" id="playhead"><div class="playhead-head"></div></div>
+                <div id="tl-track-container" style="position:relative;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL ATAJOS ================= -->
+    <div id="modal-overlay" onclick="UI.closeShortcuts()"></div>
+    <div id="modal-shortcuts">
+        <div class="modal-title">Keyboard Shortcuts Manager</div>
+        <div id="sc-list">
+            <!-- Injectados vía JS -->
+        </div>
+        <div style="margin-top:15px; color:#aaa; font-size:10px;">Click the box, then press any key to rebind it.</div>
+        <button class="modal-btn" onclick="UI.closeShortcuts()">Apply Changes</button>
+    </div>
+
+
+    <script>
+        /**
+         * ==========================================
+         *  CORE STATE & CONSTANTS
+         * ==========================================
+         */
+        const State = {
+            duration: 10000, fps: 60, timeMs: 0, playing: false, 
+            layerCounter: 0, layers:[], selectedId: null, activeTool: 'v'
+        };
+
+        // ATAJOS DINÁMICOS. Modificables por el usuario.
+        const Shortcuts = {
+            play: { key: 'space', label: 'Play / Pause' },
+            cut: { key: 'c', label: 'Split Layer (Cortar)' },
+            addKf: { key: 'k', label: 'Add Explicit Keyframe' },
+            toolV: { key: 'v', label: 'Selection Tool' },
+            toolH: { key: 'h', label: 'Hand Tool' }
+        };
+
+        let listeningForShortcut = null; // Para el rebinder del Modal
+
+        const PROPS_META = {
+            x: { name: 'X Pos', unit: 'px', def: 400 },
+            y: { name: 'Y Pos', unit: 'px', def: 225 },
+            z: { name: 'Z Pos', unit: 'px', def: 0, requires3D: true },
+            scale: { name: 'Scale', unit: '%', def: 100 },
+            rotX: { name: 'Rot X', unit: '°', def: 0, requires3D: true },
+            rotY: { name: 'Rot Y', unit: '°', def: 0, requires3D: true },
+            rotZ: { name: 'Rot Z', unit: '°', def: 0 },
+            opacity: { name: 'Opacity', unit: '%', def: 100 }
+        };
+
+        // Math Curvas Easing (After Effects cubic bezier simulation)
+        const EASE = {
+            linear: t => t,
+            easeOutBounce: t => { 
+                const n1 = 7.5625, d1 = 2.75;
+                if(t<1/d1) return n1*t*t; if(t<2/d1) return n1*(t-=1.5/d1)*t+0.75; 
+                if(t<2.5/d1) return n1*(t-=2.25/d1)*t+0.9375; return n1*(t-=2.625/d1)*t+0.984375; 
+            },
+            easeOutQuint: t => 1 - Math.pow(1 - t, 5),
+            easeInOut: t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+        };
+
+        const LABELS =['#497491', '#85a085', '#a0859c', '#a09485', '#8f4646'];
+
+        /**
+         * ==========================================
+         *  ENGINE LOGIC
+         * ==========================================
+         */
+        const Engine = {
+            
+            init() {
+                UI.updateHints();
+                this.addLayer('text', 'MASTER TEXT 3D');
+                this.addLayer('solid', 'BG Solid');
+                // Config predeterminada demo
+                State.layers[0].is3D = true;
+                State.layers[0].expanded = true;
+                State.layers[0].expandedTF = true;
+                this.select(State.layers[0].id);
+                UI.renderFull();
+            },
+
+            addLayer(type, forceName) {
+                State.layerCounter++;
+                const isSolid = type === 'solid';
+                
+                const l = {
+                    id: 'L_' + Date.now() + Math.random(),
+                    idx: State.layerCounter, type: type,
+                    name: forceName || (isSolid ? `Solid ${State.layerCounter}` : `Text ${State.layerCounter}`),
+                    color: isSolid ? `hsl(${Math.random()*360},60%,30%)` : '#ffffff',
+                    label: LABELS[State.layerCounter % LABELS.length],
+                    content: isSolid ? '' : 'HELLO AE',
+                    
+                    visible: true, locked: false, is3D: false,
+                    expanded: false, expandedTF: false,
+                    inPoint: 0, outPoint: State.duration, // NUEVO: Control de cortes
+                    props: {}
+                };
+
+                for(let k in PROPS_META) l.props[k] = { val: PROPS_META[k].def, sw: false, kfs:[], ease: 'easeInOut' };
+                State.layers.unshift(l);
+                this.select(l.id);
+                UI.renderFull();
+            },
+
+            select(id) { State.selectedId = id; UI.renderFull(); },
+
+            toggleSw(id, prop) {
+                const l = State.layers.find(x => x.id === id); l[prop] = !l[prop]; UI.renderFull();
+            },
+
+            // --- KEYFRAME MAGIC ---
+            toggleStopwatch(id, pk) {
+                const p = State.layers.find(l => l.id === id).props[pk];
+                p.sw = !p.sw;
+                if(p.sw) this.writeKeyframe(p, State.timeMs, p.val); else p.kfs =[];
+                UI.renderFull();
+            },
+
+            // Botón explícito Diamante en Propiedad (NUEVO)
+            toggleExplicitKeyframe(id, pk) {
+                const p = State.layers.find(l => l.id === id).props[pk];
+                if(!p.sw) { p.sw = true; } // Auto-activar reloj si no lo estaba
+                
+                // ¿Existe KF exactamente aquí (con margen de 5ms)?
+                const existIdx = p.kfs.findIndex(k => Math.abs(k.t - State.timeMs) < 10);
+                if (existIdx >= 0) {
+                    p.kfs.splice(existIdx, 1); // Borrar
+                } else {
+                    this.writeKeyframe(p, State.timeMs, p.val); // Añadir nuevo garantizado
+                }
+                UI.renderFull();
+            },
+
+            writeKeyframe(propObj, time, value) {
+                const exist = propObj.kfs.findIndex(k => Math.abs(k.t - time) < 10);
+                if(exist >= 0) propObj.kfs[exist].val = value;
+                else propObj.kfs.push({ t: time, val: value });
+                propObj.kfs.sort((a,b) => a.t - b.t);
+            },
+
+            // Add via Action Menu
+            addKeyframeToSelected() {
+                if(!State.selectedId) return;
+                const l = State.layers.find(x => x.id === State.selectedId);
+                for(let pk in l.props) { if(l.props[pk].sw) this.toggleExplicitKeyframe(l.id, pk); }
+            },
+
+            // --- SPLIT LAYER (CORTAR) NUEVO ---
+            splitLayer() {
+                if(!State.selectedId) return alert("Select a layer to Split/Cut!");
+                const idx = State.layers.findIndex(l => l.id === State.selectedId);
+                const l = State.layers[idx];
+
+                // No puedes cortar si estás fuera de los límites de la capa
+                if(State.timeMs <= l.inPoint || State.timeMs >= l.outPoint) return;
+
+                // Clon profundo de la capa y sus KFs
+                const copy = JSON.parse(JSON.stringify(l));
+                State.layerCounter++;
+                copy.id = 'L_' + Date.now();
+                copy.idx = State.layerCounter;
+                copy.name = l.name + " (Corte)";
+
+                // Cortar la matemática temporal!
+                l.outPoint = State.timeMs;
+                copy.inPoint = State.timeMs;
+
+                // Insertar debajo (en array arriba)
+                State.layers.splice(idx, 0, copy);
+                this.select(copy.id); // Selecciona la nueva parte derecha
+                UI.renderFull();
+            },
+
+            // --- MOTOR DE PRESETS ---
+            applyPreset(type) {
+                if(!State.selectedId) return alert("Select a layer first.");
+                const l = State.layers.find(x => x.id === State.selectedId);
+                let time = State.timeMs;
+
+                if (type === 'fade') {
+                    l.props.opacity.sw = true;
+                    this.writeKeyframe(l.props.opacity, time, 0);
+                    this.writeKeyframe(l.props.opacity, time + 1000, 100);
+                } 
+                else if (type === 'pop') {
+                    l.props.scale.sw = true; l.props.scale.ease = 'easeOutBounce';
+                    this.writeKeyframe(l.props.scale, time, 0);
+                    this.writeKeyframe(l.props.scale, time + 1200, 100);
+                }
+                else if (type === 'spin') {
+                    l.is3D = true;
+                    l.props.z.sw = true; l.props.rotX.sw = true; l.props.rotY.sw = true; l.props.rotZ.sw = true;
+                    l.props.z.ease = 'easeOutQuint';
+                    this.writeKeyframe(l.props.z, time, -1000); this.writeKeyframe(l.props.z, time + 1500, 0);
+                    this.writeKeyframe(l.props.rotX, time, -90); this.writeKeyframe(l.props.rotX, time + 1500, 0);
+                    this.writeKeyframe(l.props.rotY, time, 180); this.writeKeyframe(l.props.rotY, time + 1500, 0);
+                    this.writeKeyframe(l.props.rotZ, time, -180); this.writeKeyframe(l.props.rotZ, time + 1500, 0);
+                }
+                l.expanded = true; l.expandedTF = true;
+                Engine.evalLogic(); UI.renderFull(); // Force refresh to show 0
+            },
+
+            // --- MATHEMATICS MATH ---
+            evalLogic() {
+                State.layers.forEach(l => {
+                    for(let k in l.props) {
+                        const p = l.props[k];
+                        if(!p.sw || p.kfs.length === 0) continue;
+                        if(State.timeMs <= p.kfs[0].t) p.val = p.kfs[0].val;
+                        else if(State.timeMs >= p.kfs[p.kfs.length-1].t) p.val = p.kfs[p.kfs.length-1].val;
+                        else {
+                            for(let i=0; i<p.kfs.length-1; i++) {
+                                if(State.timeMs >= p.kfs[i].t && State.timeMs < p.kfs[i+1].t) {
+                                    const k1=p.kfs[i], k2=p.kfs[i+1];
+                                    const prog = (State.timeMs - k1.t)/(k2.t - k1.t);
+                                    const func = EASE[p.ease] || EASE.easeInOut;
+                                    p.val = k1.val + (k2.val - k1.val) * func(prog);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                });
+            },
+
+            // --- TIMING / SCRUBBING ---
+            scrubTimeline(e) {
+                if(State.playing) this.togglePlay();
+                const cont = document.getElementById('tl-tracks');
+                const drag = (ev) => {
+                    const rect = cont.getBoundingClientRect();
+                    const x = Math.max(0, Math.min(ev.clientX - rect.left, rect.width));
+                    State.timeMs = (x / rect.width) * State.duration;
+                    this.evalLogic(); UI.fastUpdate();
+                }; drag(e);
+                window.onmousemove = drag;
+                window.onmouseup = () => { window.onmousemove = null; window.onmouseup = null; UI.renderFull(); };
+            },
+
+            // ANIM FRAME BUCLE
+            loop(ts) {
+                if(!State.playing) return;
+                const dt = ts - (this.lastTs || ts); this.lastTs = ts;
+                State.timeMs += dt; if(State.timeMs > State.duration) State.timeMs = 0;
+                this.evalLogic(); UI.fastUpdate();
+                this.animReq = requestAnimationFrame(this.loop.bind(this));
+            },
+            togglePlay() {
+                State.playing = !State.playing;
+                document.getElementById('btn-play-big').innerText = State.playing ? '⏸ Pause' : '▶ Play Timeline';
+                if(State.playing) { this.lastTs = performance.now(); this.animReq = requestAnimationFrame(this.loop.bind(this)); }
+                else { cancelAnimationFrame(this.animReq); UI.renderFull(); }
+            }
+        };
+
+        /**
+         * ==========================================
+         *  UI RENDERER & INTERFACE
+         * ==========================================
+         */
+        const UI = {
+            
+            setTool(t) {
+                State.activeTool = t;
+                document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+                document.getElementById('tool-'+t)?.classList.add('active');
+            },
+
+            // RENDER GLOBAL
+            renderFull() {
+                Engine.evalLogic();
+                this.renderComp();
+                this.renderTL();
+                this.updatePlayhead();
+            },
+
+            // UPDATE RÁPIDO (Aislado de DOM String parsing pesados, para ir a 60FPS)
+            fastUpdate() {
+                this.renderComp();
+                this.updatePlayhead();
+                // Update numeros directos en Inputs
+                State.layers.forEach(l => {
+                    for(let k in l.props) {
+                        const el = document.getElementById(`val_${l.id}_${k}`);
+                        if(el) el.innerText = l.props[k].val.toFixed(1) + PROPS_META[k].unit;
+                    }
+                });
+            },
+
+            updatePlayhead() {
+                const p = (State.timeMs / State.duration) * 100;
+                document.getElementById('playhead').style.left = p + '%';
+                // Time format 00:00:00:00
+                const f = Math.floor((State.timeMs / 1000) * State.fps);
+                const ms = Math.floor(State.timeMs / 1000);
+                document.getElementById('time-display').innerText = `00:00:${ms.toString().padStart(2,'0')}:${(f%State.fps).toString().padStart(2,'0')}`;
+            },
+
+            // Dibuja Visor 3D y aplica IN/OUT Points (CORTES)
+            renderComp() {
+                const comp = document.getElementById('composition');
+                comp.innerHTML = '';
+                [...State.layers].reverse().forEach(l => {
+                    if(!l.visible) return;
+                    
+                    // ¿ESTAMOS FUERA DEL PUNTO DE CORTE DE LA CAPA? Si sí, ocúltala en pantalla!
+                    if (State.timeMs < l.inPoint || State.timeMs >= l.outPoint) return;
+
+                    const el = document.createElement('div');
+                    el.className = `layer-item-3d ${l.id === State.selectedId ? 'selected' : ''}`;
+                    const p = l.props;
+                    
+                    let tf = `translate3d(${p.x.val}px, ${p.y.val}px, ${l.is3D ? p.z.val : 0}px) `;
+                    if(l.is3D) tf += `rotateX(${p.rotX.val}deg) rotateY(${p.rotY.val}deg) `;
+                    tf += `rotateZ(${p.rotZ.val}deg) scale(${p.scale.val/100})`;
+                    
+                    el.style.transform = tf; el.style.opacity = p.opacity.val/100;
+                    
+                    if(l.type === 'solid') { el.style.width='100px'; el.style.height='100px'; el.style.background=l.color; }
+                    else { el.innerText = l.content; el.style.color=l.color; el.style.fontSize='40px'; el.style.fontWeight='bold'; el.style.whiteSpace='nowrap';}
+                    
+                    // Native Screen Scrub Drag
+                    el.onmousedown = (e) => {
+                        e.stopPropagation(); Engine.select(l.id);
+                        if(State.activeTool!=='v' || l.locked) return;
+                        let sx=e.clientX, sy=e.clientY, ix=p.x.val, iy=p.y.val;
+                        window.onmousemove = (ev) => {
+                            p.x.val = ix + (ev.clientX - sx); p.y.val = iy + (ev.clientY - sy);
+                            if(p.x.sw) Engine.writeKeyframe(p.x, State.timeMs, p.x.val);
+                            if(p.y.sw) Engine.writeKeyframe(p.y, State.timeMs, p.y.val);
+                            UI.fastUpdate();
+                        };
+                        window.onmouseup = () => { window.onmousemove=null; window.onmouseup=null; UI.renderFull(); }
+                    }
+                    comp.appendChild(el);
+                });
+            },
+
+            renderTL() {
+                const tLeft = document.getElementById('tl-hierarchy');
+                const tRight = document.getElementById('tl-track-container');
+                tLeft.innerHTML = `
+                    <div class="tl-head-row">
+                        <div class="th-cell icon"></div><div class="th-cell icon"></div>
+                        <div class="th-cell" style="width:24px;">#</div><div class="th-cell" style="flex:1;">Layer Name</div>
+                        <div class="th-cell icon" style="width:30px;"><svg viewBox="0 0 10 10" class="svg-icon" style="fill:#aaa;"><path d="M5 0L0 2.5v5L5 10l5-2.5v-5L5 0zM4.5 1.4l3.4 1.7-3.4 1.7L1.1 3.1 4.5 1.4zM1 7.8V4.3l3.5 1.7v3.5L1 7.8zm8 0L5.5 9.5V6l3.5-1.7v3.5z"/></svg></div>
+                    </div>`;
+                tRight.innerHTML = '';
+
+                State.layers.forEach(l => {
+                    const row = document.createElement('div');
+                    row.className = `row-layer ${l.id === State.selectedId ? 'active' : ''}`;
+                    row.onclick = () => Engine.select(l.id);
+                    row.innerHTML = `
+                        <div class="th-cell icon" onclick="Engine.toggleSw('${l.id}', 'visible'); event.stopPropagation();" style="color:${l.visible?'#fff':'#333'};">👁</div>
+                        <div class="th-cell icon" onclick="Engine.toggleSw('${l.id}', 'locked'); event.stopPropagation();" style="color:${l.locked?'#fff':'#333'};">🔒</div>
+                        <div class="th-cell" style="width:24px; background:${l.label}; justify-content:center; color:#fff;">${l.idx}</div>
+                        <div class="th-cell" style="flex:1;">
+                            <span class="expander ${l.expanded?'open':''}" onclick="Engine.toggleSw('${l.id}', 'expanded'); event.stopPropagation();">▶</span> ${l.name}
+                        </div>
+                        <div class="th-cell icon" onclick="Engine.toggleSw('${l.id}', 'is3D'); event.stopPropagation();" style="width:30px; color:${l.is3D?'var(--ae-text-blue)':'#333'};">⚙️</div>
+                    `;
+                    tLeft.appendChild(row);
+
+                    const tr = document.createElement('div'); tr.className = 'track-row track-bg';
+                    // NUEVO LÍMITE DE TRACK VISUAL EN BASE AL CORTE IN/OUT
+                    const wPerc = ((l.outPoint - l.inPoint) / State.duration) * 100;
+                    const lPerc = (l.inPoint / State.duration) * 100;
+                    tr.innerHTML = `<div class="time-bar ${l.id===State.selectedId?'active':''}" style="background:${l.label}; left:${lPerc}%; width:${wPerc}%;"></div>`;
+                    tRight.appendChild(tr);
+
+                    if(l.expanded) {
+                        tLeft.innerHTML += `<div class="row-prop-group"><span class="expander ${l.expandedTF?'open':''}" onclick="Engine.toggleSw('${l.id}', 'expandedTF')">▶</span> Transform</div>`;
+                        tRight.innerHTML += `<div class="track-row"></div>`;
+                        
+                        if(l.expandedTF) {
+                            for(let pk in l.props) {
+                                if(PROPS_META[pk].requires3D && !l.is3D) continue;
+                                const p = l.props[pk];
+                                
+                                // ¿Tiene Keyframe aquí? ♦ vs ♢
+                                const existKf = p.kfs.some(k => Math.abs(k.t - State.timeMs) < 10);
+                                const d_col = existKf ? 'var(--ae-text-blue)' : '#666';
+                                const d_icn = existKf ? '♦' : '♢';
+
+                                const pR = document.createElement('div'); pR.className = 'row-prop';
+                                pR.innerHTML = `
+                                    <div class="btn-kf" style="color:${p.sw ? 'var(--ae-text-blue)':'#555'};" onclick="Engine.toggleStopwatch('${l.id}', '${pk}')">⏱</div>
+                                    <div class="btn-kf" style="color:${d_col};" onclick="Engine.toggleExplicitKeyframe('${l.id}', '${pk}')">${d_icn}</div>
+                                    <div style="flex:1;">${PROPS_META[pk].name}</div>
+                                    <div class="val-scrubber" id="val_${l.id}_${pk}">${p.val.toFixed(1)}${PROPS_META[pk].unit}</div>
+                                `;
+                                tLeft.appendChild(pR);
+
+                                // Scrub Numérico Evento (Señal)
+                                const sn = pR.querySelector('.val-scrubber');
+                                sn.onmousedown = (e) => {
+                                    e.preventDefault(); if(State.playing) Engine.togglePlay();
+                                    const initX = e.clientX, initV = p.val;
+                                    window.onmousemove = (ev) => {
+                                        p.val = initV + (ev.clientX - initX) * (pk==='scale'||pk==='opacity'?0.5:1);
+                                        if(pk==='opacity') p.val = Math.max(0,Math.min(100,p.val)); // Clamp
+                                        if(p.sw) Engine.writeKeyframe(p, State.timeMs, p.val);
+                                        UI.fastUpdate();
+                                    };
+                                    window.onmouseup = () => { window.onmousemove=null; window.onmouseup=null; UI.renderFull(); }
+                                }
+
+                                const tk = document.createElement('div'); tk.className = 'track-row';
+                                if(p.sw) {
+                                    p.kfs.forEach(k => {
+                                        // Ocultar rombos fuera del límite de capa cortada visualmente
+                                        if(k.t >= l.inPoint && k.t <= l.outPoint) {
+                                            tk.innerHTML += `<div class="kf-diamond" style="left:${(k.t/State.duration)*100}%"></div>`;
+                                        }
+                                    });
+                                }
+                                tRight.appendChild(tk);
+                            }
+                        }
+                    }
+                });
+            },
+
+            // --- MENU DE SHORTCUTS ---
+            openShortcuts() {
+                const m = document.getElementById('modal-shortcuts');
+                document.getElementById('modal-overlay').style.display = 'block';
+                m.style.display = 'block';
+                this.renderSCList();
+            },
+            closeShortcuts() {
+                document.getElementById('modal-overlay').style.display = 'none';
+                document.getElementById('modal-shortcuts').style.display = 'none';
+                listeningForShortcut = null;
+                this.updateHints();
+            },
+            updateHints() {
+                document.getElementById('hint-cut').innerText = `[${Shortcuts.cut.key.toUpperCase()}]`;
+                document.getElementById('hint-kf').innerText = `[${Shortcuts.addKf.key.toUpperCase()}]`;
+            },
+            renderSCList() {
+                const list = document.getElementById('sc-list'); list.innerHTML = '';
+                for(let k in Shortcuts) {
+                    const row = document.createElement('div'); row.className = 'sc-row';
+                    const active = listeningForShortcut === k;
+                    row.innerHTML = `<div class="sc-name">${Shortcuts[k].label}</div>
+                                     <div class="sc-input ${active?'listening':''}" onclick="UI.listenToKey('${k}')">
+                                        ${active ? 'Press key...' : Shortcuts[k].key.toUpperCase()}
+                                     </div>`;
+                    list.appendChild(row);
+                }
+            },
+            listenToKey(scKey) {
+                listeningForShortcut = scKey;
+                this.renderSCList();
+            }
+        };
+
+        /**
+         * ==========================================
+         *  KEYBOARD GLOBAL LISTENER
+         * ==========================================
+         */
+        window.addEventListener('keydown', e => {
+            const lowerKey = (e.key === ' ' ? 'space' : e.key).toLowerCase();
+
+            // Modo REBIND del modal
+            if(listeningForShortcut) {
+                e.preventDefault();
+                Shortcuts[listeningForShortcut].key = lowerKey;
+                listeningForShortcut = null;
+                UI.renderSCList();
+                return; // Break
+            }
+
+            // Engine General Shortcuts 
+            if(lowerKey === Shortcuts.play.key) { e.preventDefault(); Engine.togglePlay(); }
+            else if(lowerKey === Shortcuts.cut.key) { e.preventDefault(); Engine.splitLayer(); }
+            else if(lowerKey === Shortcuts.addKf.key) { e.preventDefault(); Engine.addKeyframeToSelected(); }
+            else if(lowerKey === Shortcuts.toolV.key) UI.setTool('v');
+            else if(lowerKey === Shortcuts.toolH.key) UI.setTool('h');
+        });
+
+        // INIT KICK
+        window.onload = () => Engine.init();
+
+    </script>
+</body>
 </html>
