@@ -1,15 +1,1 @@
-/* src/index.css */
-@import "tailwindcss";
 
-@theme {
-  --color-ae-bg-dark: #161616;
-  --color-ae-bg-panel: #1c1c1c;
-  --color-ae-accent: #3895ff;
-  --color-ae-border: #000000;
-}
-
-body {
-  background-color: var(--color-ae-bg-dark);
-  color: white;
-  font-family: 'Inter', sans-serif;
-}
