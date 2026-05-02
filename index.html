@@ -3,274 +3,315 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>After Effects Engine: Pro Composer & Graph Editor</title>
+    <title>Ae Ultra Pro: 3D Engine & Motion</title>
     <style>
         /* =========================================================
-           CORE SYSTEM VARIABLES & DARK MODE AE PALETTE
+           CORE SYSTEM VARIABLES & ADOBE DARK THEME
            ========================================================= */
         :root {
             --bg-base: #101010;
             --bg-panel: #232323;
-            --bg-head: #2a2a2a;
-            --bg-track: #1b1b1b;
-            --border-drk: #141414;
-            --border-lgt: #3a3a3a;
+            --bg-head: #2d2d2d;
+            --bg-track: #1e1e1e;
+            --bg-track-alt: #252525;
+            --border-drk: #000000;
+            --border-lgt: #333333;
             --text-base: #cccccc;
             --text-high: #ffffff;
-            --accent: #2d8ceb;
-            --accent-hov: #1a74ce;
-            --accent-plugin: #823ab0;
-            --kf-dim: #e5b92e;
-            --graph-grid: rgba(255, 255, 255, 0.05);
+            --accent: #1473e6;
+            --accent-hov: #2684FF;
+            --accent-plugin: #a749f2;
+            --kf-dim: #777777;
+            --graph-grid: rgba(255, 255, 255, 0.07);
             --graph-line: #52a8ff;
+            --graph-handle: #ffd54f;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 11px; background: var(--bg-base); color: var(--text-base); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        body { font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif; font-size: 11px; background: var(--bg-base); color: var(--text-base); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
-        /* Smooth custom scrollbars */
         ::-webkit-scrollbar { width: 10px; height: 10px; }
-        ::-webkit-scrollbar-track { background: var(--bg-base); }
-        ::-webkit-scrollbar-thumb { background: #4a4a4a; border-radius: 5px; border: 2px solid var(--bg-base); }
+        ::-webkit-scrollbar-track { background: var(--bg-base); border-left: 1px solid var(--border-lgt); }
+        ::-webkit-scrollbar-thumb { background: #444; border-radius: 5px; border: 2px solid var(--bg-base); }
         ::-webkit-scrollbar-thumb:hover { background: #666; }
 
         /* =========================================================
            MENU & HEADER
            ========================================================= */
-        header { display: flex; align-items: center; padding: 0 10px; height: 26px; background: #181818; border-bottom: 1px solid var(--border-drk); z-index: 10; gap: 15px;}
-        .logo { color: #fff; font-weight: bold; padding-right: 15px; border-right: 1px solid #333; }
+        header { display: flex; align-items: center; padding: 0 10px; height: 30px; background: #1a1a1a; border-bottom: 1px solid var(--border-drk); z-index: 10; gap: 15px;}
+        .logo { color: var(--accent-hov); font-weight: 800; padding-right: 15px; border-right: 1px solid #333; letter-spacing: 1px; }
         .menu { padding: 4px 8px; color: #aaa; cursor: pointer; position: relative;}
         .menu:hover { color: #fff; background: var(--bg-panel); }
-        .ddown { display: none; position: absolute; top: 100%; left: 0; background: var(--bg-panel); border: 1px solid #111; box-shadow: 2px 2px 8px rgba(0,0,0,0.8); z-index: 1000; min-width: 150px; }
+        .ddown { display: none; position: absolute; top: 100%; left: 0; background: var(--bg-panel); border: 1px solid #000; box-shadow: 2px 5px 15px rgba(0,0,0,0.9); z-index: 1000; min-width: 200px; }
         .menu:hover .ddown { display: block; }
         .ditem { padding: 8px 12px; color: #ccc; display: flex; justify-content: space-between; align-items: center; }
         .ditem:hover { background: var(--accent); color: #fff; }
 
-        .toolbar { display: flex; align-items: center; height: 35px; background: var(--bg-panel); border-bottom: 1px solid var(--border-drk); padding: 0 10px; gap: 5px; }
-        .tool { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 3px; cursor: pointer; border: 1px solid transparent; }
-        .tool svg { width: 16px; height: 16px; fill: #aaa; }
-        .tool:hover { background: var(--bg-head); }
-        .tool.active { background: #111; border-color: var(--accent); }
-        .tool.active svg { fill: var(--accent); }
+        /* TOOLS */
+        .toolbar { display: flex; align-items: center; height: 38px; background: var(--bg-head); border-bottom: 1px solid var(--border-drk); padding: 0 10px; gap: 5px; }
+        .tool { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 4px; cursor: pointer; border: 1px solid transparent; transition: 0.1s;}
+        .tool svg { width: 18px; height: 18px; fill: #aaa; }
+        .tool:hover { background: #333; }
+        .tool.active { background: #181818; border-color: var(--accent); box-shadow: inset 0 0 5px rgba(0,0,0,0.5); }
+        .tool.active svg { fill: var(--accent-hov); }
 
         /* =========================================================
-           WORKSPACE (3 COLUMNS)
+           WORKSPACE & 3D ENGINE VIEWPORT
            ========================================================= */
         .workspace { display: flex; flex: 1; overflow: hidden; background: #000; }
-        .col { display: flex; flex-direction: column; background: var(--bg-panel); border: 1px solid var(--border-drk); }
-        .col-tabs { height: 24px; background: var(--bg-head); display: flex; border-bottom: 1px solid var(--border-drk); }
-        .tab { padding: 4px 15px; border-right: 1px solid var(--border-drk); cursor: pointer; color: #999; }
-        .tab.active { background: var(--bg-panel); color: #fff; border-bottom: 2px solid var(--accent); padding-bottom: 2px;}
+        .col { display: flex; flex-direction: column; background: var(--bg-panel); border: 1px solid var(--border-drk); border-top: none; }
+        .col-tabs { height: 30px; background: var(--bg-head); display: flex; align-items: center; border-bottom: 1px solid var(--border-drk); }
+        .tab { padding: 0 15px; height: 100%; display: flex; align-items: center; border-right: 1px solid var(--border-drk); cursor: pointer; color: #bbb; font-weight: 600; font-size: 11px;}
+        .tab.active { background: var(--bg-panel); color: #fff; border-bottom: 2px solid var(--accent); }
 
-        /* CANVAS ENGINE (3D Render View) */
-        .viewport { flex: 1; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #252525, #000); overflow: hidden; perspective: 1200px; }
-        .comp { width: 800px; height: 450px; background: #0c0c0c; position: relative; box-shadow: 0 0 50px #000; border: 1px solid #222; transform-style: preserve-3d; }
-        .lyr-view { position: absolute; transform-style: preserve-3d; display: flex; align-items: center; justify-content: center; text-align: center; cursor: pointer; }
-        .lyr-view.selected { outline: 1px dashed rgba(255,255,255,0.7); z-index: 100 !important; }
+        /* TRUE 3D ENGINE STYLES */
+        .viewport { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #252525, #0a0a0a); overflow: hidden; perspective: 1500px; }
+        .camera-rig { position: absolute; width: 100%; height: 100%; transform-style: preserve-3d; display: flex; align-items: center; justify-content: center; }
+        .comp-bg { position: absolute; width: 800px; height: 450px; background-color: #0c0c0c; border: 1px solid #333; 
+            background-image: linear-gradient(45deg, #111 25%, transparent 25%), linear-gradient(-45deg, #111 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #111 75%), linear-gradient(-45deg, transparent 75%, #111 75%);
+            background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px; box-shadow: 0 0 50px rgba(0,0,0,0.8);
+        }
+        .comp { width: 800px; height: 450px; position: absolute; transform-style: preserve-3d; }
         
-        .btn { padding: 8px; width: 100%; border: none; background: #333; color: #fff; cursor: pointer; text-align: center; margin-bottom: 5px; border-radius: 2px;}
-        .btn:hover { background: #444; }
-        .btn-comp { background: linear-gradient(90deg, #711bb8, #973cd6); border: 1px solid #4a107a; font-weight: bold; margin-top:10px; }
+        /* 3D Grid Floor */
+        .grid-3d { position: absolute; width: 4000px; height: 4000px; top: 50%; left: 50%; transform: translate(-50%, -50%) rotateX(90deg);
+            background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 100px 100px; pointer-events: none; border: 1px solid rgba(255,255,255,0.1); display: none;
+        }
+        .grid-3d::after { content: ''; position: absolute; width: 100%; height: 100%; background: radial-gradient(circle, transparent 10%, #000 70%); }
+
+        .layers-root { position: absolute; top:0; left:0; width: 100%; height: 100%; transform-style: preserve-3d; }
+        .lyr-view { position: absolute; top: 0; left: 0; transform-style: preserve-3d; display: flex; align-items: center; justify-content: center; text-align: center; cursor: pointer; }
+        .lyr-view.selected { outline: 2px solid var(--accent); /* No Z-Index override to keep 3D valid! */ }
+        
+        .btn { padding: 8px; width: 100%; border: none; background: #3a3a3a; color: #fff; cursor: pointer; text-align: center; margin-bottom: 5px; border-radius: 3px; font-weight:600;}
+        .btn:hover { background: #4a4a4a; }
+        .btn-comp { background: linear-gradient(90deg, #711bb8, #973cd6); border: 1px solid #4a107a; margin-top:10px; }
         .btn-comp:hover { filter: brightness(1.2); }
 
         /* =========================================================
-           TIMELINE HIERARCHY & ZOOMABLE TRACKS
+           TIMELINE & TRACKS
            ========================================================= */
-        .timeline { height: 35vh; min-height: 250px; display: flex; flex-direction: column; background: var(--bg-panel); border-top: 2px solid #000; position:relative; }
-        .tl-ctrls { height: 32px; background: var(--bg-head); border-bottom: 1px solid #111; display: flex; align-items: center; padding: 0 10px; gap: 15px; }
-        .tc-box { font-family: 'Consolas', monospace; color: var(--accent); background: #000; padding: 3px 8px; border: 1px inset #222; border-radius: 3px; font-size: 14px; font-weight: bold; }
-        .zoom-slider { -webkit-appearance: none; width: 150px; height: 5px; background: #555; outline: none; border-radius: 3px; }
-        .zoom-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 13px; height: 13px; border-radius: 50%; background: #ccc; cursor: ew-resize; }
+        .timeline { height: 40vh; min-height: 250px; display: flex; flex-direction: column; background: var(--bg-panel); border-top: 2px solid #000; position:relative; }
+        .tl-ctrls { height: 35px; background: var(--bg-head); border-bottom: 1px solid #000; display: flex; align-items: center; padding: 0 10px; gap: 15px; }
+        .tc-box { font-family: 'Consolas', monospace; color: var(--accent-hov); background: #111; padding: 4px 10px; border: 1px solid #000; border-radius: 3px; font-size: 15px; font-weight: bold; letter-spacing: 1px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);}
+        .zoom-slider { -webkit-appearance: none; width: 150px; height: 6px; background: #111; outline: none; border-radius: 3px; border: 1px solid #333;}
+        .zoom-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: #aaa; cursor: ew-resize; border: 2px solid #222;}
 
         .tl-main { display: flex; flex: 1; overflow: hidden; position: relative; }
+        .tl-tree { width: 420px; background: var(--bg-panel); border-right: 1px solid #000; z-index: 50; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column;}
+        .tr-head { display: flex; height: 28px; background: #1a1a1a; font-weight: bold; color: #888; border-bottom: 1px solid #000; flex-shrink: 0; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.5); z-index: 10;}
+        .th-c { border-right: 1px solid #222; display: flex; align-items: center; padding-left: 5px; height: 100%;}
         
-        /* Hierarchy Table Left */
-        .tl-tree { width: 380px; background: var(--bg-panel); border-right: 1px solid #000; z-index: 50; overflow-y: auto; overflow-x: hidden; }
-        .tr-head { display: flex; height: 24px; background: #1a1a1a; font-weight: bold; color: #888; border-bottom: 1px solid #000; }
-        .th-c { border-right: 1px solid #111; display: flex; align-items: center; padding-left: 5px; }
+        .t-row { display: flex; height: 26px; align-items: center; border-bottom: 1px solid #1a1a1a; cursor: pointer; flex-shrink: 0;}
+        .lyr-row { background: #2a2a2a; } .lyr-row.active { background: #3d3d3d; color: #fff; }
+        .grp-row { background: #222; padding-left: 45px; color: var(--accent-hov); }
+        .prp-row { background: #1e1e1e; padding-left: 60px; color: #bbb; }
+        .prp-row.graph-active { background: rgba(20, 115, 230, 0.2); border-right: 4px solid var(--accent); color: #fff; }
         
-        .t-row { display: flex; height: 22px; align-items: center; border-bottom: 1px solid #1f1f1f; cursor: pointer; }
-        .lyr-row { background: #232323; } .lyr-row.active { background: #353535; color: #fff; }
-        .grp-row { background: #1c1c1c; padding-left: 40px; color: var(--accent); }
-        .prp-row { background: #181818; padding-left: 55px; color: #aaa; }
-        .prp-row.graph-active { background: rgba(45, 140, 235, 0.2); border-right: 3px solid var(--accent); color: #fff; }
-        
-        .ic { width: 22px; display: flex; align-items: center; justify-content: center; }
-        .xp { font-size: 9px; margin-right: 5px; transition: transform 0.1s; } .xp.op { transform: rotate(90deg); color: #fff; }
-        .val-scrub { margin-left: auto; margin-right: 10px; font-family: monospace; color: var(--accent); cursor: ew-resize; }
+        .ic { width: 26px; display: flex; align-items: center; justify-content: center; font-size: 13px;}
+        .xp { font-size: 10px; margin-right: 8px; transition: transform 0.1s; color: #888;} .xp.op { transform: rotate(90deg); color: #fff; }
+        .val-scrub { margin-left: auto; margin-right: 10px; font-family: 'Consolas', monospace; color: var(--accent-hov); cursor: ew-resize; background:#111; padding:2px 6px; border-radius:3px; border: 1px solid #000;}
 
-        /* TRACK CONTAINER RIGHT (ZOOMABLE) */
-        .tl-view { flex: 1; overflow-x: auto; overflow-y: hidden; background: var(--bg-track); position: relative; }
-        .tl-scroll { position: relative; height: 100%; background: repeating-linear-gradient(90deg, transparent, transparent 99px, #262626 99px, #262626 100px); }
-        .ruler { height: 24px; background: #222; border-bottom: 1px solid #111; pointer-events: none; }
-        .playhead { position: absolute; left: 0%; top: 0; width: 1px; height: 100vh; background: var(--playhead); z-index: 100; pointer-events: none; }
-        .playhead-cap { position: absolute; top: 0; left: -5px; width: 11px; height: 15px; background: var(--playhead); cursor: ew-resize; pointer-events: all; clip-path: polygon(0 0, 100% 0, 100% 60%, 50% 100%, 0 60%); }
+        .tl-view { flex: 1; overflow-x: auto; overflow-y: hidden; display: flex; flex-direction: column; position: relative; background: var(--bg-track); }
+        .ruler { height: 28px; flex-shrink: 0; background-color: #222; border-bottom: 1px solid #000; position: relative; cursor: pointer;
+            background-image: repeating-linear-gradient(90deg, #444, #444 1px, transparent 1px, transparent 10px), repeating-linear-gradient(90deg, #666, #666 1px, transparent 1px, transparent 50px);
+            background-position: 0 100%, 0 100%; background-size: 100% 25%, 100% 50%; background-repeat: no-repeat; z-index: 10;}
         
-        .tk-row { height: 22px; position: relative; border-bottom: 1px solid #222; }
-        .lyr-bar { position: absolute; height: 14px; top: 4px; border-radius: 2px; box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.6); }
-        .lyr-bar.selected { filter: brightness(1.4); border: 1px solid #fff; }
+        .playhead-cap { position: absolute; top: 0; z-index: 110; width: 13px; height: 18px; background: var(--accent); cursor: ew-resize; clip-path: polygon(0 0, 100% 0, 100% 60%, 50% 100%, 0 60%); }
+        .tl-scroll { position: relative; height: 100%; min-height: 100%; 
+            background: repeating-linear-gradient(90deg, var(--bg-track-alt), var(--bg-track-alt) 99px, #151515 99px, #151515 100px); }
+        .playhead-line { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--accent); z-index: 100; pointer-events: none; box-shadow: 0 0 5px var(--accent);}
+        
+        .tk-row { height: 26px; position: relative; border-bottom: 1px solid #181818; flex-shrink: 0; }
+        .lyr-bar { position: absolute; height: 18px; top: 4px; border-radius: 3px; display: flex; align-items: center; font-size: 10px; color: #fff; padding: 0 8px; overflow: hidden; cursor: grab; 
+            background-image: linear-gradient(rgba(255,255,255,0.15), rgba(0,0,0,0.15)); border: 1px solid rgba(0,0,0,0.6); box-shadow: 0 2px 4px rgba(0,0,0,0.3);}
+        .lyr-bar:active { cursor: grabbing; }
+        .lyr-bar.selected { filter: brightness(1.3); outline: 1px solid #fff; }
+        .trim-handle { position: absolute; top: 0; width: 8px; height: 100%; cursor: ew-resize; background: rgba(255,255,255,0.1); z-index: 10; }
+        .trim-handle.left { left: 0; border-right: 1px solid rgba(0,0,0,0.3);} .trim-handle.right { right: 0; border-left: 1px solid rgba(0,0,0,0.3);}
+        .lyr-bar:hover .trim-handle { background: rgba(255,255,255,0.4); }
         
         /* Keyframes */
-        .kf-dim { position: absolute; top: 11px; width: 9px; height: 9px; background: var(--kf-dim); transform: translate(-50%,-50%) rotate(45deg); cursor: pointer; z-index: 20; box-shadow: 1px 1px 2px #000, inset 0 0 0 1px rgba(0,0,0,0.5); }
-        .kf-dim.selected { background: #fff; box-shadow: 0 0 5px #fff, inset 0 0 0 1px #f00; z-index: 30;}
+        .kf-dim { position: absolute; top: 13px; width: 9px; height: 9px; background: var(--kf-dim); transform: translate(-50%,-50%) rotate(45deg); cursor: pointer; z-index: 20; border: 1px solid #222; transition: 0.1s; }
+        .kf-dim:hover { background: #aaa; }
+        .kf-dim.kf-ease { border-radius: 2px; background: #999; }
+        .kf-dim.selected { background: var(--accent-hov); border: 1px solid #fff; box-shadow: 0 0 8px var(--accent); z-index: 30;}
 
-        /* =========================================================
-           GRAPH EDITOR OVERLAY (THE MAGICAL BEZIER CURVE EDITOR)
-           ========================================================= */
-        #graph-editor { display: none; position: absolute; top: 24px; left: 0; width: 100%; height: calc(100% - 24px); background: #161616; z-index: 90; }
-        /* Cuadricula fondo */
-        #graph-editor { background-image: linear-gradient(var(--graph-grid) 1px, transparent 1px), linear-gradient(90deg, var(--graph-grid) 1px, transparent 1px); background-size: 20px 20px, 20px 20px; }
+        /* GRAPH EDITOR */
+        #graph-editor { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 90; background-color: rgba(15,15,15,0.85); background-image: linear-gradient(var(--graph-grid) 1px, transparent 1px), linear-gradient(90deg, var(--graph-grid) 1px, transparent 1px); background-size: 40px 40px, 40px 40px; pointer-events: none;}
         .svg-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: visible; }
         .g-line { fill: none; stroke: var(--graph-line); stroke-width: 2px; }
-        .g-point { fill: #fff; stroke: var(--graph-line); stroke-width: 2px; cursor: pointer; r: 4; }
-        .g-handle-line { stroke: #555; stroke-width: 1px; stroke-dasharray: 2 2; }
-        .g-handle { fill: var(--accent-plugin); stroke: #fff; stroke-width: 1.5px; cursor: crosshair; r: 5; }
+        .g-point { fill: #fff; stroke: var(--graph-line); stroke-width: 2px; r: 4; }
 
-        /* =========================================================
-           COMPOSER PLUGIN MODAL UI
-           ========================================================= */
-        #pl-modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:2000; align-items:center; justify-content:center; }
-        .pl-win { width: 700px; height: 500px; background: #161616; border: 1px solid #444; border-radius: 8px; box-shadow: 0 20px 60px #000; display: flex; flex-direction: column; overflow: hidden; }
-        .pl-head { background: linear-gradient(90deg, #180922 0%, #3e1b52 100%); padding: 15px 20px; display: flex; justify-content: space-between; border-bottom: 1px solid #6b2e8f; align-items: center;}
-        .pl-title { color: #fff; font-weight: 800; font-size: 16px; display: flex; align-items: center; gap: 10px; letter-spacing: 1px;}
-        .pl-title svg { fill: #fff; width: 20px; height: 20px; }
-        .pl-close { color: rgba(255,255,255,0.5); font-size: 20px; cursor: pointer; font-weight: bold; }
-        .pl-close:hover { color: #fff; }
-        
+        /* PLUGIN MODAL */
+        #pl-modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:2000; align-items:center; justify-content:center; backdrop-filter: blur(8px);}
+        .pl-win { width: 750px; height: 500px; background: #161616; border: 1px solid #444; border-radius: 8px; box-shadow: 0 20px 60px #000; display: flex; flex-direction: column; overflow: hidden; }
+        .pl-head { background: linear-gradient(90deg, #180922, #3e1b52); padding: 15px 20px; display: flex; justify-content: space-between; border-bottom: 1px solid #6b2e8f; align-items: center;}
         .pl-body { display: flex; flex: 1; }
-        .pl-nav { width: 180px; background: #121212; border-right: 1px solid #222; }
-        .pl-cat { padding: 12px 15px; color: #888; border-left: 3px solid transparent; cursor: pointer; font-weight: 600; display: flex; gap: 8px; align-items: center;}
+        .pl-nav { width: 180px; background: #111; border-right: 1px solid #222; }
+        .pl-cat { padding: 12px 15px; color: #888; border-left: 3px solid transparent; cursor: pointer; font-weight: 600;}
         .pl-cat.act { color: #fff; background: #1a1a1a; border-left-color: #a749f2; }
-        
         .pl-grid { flex: 1; padding: 20px; overflow-y: auto; display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; align-content: start; background: #1b1b1b; }
         .pr-card { background: #252525; border: 1px solid #333; border-radius: 6px; padding: 15px; display: flex; flex-direction: column; gap: 10px; transition: 0.2s;}
-        .pr-card:hover { border-color: #555; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
-        .pr-name { color: #fff; font-weight: bold; font-size: 13px; }
-        .pr-desc { color: #888; font-size: 10px; line-height: 1.4; flex:1;}
-        .pr-btn-grp { display: flex; gap: 5px; }
-        .btn-inj { flex: 1; padding: 8px; border: none; border-radius: 4px; font-weight: bold; color: #fff; cursor: pointer; font-size: 10px; }
-        .btn-inj.in { background: #235233; border: 1px solid #327549; } .btn-inj.in:hover { background: #327549; }
-        .btn-inj.out { background: #752828; border: 1px solid #a33838; } .btn-inj.out:hover { background: #a33838; }
-
+        .pr-card:hover { border-color: #666; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.6); }
+        .pr-name { color: #fff; font-weight: bold; font-size: 14px; }
+        .pr-desc { color: #999; font-size: 11px; line-height: 1.4; flex:1;}
+        .btn-inj { flex: 1; padding: 8px; border: none; border-radius: 4px; font-weight: bold; color: #fff; cursor: pointer; font-size: 11px; }
+        .btn-inj.in { background: #235233; border: 1px solid #327549; } .btn-inj.in:hover { background: #41965e; }
+        .btn-inj.out { background: #752828; border: 1px solid #a33838; } .btn-inj.out:hover { background: #c23e3e; }
+        .preset-btn { flex: 1; min-width: 40px; padding: 4px 0; font-size: 11px; background: #2a2a2a; color: #ccc; border: 1px solid #444;}
+        .preset-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent-hov); }
     </style>
 </head>
 <body>
 
-    <!-- MENÚ -->
     <header>
-        <div class="logo">Ae Ultra</div>
+        <div class="logo">Ae Ultra Pro</div>
         <div class="menu">File</div>
         <div class="menu">Edit
             <div class="ddown">
                 <div class="ditem" onclick="App.split()"><span>Split Layer</span> <span style="color:#666;">[C]</span></div>
+                <div class="ditem" onclick="App.duplicate()"><span>Duplicate Layer</span> <span style="color:#666;">[Ctrl+D]</span></div>
                 <div class="ditem" onclick="App.deleteKF()"><span>Delete Selected KFs</span> <span style="color:#666;">[Del]</span></div>
             </div>
         </div>
         <div class="menu">Animation
             <div class="ddown">
-                <div class="ditem" onclick="UI.openPlugin()">✨ Open Composer...</div>
+                <div class="ditem" onclick="BezierUI.setPreset([0.33,0,0.67,1])"><span>Easy Ease KFs</span> <span style="color:#666;">[F9]</span></div>
+                <div class="ditem" onclick="UI.openPlugin()" style="color:var(--accent-plugin); font-weight:bold;">✨ Open Composer...</div>
             </div>
         </div>
     </header>
 
-    <!-- HERRAMIENTAS Y GRAPH TOGGLE -->
     <div class="toolbar">
-        <div class="tool active" onclick="UI.setTool('v')"><svg viewBox="0 0 24 24"><path d="M7,2l12,11.2l-5.8,0.5l3.3,7.3l-2.2,1.1l-3.2-7.4l-4.4,4.5V2z"/></svg></div>
-        <div class="tool" onclick="UI.setTool('h')"><svg viewBox="0 0 24 24"><path d="M21,9c0-1.6-1.3-3-3-3V5c0-1.6-1.3-3-3-3s-3,1.3-3,3v1C11.5,5.4,10.8,5,10,5C8.3,5,7,6.3,7,8v2.2C6.4,10.1,5.7,10,5,10c-1.6,0-3,1.3-3,3v6c0,2.8,2.2,5,5,5h8c2.8,0,5-2.2,5-5V9z"/></svg></div>
-        <div style="width: 1px; height: 20px; background: #333; margin: 0 10px;"></div>
-        <!-- GRAPH EDITOR TOGGLE -->
-        <div class="tool" id="btn-graph" onclick="App.toggleGraph()" title="Graph Editor / Bézier Curve Builder">
+        <div class="tool active" data-tool="v" onclick="UI.setTool('v')" title="Selection Tool (V)"><svg viewBox="0 0 24 24"><path d="M7,2l12,11.2l-5.8,0.5l3.3,7.3l-2.2,1.1l-3.2-7.4l-4.4,4.5V2z"/></svg></div>
+        <div class="tool" data-tool="h" onclick="UI.setTool('h')" title="Hand Tool / Pan View (H)"><svg viewBox="0 0 24 24"><path d="M21,9c0-1.6-1.3-3-3-3V5c0-1.6-1.3-3-3-3s-3,1.3-3,3v1C11.5,5.4,10.8,5,10,5C8.3,5,7,6.3,7,8v2.2C6.4,10.1,5.7,10,5,10c-1.6,0-3,1.3-3,3v6c0,2.8,2.2,5,5,5h8c2.8,0,5-2.2,5-5V9z"/></svg></div>
+        <div class="tool" data-tool="c" onclick="UI.setTool('c')" title="Camera Orbit 3D (C)"><svg viewBox="0 0 24 24"><path d="M12,2.5A9.5,9.5,0,0,0,2.5,12a9.5,9.5,0,0,0,19,0A9.5,9.5,0,0,0,12,2.5ZM12,20a8,8,0,1,1,8-8A8,8,0,0,1,12,20ZM12,5c-3.87,0-7,3.13-7,7s3.13,7,7,7,7-3.13,7-7-3.13-7-7-7Zm0,12c-2.76,0-5-2.24-5-5s2.24-5,5-5,5,2.24,5,5-2.24,5-5,5Z"/></svg></div>
+        <div class="tool" data-tool="y" onclick="UI.setTool('y')" title="Pan Behind / Anchor Point (Y)"><svg viewBox="0 0 24 24"><path d="M12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm0,18a8,8,0,1,1,8-8A8,8,0,0,1,12,20ZM12,6a6,6,0,1,0,6,6A6,6,0,0,0,12,6Zm0,10a4,4,0,1,1,4-4A4,4,0,0,1,12,16Z"/></svg></div>
+        
+        <div style="width: 1px; height: 20px; background: #444; margin: 0 10px;"></div>
+        <div class="tool" id="btn-graph" onclick="App.toggleGraph()" title="Graph Editor Overlay">
             <svg viewBox="0 0 24 24"><path d="M2,20 h20 v2 H2 V20 z M4,16 c4,0 4,-10 8,-10 s4,10 8,10 v2 c-5.5,0 -5.5,-12 -8,-12 s-2.5,12 -8,12 V16 z"/></svg>
         </div>
-        <span style="color:#666; margin-left:10px;">Select a property and open Graph Editor to draw curves!</span>
+        <span style="color:#888; margin-left:10px;">Shortcut: P, S, R, T, A para abrir propiedades. Doble-clic en nombre para editar.</span>
     </div>
 
-    <!-- PANELES DE ESPACIO DE TRABAJO -->
     <div class="workspace">
         <div class="col" style="width:260px;">
             <div class="col-tabs"><div class="tab active">Project Assets</div></div>
             <div style="padding:15px;">
                 <button class="btn" onclick="App.addLyr('solid')">+ Block Element</button>
                 <button class="btn" onclick="App.addLyr('text')">+ Typo Element</button>
-                <div style="margin-top:20px; color:#aaa; font-size: 12px; line-height: 1.6;">
-                    <b>💡 Novedades Pro:</b><br>
-                    • <b>Icono Gráfico Arriba:</b> Transforma el Timeline en modo Editor de Nodos.<br>
-                    • Arrastra los <b>tiradores azules</b> en el gráfico para deformar la animación de un preset.<br>
-                    • Usa <b>Space</b> para reproducir a 60fps.<br>
+                <div style="margin-top:20px; color:#aaa; font-size: 12px; line-height: 1.6; padding:10px; background:#1c1c1c; border:1px solid #333; border-radius:4px;">
+                    <b>💡 Tips Pro:</b><br>
+                    • Selecciona la herramienta <b>[C] Orbit</b> y arrastra en el visor para rotar el mundo 3D.<br>
+                    • Con <b>[Y] Pan Behind</b> mueves el Anchor Point sin cambiar la posición visual.<br>
+                    • <b>Doble clic</b> en el nombre de capa para renombrar.<br>
+                    • Haz clic en <b>[✨ Open Composer]</b> y crea un cubo 3D automático.
                 </div>
             </div>
         </div>
 
-        <div class="col" style="flex:1;">
-            <div class="col-tabs"><div class="tab active">Master Composition</div></div>
-            <div class="viewport"><div class="comp" id="comp-box"></div></div>
+        <!-- 3D ENGINE VIEWPORT -->
+        <div class="col" style="flex:1; position:relative;">
+            <div class="col-tabs">
+                <div class="tab active">Master Composition</div>
+                <div style="margin-left:auto; display:flex; gap:5px; padding-right:10px;">
+                    <button class="btn preset-btn" style="margin:0;" onclick="UI.toggle3DGrid()">Toggle Floor Grid</button>
+                    <button class="btn preset-btn" style="margin:0;" onclick="UI.resetCamera()">Reset Cam</button>
+                </div>
+            </div>
+            <div class="viewport" id="viewport">
+                <div class="camera-rig" id="camera-rig">
+                    <div class="comp" id="comp-box">
+                        <div class="comp-bg" id="comp-bg"></div>
+                        <div class="grid-3d" id="grid-3d"></div>
+                        <div class="layers-root" id="layers-root"></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="col" style="width:280px;">
-            <div style="flex: 0.6; border-bottom: 1px solid #000; display:flex; flex-direction:column;">
+        <div class="col" style="width:300px;">
+            <div style="flex: 0.35; border-bottom: 1px solid #000; display:flex; flex-direction:column;">
                 <div class="col-tabs"><div class="tab active">Controls</div></div>
                 <div style="padding:15px;">
-                    <button class="btn" style="background:var(--accent);font-weight:bold;" id="btn-play" onclick="App.togglePlay()">▶ Play Animation (Space)</button>
+                    <button class="btn" style="background:var(--accent); font-size:13px;" id="btn-play" onclick="App.togglePlay()">▶ Play (Space)</button>
                     <button class="btn btn-comp" onclick="UI.openPlugin()">✨ PREMIERE COMPOSER</button>
                 </div>
             </div>
-            <div style="flex: 1; display:flex; flex-direction:column;">
-                <div class="col-tabs"><div class="tab active">Physics Math Logs</div></div>
-                <div style="padding:15px; color:#555; font-family:monospace;" id="log">
-                    Engine V3 Ready.<br>Waiting for graph drawing...
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- LA TIMELINE (PANELES ÁRBOL, KEYFRAMES Y GRÁFICO SUPERPUESTO) -->
-    <div class="timeline">
-        <div class="tl-ctrls">
-            <div class="tc-box" id="time-display">00:00:00:00</div>
-            <input type="range" class="zoom-slider" min="0.5" max="6" step="0.1" value="1" oninput="App.setZoom(this.value)" title="Timeline Zoom">
-        </div>
-
-        <div class="tl-main">
-            <!-- Arbol Izquierdo -->
-            <div class="tl-tree" id="tl-left"></div>
-
-            <!-- Contenedor Derecho (Desplazable según Zoom) -->
-            <div class="tl-view" onmousedown="App.scrubTime(event)">
-                <div class="tl-scroll" id="tl-right">
-                    <div class="ruler"></div>
-                    <div class="playhead" id="playhead"><div class="playhead-cap"></div></div>
-                    <!-- CONTENEDOR DE LOS TRACKS NORMALES -->
-                    <div id="tk-container"></div>
+            
+            <div style="flex: 1; display:flex; flex-direction:column; background: #181818;">
+                <div class="col-tabs"><div class="tab active">Keyframe Interpolation</div></div>
+                <div style="padding:15px; display:flex; flex-direction:column; align-items:center; gap: 10px; flex:1;">
+                    <div id="bezier-presets" style="display:flex; gap: 4px; width:100%; justify-content:center; flex-wrap:wrap;">
+                        <button class="btn preset-btn" onclick="BezierUI.setPreset([0,0,1,1])">Linear</button>
+                        <button class="btn preset-btn" onclick="BezierUI.setPreset([0.33,0,0.67,1])" style="background:#4a4a4a; color:#fff;">Easy Ease</button>
+                        <button class="btn preset-btn" onclick="BezierUI.setPreset([0.33,0,0.83,1])">Ease In</button>
+                        <button class="btn preset-btn" onclick="BezierUI.setPreset([0.17,0,0.67,1])">Ease Out</button>
+                        <button class="btn preset-btn" onclick="BezierUI.setPreset([0.17,0.89,0.32,1.5])">Over</button>
+                    </div>
                     
-                    <!-- EL LIENZO SUPERPUESTO PARA EL GRAPH EDITOR (Visibilidad Dinámica) -->
-                    <div id="graph-editor">
-                        <svg class="svg-canvas" id="svg-graph"></svg>
+                    <div id="bezier-editor" style="width: 220px; height: 220px; background: #111; border: 1px solid #333; position:relative; border-radius: 4px; box-shadow: inset 0 0 15px rgba(0,0,0,0.8);">
+                        <svg id="bezier-svg" width="220" height="220" style="overflow:visible;"></svg>
+                    </div>
+                    
+                    <div style="display:flex; gap:5px; width:100%;">
+                        <input type="text" id="bz-input" style="flex:1; background:#000; color:var(--accent-hov); border:1px solid #333; padding:6px; font-family:monospace; font-size:12px; text-align:center; outline:none;" value="-">
+                        <button class="btn" style="width:50px; padding:6px; margin:0; background:var(--accent);" onclick="BezierUI.applyInput()">Set</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- EL PLUGIN MODAL FLOTANTE (COMPOSER UI) -->
+    <div class="timeline">
+        <div class="tl-ctrls">
+            <div class="tc-box" id="time-display">00:00:00:00</div>
+            <input type="range" class="zoom-slider" min="0.5" max="8" step="0.1" value="1" oninput="App.setZoom(this.value)" title="Timeline Zoom">
+        </div>
+        <div class="tl-main">
+            <div class="tl-tree" id="tl-left"></div>
+            <div class="tl-view" onmousedown="App.scrubTime(event)">
+                <div class="ruler" id="tl-ruler">
+                    <div class="playhead-cap" id="playhead-cap"></div>
+                </div>
+                <div id="tk-scroll-area" style="flex:1; overflow-y:hidden; position:relative;">
+                    <div class="tl-scroll" id="tl-right">
+                        <div class="playhead-line" id="playhead-line"></div>
+                        <div id="tk-container"></div>
+                        <div id="graph-editor"><svg class="svg-canvas" id="svg-graph"></svg></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PLUGIN COMPOSER UI -->
     <div id="pl-modal" onclick="UI.closePlugin(event)">
         <div class="pl-win" onclick="event.stopPropagation()">
             <div class="pl-head">
-                <div class="pl-title">
-                    <svg viewBox="0 0 24 24"><path d="M12,2L2,12l10,10l10-10L12,2z M12,4.8L19.2,12L12,19.2L4.8,12L12,4.8z"/><circle cx="12" cy="12" r="3"/></svg>
-                    MOTION COMPOSER SUITE
-                </div>
-                <div class="pl-close" onclick="UI.closePlugin()">✖</div>
+                <div style="color:#fff; font-weight:800; font-size:16px; display:flex; align-items:center; gap:10px;">✨ MOTION COMPOSER SUITE PRO</div>
+                <div style="color:rgba(255,255,255,0.5); font-size:20px; cursor:pointer;" onclick="UI.closePlugin()">✖</div>
             </div>
             <div class="pl-body">
                 <div class="pl-nav">
                     <div class="pl-cat act">🚀 Express Trans</div>
                     <div class="pl-cat">🧬 Spring Physics</div>
-                    <div class="pl-cat">🌀 3D Tumbles</div>
+                    <div class="pl-cat" style="color:var(--accent-plugin);">🧊 3D Factories</div>
                 </div>
                 <div class="pl-grid">
                     <div class="pr-card">
+                        <div class="pr-name">📦 Spawn 3D Cube Demo</div>
+                        <div class="pr-desc">Crea 6 sólidas pre-rotadas formando un cubo 3D perfecto. Gira la cámara [C] para visualizar el motor espacial real.</div>
+                        <div class="pr-btn-grp">
+                            <button class="btn-inj in" style="background:#a749f2; border-color:#6b2e8f;" onclick="Composer.createCube()">SPAWN CUBE</button>
+                        </div>
+                    </div>
+                    <div class="pr-card">
                         <div class="pr-name">Velocity Slide Base</div>
-                        <div class="pr-desc">Movimiento clásico horizontal. Inyecta Curvas Cúbicas de interpolación de aceleración.</div>
+                        <div class="pr-desc">Inyecta curvas de aceleración extrema Bezier en los extremos X.</div>
                         <div class="pr-btn-grp">
                             <button class="btn-inj in" onclick="Composer.inject('slideX', 'in')">IN</button>
                             <button class="btn-inj out" onclick="Composer.inject('slideX', 'out')">OUT</button>
@@ -278,22 +319,15 @@
                     </div>
                     <div class="pr-card">
                         <div class="pr-name">Boom Pop! (Overshoot)</div>
-                        <div class="pr-desc">Crecimiento de escala violento que sobrepasa el límite 100% (Curve Y-Busting).</div>
+                        <div class="pr-desc">Crecimiento violento que sobrepasa el 100% gracias a la inyección de curva Overshoot.</div>
                         <div class="pr-btn-grp">
                             <button class="btn-inj in" onclick="Composer.inject('pop', 'in')">IN</button>
                             <button class="btn-inj out" onclick="Composer.inject('pop', 'out')">OUT</button>
                         </div>
                     </div>
                     <div class="pr-card">
-                        <div class="pr-name">Elastic Drop (Newton)</div>
-                        <div class="pr-desc">Caída desde Y negativo creando múltiples rebotes simulados matemáticamente.</div>
-                        <div class="pr-btn-grp">
-                            <button class="btn-inj in" onclick="Composer.inject('drop', 'in')">IN</button>
-                        </div>
-                    </div>
-                    <div class="pr-card">
                         <div class="pr-name">3D Twist Spin Entrance</div>
-                        <div class="pr-desc">Active entorno 3D. Entra rotando en X, Y, Z con una suavización extrema Ease In.</div>
+                        <div class="pr-desc">Entra rotando simultáneamente en X, Y, Z con profundidad.</div>
                         <div class="pr-btn-grp">
                             <button class="btn-inj in" onclick="Composer.inject('spin3D', 'in')">IN</button>
                             <button class="btn-inj out" onclick="Composer.inject('spin3D', 'out')">OUT</button>
@@ -306,134 +340,113 @@
 
     <script>
         /** =========================================================================
-         *   MATEMÁTICAS PURAS DEL ENGINE (Cubic Bézier Solver para Animación Real)
+         *   CORE MATH & DATA
          *  ========================================================================= */
         const MathCore = {
-            // Newton-Raphson: Para una curva (x1,y1,x2,y2) donde X es tiempo [0..1] e Y es multiplicador
             solveBezier(p1x, p1y, p2x, p2y, targetX) {
-                if(p1x===p1y && p2x===p2y) return targetX; // Si es puramente lineal (0,0,1,1) bypass
+                if(p1x===p1y && p2x===p2y && p1x===0 && p2x===1) return targetX;
                 let t = targetX;
                 for(let i=0; i<8; i++) {
                     let fx = 3*Math.pow(1-t,2)*t*p1x + 3*(1-t)*t*t*p2x + Math.pow(t,3) - targetX;
                     let dx = 3*Math.pow(1-t,2)*p1x + 6*(1-t)*t*(p2x-p1x) + 3*t*t*(1-p2x);
-                    if(Math.abs(fx) < 0.001) break;
-                    if(dx===0) break;
+                    if(Math.abs(fx) < 0.0001) break;
+                    if(Math.abs(dx) < 0.00001) break;
                     t -= fx / dx;
                 }
-                t = Math.max(0, Math.min(1, t)); // Limitar t
-                // Con T hallado, obtener progreso Y de la curva (puede salirse de 0 y 1 permitiendo OVERSHOOT y Rebotes)
+                t = Math.max(0, Math.min(1, t));
                 return 3*Math.pow(1-t,2)*t*p1y + 3*(1-t)*t*t*p2y + Math.pow(t,3);
             }
         };
 
-        /** =========================================================================
-         *   STATE & MODELOS
-         *  ========================================================================= */
+        const META = {
+            x: {n:'Position X', u:'px', d:400}, y: {n:'Position Y', u:'px', d:225}, z: {n:'Position Z', u:'px', d:0, req3D:true},
+            aX: {n:'Anchor X', u:'px', d:0}, aY: {n:'Anchor Y', u:'px', d:0}, aZ: {n:'Anchor Z', u:'px', d:0, req3D:true},
+            scale: {n:'Scale', u:'%', d:100}, rotX: {n:'Rotation X', u:'°', d:0, req3D:true}, rotY: {n:'Rotation Y', u:'°', d:0, req3D:true},
+            rotZ: {n:'Rotation Z', u:'°', d:0}, opacity: {n:'Opacity', u:'%', d:100}
+        };
+
+        const PALETTE =['#e05050', '#d6833c', '#d2b138', '#4caf50', '#2196f3', '#9c27b0', '#795548'];
+
         const State = {
             T: 10000, FPS: 60, time: 0, play: false, 
             layers:[], counter: 0, sel: null, selKfs:[],
             zoom: 1.0, tool: 'v',
-            
-            // NUEVO: SISTEMA GRAPH EDITOR
-            graphMode: false,
-            graphActiveProp: null // Ej: { lyrId: 'Lx', propKey: 'scale' }
+            graphMode: false, graphActiveProp: null 
         };
 
-        const META = {
-            x: {n:'X Position', u:'px', d:400},
-            y: {n:'Y Position', u:'px', d:225},
-            z: {n:'Z Position', u:'px', d:0, req3D:true},
-            scale: {n:'Scale', u:'%', d:100},
-            rotX: {n:'X Rotation', u:'°', d:0, req3D:true},
-            rotY: {n:'Y Rotation', u:'°', d:0, req3D:true},
-            rotZ: {n:'Z Rotation', u:'°', d:0},
-            opacity: {n:'Opacity', u:'%', d:100}
-        };
-
-        const PALETTE =['#85a085', '#a0859c', '#497491', '#8f4646'];
+        const Camera = { x:0, y:0, z:0, rotX:0, rotY:0, zoom:1 };
+        let show3DGrid = false;
 
         /** =========================================================================
-         *   ENGINE CONTROLLER
+         *   APP CONTROLLER
          *  ========================================================================= */
         const App = {
             init() {
-                this.addLyr('solid', 'Base Layer Block');
+                document.getElementById('tl-left').addEventListener('scroll', function() {
+                    document.getElementById('tk-scroll-area').scrollTop = this.scrollTop;
+                });
+                
+                this.addLyr('solid', 'Base Box');
+                this.addLyr('text', 'AE PRO');
+                State.layers[1].props.y.val = 300; 
+                State.layers[0].props.y.val = 150;
                 State.layers[0].exp = true; State.layers[0].expT = true;
+                
+                UI.setupViewportEvents();
+                UI.updateCamera();
                 UI.renderTree(); UI.syncView();
             },
 
             addLyr(type, txt) {
                 State.counter++;
                 const l = {
-                    id: 'L_' + Date.now() + Math.random(),
-                    num: State.counter, type: type, name: txt || (type==='solid'?'Solid Shape':'Typo'),
-                    col: type==='solid'?'#cf3838':'#fff', tag: PALETTE[State.counter%PALETTE.length],
-                    txt: type==='solid'?'':(txt||'AE ULTRA'),
-                    vis: true, lck: false, is3D: false,
-                    exp: false, expT: false,
+                    id: 'L_' + Date.now() + Math.random(), num: State.counter, type: type, name: txt || (type==='solid'?'Solid Shape':'Typo'),
+                    col: type==='solid' ? PALETTE[State.counter%PALETTE.length] : '#ffffff', tag: PALETTE[State.counter%PALETTE.length],
+                    txt: type==='solid'?'':(txt||'TEXT'),
+                    vis: true, lck: false, solo: false, mb: false, is3D: false, exp: false, expT: false,
                     in: 0, out: State.T, props: {}
                 };
                 for(let k in META) l.props[k] = { val: META[k].d, sw: false, kfs:[] };
                 State.layers.unshift(l); this.select(l.id);
             },
             
-            select(id) { State.sel = id; State.selKfs =[]; UI.renderTree(); UI.syncView(); },
-            tSw(id, pk) { const l = State.layers.find(x=>x.id===id); l[pk]=!l[pk]; UI.renderTree(); UI.syncView(); },
-            
-            setProp(lId, pk, val) {
-                const p = State.layers.find(x=>x.id===lId).props[pk];
-                p.val = val; if(p.sw) this.makeKf(p, State.time, val);
-                UI.fastUpdate();
+            duplicate() {
+                if(!State.sel) return;
+                const l = State.layers.find(x=>x.id===State.sel); const cl = JSON.parse(JSON.stringify(l));
+                State.counter++; cl.id = 'L_'+Date.now()+Math.random(); cl.num = State.counter; cl.name += ' (Copy)';
+                for(let pk in cl.props) cl.props[pk].kfs.forEach(k => k.id = 'K_'+Math.random());
+                State.layers.splice(State.layers.findIndex(x=>x.id===State.sel), 0, cl); this.select(cl.id);
             },
-            
-            toggleSW(lId, pk) {
-                const p = State.layers.find(x=>x.id===lId).props[pk]; p.sw = !p.sw;
-                if(p.sw) this.makeKf(p, State.time, p.val); else p.kfs=[];
+
+            select(id) { State.sel = id; State.selKfs =[]; UI.renderTree(); UI.syncView(); BezierUI.draw(); },
+            tSw(id, pk) { const l = State.layers.find(x=>x.id===id); l[pk]=!l[pk]; UI.renderTree(); UI.syncView(); },
+            toggleSW(lId, pk) { const p = State.layers.find(x=>x.id===lId).props[pk]; p.sw = !p.sw; if(p.sw) this.makeKf(p, State.time, p.val); else p.kfs=[]; UI.renderTree(); UI.syncView(); },
+            toggleExplicitKF(lId, pk) {
+                const p = State.layers.find(x=>x.id===lId).props[pk]; if(!p.sw) p.sw = true;
+                const exIdx = p.kfs.findIndex(k => Math.abs(k.t - State.time) < 10);
+                if(exIdx >= 0) p.kfs.splice(exIdx, 1); else this.makeKf(p, State.time, p.val);
                 UI.renderTree(); UI.syncView();
             },
-            
-            makeKf(propRef, time, val, optCurveArray) {
-                // optCurveArray =[x1, y1, x2, y2]
+            makeKf(propRef, time, val, optCurve) {
                 const ex = propRef.kfs.findIndex(k => Math.abs(k.t - time) < 10);
-                // Por defecto, Ease Clásico Ae (Curva en S ligera: 0.33, 0.0, 0.67, 1.0)
-                const c = optCurveArray ||[0.33, 0.0, 0.67, 1.0]; 
-                if(ex >= 0) propRef.kfs[ex].val = val;
-                else propRef.kfs.push({ id:'K_'+Math.random(), t: time, val: val, bz: c });
-                propRef.kfs.sort((a,b)=>a.t - b.t);
+                const c = optCurve ||[0.33, 0.0, 0.67, 1.0]; 
+                if(ex >= 0) propRef.kfs[ex].val = val; else propRef.kfs.push({ id:'K_'+Math.random(), t: time, val: val, bz: c });
+                propRef.kfs.sort((a,b)=>a.t - b.t); BezierUI.draw();
             },
-            
-            selKF(ev, lid, pkey, kid) {
-                ev.stopPropagation();
-                if(!ev.shiftKey) State.selKfs =[];
-                const ix = State.selKfs.findIndex(x => x.kid === kid);
-                if(ix>=0) State.selKfs.splice(ix, 1); else State.selKfs.push({lid, pkey, kid});
-                UI.renderTree(); // Solo forzar el remint para la UI rojo brillante
-            },
-
             deleteKF() {
-                if(!State.selKfs.length) return;
-                State.selKfs.forEach(sel => {
-                    const p = State.layers.find(l=>l.id===sel.lid).props[sel.pkey];
-                    p.kfs = p.kfs.filter(k=>k.id!==sel.kid);
-                });
-                State.selKfs =[]; UI.renderTree(); UI.syncView();
+                State.selKfs.forEach(sel => { const p = State.layers.find(l=>l.id===sel.lid)?.props[sel.pkey]; if(p) p.kfs = p.kfs.filter(k=>k.id!==sel.kid); });
+                State.selKfs =[]; UI.renderTree(); UI.syncView(); BezierUI.draw();
             },
-
             split() {
                 if(!State.sel) return;
                 const idx = State.layers.findIndex(x=>x.id===State.sel); const ori = State.layers[idx];
                 if(State.time <= ori.in || State.time >= ori.out) return;
-                const cut = State.time;
-                const cl = JSON.parse(JSON.stringify(ori)); State.counter++; cl.id = 'L_'+Date.now(); cl.num = State.counter; cl.name += ' (Corte)';
+                const cut = State.time; const cl = JSON.parse(JSON.stringify(ori)); State.counter++; cl.id = 'L_'+Date.now(); cl.num = State.counter; cl.name += ' (2)';
                 ori.out = cut; cl.in = cut;
-                for(let k in ori.props) {
-                    ori.props[k].kfs = ori.props[k].kfs.filter(k=>k.t <= cut);
-                    cl.props[k].kfs = cl.props[k].kfs.filter(k=>k.t >= cut);
-                }
+                for(let k in ori.props) { ori.props[k].kfs = ori.props[k].kfs.filter(k=>k.t <= cut); cl.props[k].kfs = cl.props[k].kfs.filter(k=>k.t >= cut); }
                 State.layers.splice(idx, 0, cl); this.select(cl.id); UI.renderTree(); UI.syncView();
             },
 
-            // --- THE BEZIER MAGIC EVALUATOR ---
             evaluateAnimation() {
                 State.layers.forEach(l => {
                     for(let k in l.props) {
@@ -443,13 +456,8 @@
                         else {
                             for(let i=0; i<p.kfs.length-1; i++) {
                                 if(State.time >= p.kfs[i].t && State.time < p.kfs[i+1].t) {
-                                    const kA=p.kfs[i], kB=p.kfs[i+1];
-                                    const ratioT = (State.time - kA.t) / (kB.t - kA.t);
-                                    // Utilizar la curva Bézier Cúbica almacenada en el Keyframe actual hacia el siguiente!
-                                    const bz = kA.bz; 
-                                    const yProgress = MathCore.solveBezier(bz[0], bz[1], bz[2], bz[3], ratioT);
-                                    p.val = kA.val + (kB.val - kA.val) * yProgress;
-                                    break;
+                                    const yP = MathCore.solveBezier(p.kfs[i].bz[0], p.kfs[i].bz[1], p.kfs[i].bz[2], p.kfs[i].bz[3], (State.time - p.kfs[i].t) / (p.kfs[i+1].t - p.kfs[i].t));
+                                    p.val = p.kfs[i].val + (p.kfs[i+1].val - p.kfs[i].val) * yP; break;
                                 }
                             }
                         }
@@ -457,18 +465,20 @@
                 });
             },
 
-            // TIMELINE CONTROLS
             setZoom(z) { State.zoom = parseFloat(z); UI.renderTree(); UI.updateT(); if(State.graphMode) GraphEditor.draw(); },
+            
             scrubTime(e) {
+                if(e.target.closest('.kf-dim') || e.target.closest('.trim-handle') || e.target.closest('.lyr-bar')) return;
                 if(State.play) this.togglePlay();
                 const trk = document.getElementById('tl-right');
                 const evF = (ev) => {
-                    const rect = trk.getBoundingClientRect();
-                    const rawX = ev.clientX - rect.left;
-                    State.time = (Math.max(0, Math.min(rawX, rect.width)) / rect.width) * State.T;
+                    State.time = (Math.max(0, Math.min(ev.clientX - trk.getBoundingClientRect().left, trk.getBoundingClientRect().width)) / trk.getBoundingClientRect().width) * State.T;
                     this.evaluateAnimation(); UI.fastUpdate();
-                }; evF(e); window.onmousemove = evF; window.onmouseup = () => { window.onmousemove=null; window.onmouseup=null; UI.syncView(); }
+                }; 
+                evF(e); window.addEventListener('mousemove', evF); 
+                window.addEventListener('mouseup', function up() { window.removeEventListener('mousemove', evF); window.removeEventListener('mouseup', up); UI.syncView(); });
             },
+            
             loop(ts) {
                 if(!State.play) return;
                 State.time += (ts - (this.lt || ts)); this.lt = ts;
@@ -476,202 +486,97 @@
                 this.evaluateAnimation(); UI.fastUpdate();
                 this.af = requestAnimationFrame(this.loop.bind(this));
             },
+            
             togglePlay() {
-                State.play = !State.play; document.getElementById('btn-play').innerText = State.play ? "⏸ Pause" : "▶ Play Animation (Space)";
+                State.play = !State.play; document.getElementById('btn-play').innerText = State.play ? "⏸ Pause (Space)" : "▶ Play (Space)";
                 if(State.play) { this.lt = performance.now(); this.af = requestAnimationFrame(this.loop.bind(this)); }
                 else { cancelAnimationFrame(this.af); UI.syncView(); }
             },
 
-            // GRAPH TOGGLE
-            toggleGraph() {
-                State.graphMode = !State.graphMode;
-                document.getElementById('btn-graph').classList.toggle('active', State.graphMode);
-                UI.renderTree(); UI.syncView();
-            }
+            toggleGraph() { State.graphMode = !State.graphMode; document.getElementById('btn-graph').classList.toggle('active', State.graphMode); UI.renderTree(); UI.syncView(); }
         };
 
         /** =========================================================================
-         *   EL COMPOSER (Inyector Mágico de Curvas Extremas)
-         *  ========================================================================= */
-        const Composer = {
-            inject(preset, mode) {
-                if(!State.sel) return;
-                const l = State.layers.find(x=>x.id===State.sel); const isIn = mode==='in';
-                const T0 = isIn ? l.in : l.out-1000; const T1 = isIn ? l.in+1000 : l.out;
-                
-                if(preset==='slideX') {
-                    l.props.x.sw=true; const bv = l.props.x.val;
-                    // Injecting Smooth Fast Bezier[0.1, 1.0, 0.2, 1.0]
-                    App.makeKf(l.props.x, T0, isIn?bv-800:bv,[0.1, 1.0, 0.2, 1.0]); 
-                    App.makeKf(l.props.x, T1, isIn?bv:bv-800,[0.33, 0, 0.67, 1]); 
-                } else if(preset==='pop') {
-                    l.props.scale.sw=true;
-                    // BUSTING THE CURVE: OVERSHOOT CÚBICO[0.17, 0.89, 0.32, 1.5] (Sube del 100% y luego baja a reposar)
-                    App.makeKf(l.props.scale, T0, isIn?0:100,[0.17, 0.89, 0.32, 1.6]);
-                    App.makeKf(l.props.scale, T1, isIn?100:0,[0.33, 0, 0.67, 1]);
-                } else if(preset==='spin3D') {
-                    l.is3D=true; l.props.z.sw=true; l.props.rotX.sw=true; l.props.rotZ.sw=true; l.props.scale.sw=true;
-                    const crv = [0, 0.75, 0.15, 1]; // Slow down dramatically
-                    App.makeKf(l.props.z, T0, isIn?-2000:0, crv); App.makeKf(l.props.z, T1, isIn?0:2000, crv);
-                    App.makeKf(l.props.rotX, T0, isIn?180:0, crv); App.makeKf(l.props.rotX, T1, isIn?0:180, crv);
-                    App.makeKf(l.props.rotZ, T0, isIn?-270:0, crv); App.makeKf(l.props.rotZ, T1, isIn?0:270, crv);
-                    App.makeKf(l.props.scale, T0, isIn?0:100, crv); App.makeKf(l.props.scale, T1, isIn?100:0, crv);
-                } else if(preset==='drop') {
-                    l.props.y.sw=true;
-                    // Elastic Custom approximation handles
-                    App.makeKf(l.props.y, T0, l.props.y.val - 500,[0.5, 0, 1, 0.5]);
-                    App.makeKf(l.props.y, T1, l.props.y.val, [0.33,0,0.67,1]);
-                }
-                
-                l.exp = true; l.expT = true;
-                UI.closePlugin(); App.evaluateAnimation(); UI.renderTree(); UI.syncView();
-            }
-        };
-
-        /** =========================================================================
-         *   GRAPH EDITOR NATIVE (La pieza Maestra: Dibuja Bezier con interacciones)
-         *  ========================================================================= */
-        const GraphEditor = {
-            
-            draw() {
-                const svg = document.getElementById('svg-graph'); svg.innerHTML = '';
-                if(!State.graphMode || !State.graphActiveProp) {
-                    document.getElementById('graph-editor').style.display = 'none';
-                    document.getElementById('tk-container').style.display = 'block';
-                    return;
-                }
-                document.getElementById('graph-editor').style.display = 'block';
-                document.getElementById('tk-container').style.display = 'none';
-
-                const W = document.getElementById('tl-right').offsetWidth;
-                const H = document.getElementById('graph-editor').offsetHeight;
-                
-                const {lId, pk} = State.graphActiveProp;
-                const lyr = State.layers.find(x=>x.id===lId); if(!lyr) return;
-                const kfs = lyr.props[pk].kfs; if(kfs.length < 2) return; // Se necesitan 2 kfs
-
-                // MATH NORMALIZACIÓN: Sacar Mínimos y Máximos para adaptar al alto
-                let mV = Math.min(...kfs.map(k=>k.val)); let xV = Math.max(...kfs.map(k=>k.val));
-                if (mV === xV) { mV -= 100; xV += 100; } // Si son iguales damos un margen sintético
-                const pad = 30; // pixels padding top & bottom
-                const ranY = xV - mV; 
-                // Formula to map raw Y to Screen Pixels (Flipado porque en Y baja de la pantalla)
-                const toScreenY = (raw) => H - pad - ((raw - mV) / ranY) * (H - 2*pad);
-                const toScreenX = (time) => (time / State.T) * W;
-
-                let htmlContent = '';
-
-                // DIBUJAR PUNTOS Y LÍNEAS!
-                for(let i=0; i<kfs.length-1; i++) {
-                    const k1 = kfs[i]; const k2 = kfs[i+1];
-                    const px1 = toScreenX(k1.t); const py1 = toScreenY(k1.val);
-                    const px2 = toScreenX(k2.t); const py2 = toScreenY(k2.val);
-                    
-                    // La curva de k1 nos dice como ir hasta k2 (bx, by son de 0..1 en Progresion Temporal y Valor Absoluto progresado!)
-                    const bz = k1.bz; 
-                    
-                    // X mapea directamente de tiempo, Y mapea directamente de % diferencia valor (bz=1 es todo el salto, bz=0 es nada del salto)
-                    // ¿Y qué pasa si py1 == py2? Necesitamos un Offset absoluto gráfico en pantalla
-                    let offsetY = (py2 - py1); 
-                    if(offsetY === 0) offsetY = 100; // Fake 100px gap visual for overshoot if straight line!
-
-                    const c1x = px1 + bz[0] * (px2 - px1);
-                    const c1y = py1 + bz[1] * offsetY;
-                    const c2x = px1 + bz[2] * (px2 - px1);
-                    const c2y = py1 + bz[3] * offsetY;
-
-                    // El PATH SVG Curvado
-                    htmlContent += `<path class="g-line" d="M ${px1} ${py1} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${px2} ${py2}" />`;
-
-                    // Lineas Punteadas Guía hacia los Handles
-                    htmlContent += `<line class="g-handle-line" x1="${px1}" y1="${py1}" x2="${c1x}" y2="${c1y}" />`;
-                    htmlContent += `<line class="g-handle-line" x1="${px2}" y1="${py2}" x2="${c2x}" y2="${c2y}" />`;
-
-                    // Puntos KFS base
-                    htmlContent += `<circle class="g-point" cx="${px1}" cy="${py1}" />`;
-                    htmlContent += `<circle class="g-point" cx="${px2}" cy="${py2}" />`;
-
-                    // HANDLES (Tiradores Intercambiables de Bezier!) => Injectados como SVG String y bindearemos su lógica luego.
-                    htmlContent += `<circle class="g-handle" data-idx="${i}" data-handle="1" cx="${c1x}" cy="${c1y}" />`;
-                    htmlContent += `<circle class="g-handle" data-idx="${i}" data-handle="2" cx="${c2x}" cy="${c2y}" />`;
-                }
-
-                svg.innerHTML = htmlContent;
-
-                // ACTIVAR LÓGICA DE DRAG A LOS HANDLES BÉZIER PARA MODIFICAR LAS VARIABLES REALES!
-                svg.querySelectorAll('.g-handle').forEach(hnd => {
-                    hnd.onmousedown = (e) => {
-                        e.stopPropagation(); e.preventDefault();
-                        const idx = parseInt(hnd.getAttribute('data-idx'));
-                        const isH1 = hnd.getAttribute('data-handle') === '1';
-                        
-                        // Variables base físicas del SVG y el KFS
-                        const kA = kfs[idx]; const kB = kfs[idx+1];
-                        const rect = svg.getBoundingClientRect();
-                        const sP1X = toScreenX(kA.t), sP1Y = toScreenY(kA.val);
-                        const sP2X = toScreenX(kB.t), sP2Y = toScreenY(kB.val);
-                        let sGapX = sP2X - sP1X; if(sGapX===0) sGapX = 1; // Secure Div
-                        let sGapY = sP2Y - sP1Y; if(sGapY===0) sGapY = 100;
-
-                        document.onmousemove = (ev) => {
-                            let mx = ev.clientX - rect.left; let my = ev.clientY - rect.top;
-                            
-                            // Revertir Pixel Mouse en Bézier Unit! [0...1...]
-                            let rx = (mx - sP1X) / sGapX; 
-                            rx = Math.max(0, Math.min(1, rx)); // X SIEMPRE DEBE QUEDAR EN TIEMPO ADELANTE 0..1!
-
-                            let ry = (my - sP1Y) / sGapY; // Y Puede ser negativa (Overshoot rebote!!!)
-                            
-                            if(isH1) { kA.bz[0] = rx; kA.bz[1] = ry; }
-                            else { kA.bz[2] = rx; kA.bz[3] = ry; }
-                            
-                            // Refresh
-                            GraphEditor.draw();
-                            App.evaluateAnimation(); UI.fastUpdate();
-                        };
-                        document.onmouseup = () => { document.onmousemove=null; document.onmouseup=null; };
-                    };
-                });
-            }
-        };
-
-        /** =========================================================================
-         *   DOM & UI MANAGER
+         *   DOM UI MANAGER & RENDERING
          *  ========================================================================= */
         const UI = {
-            setTool(t) { State.tool = t; document.querySelectorAll('.tool').forEach(x=>x.classList.remove('active')); event.currentTarget.classList.add('active'); },
+            setTool(t) { State.tool = t; document.querySelectorAll('.tool').forEach(x=>x.classList.remove('active')); document.querySelector(`[data-tool="${t}"]`).classList.add('active'); },
             openPlugin() { document.getElementById('pl-modal').style.display='flex'; },
             closePlugin(e) { if(e && e.target.id !== 'pl-modal') return; document.getElementById('pl-modal').style.display='none'; },
+            
+            toggle3DGrid() { show3DGrid = !show3DGrid; document.getElementById('grid-3d').style.display = show3DGrid ? 'block' : 'none'; document.getElementById('comp-bg').style.display = show3DGrid ? 'none' : 'block'; },
+            resetCamera() { Camera.x=0; Camera.y=0; Camera.z=0; Camera.rotX=0; Camera.rotY=0; Camera.zoom=1; this.updateCamera(); },
+            updateCamera() {
+                document.getElementById('comp-box').style.transform = `translate3d(${Camera.x}px, ${Camera.y}px, ${Camera.z}px) rotateX(${Camera.rotX}deg) rotateY(${Camera.rotY}deg) scale(${Camera.zoom})`;
+            },
+
+            setupViewportEvents() {
+                const ViewportEl = document.getElementById('viewport');
+                ViewportEl.onmousedown = (e) => {
+                    if (e.target.closest('.lyr-view') && (State.tool === 'v' || State.tool === 'y')) return; // handled by layer
+                    let sx = e.clientX, sy = e.clientY, rx = Camera.rotX, ry = Camera.rotY, px = Camera.x, py = Camera.y;
+                    window.onmousemove = ev => {
+                        let dx = ev.clientX - sx, dy = ev.clientY - sy;
+                        if (State.tool === 'c' || e.buttons === 4) { Camera.rotY = ry + dx*0.4; Camera.rotX = rx - dy*0.4; } 
+                        else if (State.tool === 'h') { Camera.x = px + dx; Camera.y = py + dy; }
+                        this.updateCamera();
+                    };
+                    window.onmouseup = () => { window.onmousemove = null; window.onmouseup = null; };
+                };
+                ViewportEl.addEventListener('wheel', (e) => {
+                    if (State.tool === 'c' || State.tool === 'h') { e.preventDefault(); Camera.zoom = Math.max(0.1, Math.min(Camera.zoom - e.deltaY * 0.001, 10)); this.updateCamera(); }
+                }, {passive: false});
+            },
 
             updateT() {
-                const r = document.getElementById('playhead'); r.style.left = ((State.time/State.T)*100)+'%';
+                const xp = (State.time/State.T)*100;
+                document.getElementById('playhead-cap').style.left = `calc(${xp}% - 6px)`; document.getElementById('playhead-line').style.left = `${xp}%`;
                 const f = Math.floor((State.time/1000)*State.FPS);
-                document.getElementById('time-display').innerText = `00:00:0${Math.floor(State.time/1000)}:${(f%State.FPS).toString().padStart(2,'0')}`;
+                document.getElementById('time-display').innerText = `00:00:${Math.floor(State.time/1000).toString().padStart(2,'0')}:${(f%State.FPS).toString().padStart(2,'0')}`;
             },
 
             fastUpdate() {
                 this.updateT();
-                const cvs = document.getElementById('comp-box'); cvs.innerHTML='';
+                const cvs = document.getElementById('layers-root'); cvs.innerHTML='';
+                const anySolo = State.layers.some(l => l.solo);
+
                 [...State.layers].reverse().forEach(l => {
-                    if(!l.vis || State.time < l.in || State.time > l.out) return;
+                    if(!l.vis || State.time < l.in || State.time > l.out || (anySolo && !l.solo)) return;
+                    
                     const d = document.createElement('div'); d.className = `lyr-view ${l.id===State.sel?'selected':''}`;
                     const p = l.props;
+                    
+                    // Transformation Order logic
                     let tf = `translate3d(${p.x.val}px,${p.y.val}px,${l.is3D?p.z.val:0}px) `;
                     if(l.is3D) tf += `rotateX(${p.rotX.val}deg) rotateY(${p.rotY.val}deg) `;
-                    tf += `rotateZ(${p.rotZ.val}deg) scale(${p.scale.val/100})`;
-                    d.style.transform = tf; d.style.opacity = p.opacity.val/100;
-                    if(l.type==='solid') { d.style.width='100px'; d.style.height='100px'; d.style.background=l.col;}
-                    else { d.innerText=l.txt; d.style.color=l.col; d.style.fontSize='40px'; d.style.fontWeight='bold'; d.style.whiteSpace='nowrap';}
+                    tf += `rotateZ(${p.rotZ.val}deg) scale(${p.scale.val/100}) translate3d(${-p.aX.val}px,${-p.aY.val}px,${l.is3D?-p.aZ.val:0}px) `;
                     
-                    // Native Screen Interaction
+                    d.style.transform = tf + `translate(-50%, -50%)`; 
+                    d.style.opacity = p.opacity.val/100;
+                    
+                    if(l.type==='solid') { d.style.width='100px'; d.style.height='100px'; d.style.background=l.col;}
+                    else { d.innerText=l.txt; d.style.color=l.col; d.style.fontSize='60px'; d.style.fontWeight='900'; d.style.whiteSpace='nowrap'; d.style.textShadow='0px 5px 15px rgba(0,0,0,0.8)';}
+                    
+                    // Motion Blur Fake
+                    let dx = p.x.val - (l._lx || p.x.val), dy = p.y.val - (l._ly || p.y.val);
+                    l._lx = p.x.val; l._ly = p.y.val; let v = Math.sqrt(dx*dx + dy*dy);
+                    if (l.mb && v > 1 && State.play) d.style.filter = `blur(${Math.min(v*0.3, 10)}px)`;
+                    
+                    // Interactions
                     d.onmousedown = (e) => {
-                        e.stopPropagation(); App.select(l.id);
-                        if(State.tool!=='v' || l.lck) return;
-                        let sX=e.clientX, sY=e.clientY, xO=p.x.val, yO=p.y.val;
+                        e.stopPropagation(); App.select(l.id); if(l.lck) return;
+                        let sX=e.clientX, sY=e.clientY, xO=p.x.val, yO=p.y.val, aXo=p.aX.val, aYo=p.aY.val;
                         window.onmousemove=ev=>{ 
-                            p.x.val = xO+(ev.clientX-sX); p.y.val=yO+(ev.clientY-sY);
-                            if(p.x.sw) App.makeKf(p.x, State.time, p.x.val);
-                            if(p.y.sw) App.makeKf(p.y, State.time, p.y.val);
+                            let deltaX = ev.clientX-sX, deltaY = ev.clientY-sY;
+                            if (State.tool === 'y') {
+                                let sc = p.scale.val/100;
+                                p.aX.val = aXo + deltaX/sc; p.aY.val = aYo + deltaY/sc;
+                                p.x.val = xO + deltaX; p.y.val = yO + deltaY;
+                                if(p.aX.sw) App.makeKf(p.aX, State.time, p.aX.val); if(p.aY.sw) App.makeKf(p.aY, State.time, p.aY.val);
+                            } else if (State.tool === 'v') {
+                                p.x.val = xO+deltaX; p.y.val=yO+deltaY;
+                            }
+                            if(p.x.sw) App.makeKf(p.x, State.time, p.x.val); if(p.y.sw) App.makeKf(p.y, State.time, p.y.val);
                             UI.fastUpdate();
                         };
                         window.onmouseup=()=>{window.onmousemove=null; window.onmouseup=null; UI.syncView();}
@@ -679,46 +584,68 @@
                     cvs.appendChild(d);
                 });
 
-                // Updates Scrubbers text instantly without dom rebuilt
                 State.layers.forEach(l=>{
-                    for(let k in l.props) {
-                        const sb = document.getElementById(`v_${l.id}_${k}`);
-                        if(sb) sb.innerText = l.props[k].val.toFixed(1) + META[k].u;
-                    }
+                    for(let k in l.props) { const sb = document.getElementById(`v_${l.id}_${k}`); if(sb) sb.innerText = l.props[k].val.toFixed(1) + META[k].u; }
                 });
             },
 
             renderTree() {
-                const tr = document.getElementById('tl-left');
-                const tK = document.getElementById('tk-container');
+                const tr = document.getElementById('tl-left'); const tK = document.getElementById('tk-container');
                 document.getElementById('tl-right').style.width = (State.zoom * 100) + '%';
                 
-                let isGr = State.graphMode;
-                
-                tr.innerHTML = `<div class="tr-head"><div class="th-c ic"></div><div class="th-c ic"></div><div class="th-c" style="width:20px;">#</div><div class="th-c" style="flex:1;">Source Lyr</div><div class="th-c ic">🧊</div></div>`;
-                tK.innerHTML = '';
+                tr.innerHTML = `<div class="tr-head">
+                    <div class="th-c ic">👁</div><div class="th-c ic">🔒</div><div class="th-c ic" title="Solo">S</div><div class="th-c ic" title="Motion Blur">Ⓜ️</div>
+                    <div class="th-c" style="width:20px;">#</div><div class="th-c" style="flex:1;">Layer Name</div><div class="th-c ic">🧊</div>
+                </div>`; tK.innerHTML = '';
 
                 State.layers.forEach(l => {
                     const row = document.createElement('div'); row.className=`t-row lyr-row ${l.id===State.sel?'active':''}`;
                     row.onclick=()=>App.select(l.id);
                     row.innerHTML=`
-                        <div class="th-c ic" onclick="App.tSw('${l.id}','vis');event.stopPropagation();" style="color:${l.vis?'#fff':'#333'}">👁</div>
-                        <div class="th-c ic" onclick="App.tSw('${l.id}','lck');event.stopPropagation();" style="color:${l.lck?'#fff':'#333'}">🔒</div>
-                        <div class="th-c" style="width:20px;background:${l.tag};color:#fff;justify-content:center;">${l.num}</div>
-                        <div class="th-c" style="flex:1;"><span class="xp ${l.exp?'op':''}" onclick="App.tSw('${l.id}','exp');event.stopPropagation();">▶</span>${l.name}</div>
-                        <div class="th-c ic" onclick="App.tSw('${l.id}','is3D');event.stopPropagation();" style="color:${l.is3D?'var(--accent)':'#333'}">⚙️</div>
+                        <div class="th-c ic" onclick="App.tSw('${l.id}','vis');event.stopPropagation();" style="color:${l.vis?'#fff':'#444'}">👁</div>
+                        <div class="th-c ic" onclick="App.tSw('${l.id}','lck');event.stopPropagation();" style="color:${l.lck?'#fff':'#444'}">🔒</div>
+                        <div class="th-c ic" onclick="App.tSw('${l.id}','solo');event.stopPropagation();" style="color:${l.solo?'#e6ca35':'#444'}; font-weight:bold;">S</div>
+                        <div class="th-c ic" onclick="App.tSw('${l.id}','mb');event.stopPropagation();" style="color:${l.mb?'#00a8ff':'#444'}; font-weight:bold;">Ⓜ️</div>
+                        <div class="th-c" style="width:20px;background:${l.tag};color:#fff;justify-content:center;font-size:10px;">${l.num}</div>
+                        <div class="th-c" style="flex:1; overflow:hidden;"><span class="xp ${l.exp?'op':''}" onclick="App.tSw('${l.id}','exp');event.stopPropagation();">▶</span><span class="lyr-name" style="cursor:text;font-weight:600;">${l.name}</span></div>
+                        <div class="th-c ic" onclick="App.tSw('${l.id}','is3D');event.stopPropagation();" style="color:${l.is3D?'var(--accent-hov)':'#444'}; font-weight:bold;">🧊</div>
                     `;
+                    row.querySelector('.lyr-name').ondblclick = (e) => {
+                        e.stopPropagation(); let nTxt = prompt('Rename Layer / Edit Text:', l.type === 'text' ? l.txt : l.name);
+                        if (nTxt !== null && nTxt.trim() !== '') { if (l.type === 'text') l.txt = nTxt; l.name = nTxt; UI.syncView(); }
+                    };
                     tr.appendChild(row);
 
                     const brR = document.createElement('div'); brR.className='tk-row';
                     const wp = ((l.out-l.in)/State.T)*100, xp=(l.in/State.T)*100;
-                    brR.innerHTML=`<div class="lyr-bar ${l.id===State.sel?'selected':''}" style="background:${l.tag};left:${xp}%;width:${wp}%;"></div>`;
-                    tK.appendChild(brR);
+                    const lyrBar = document.createElement('div'); lyrBar.className = `lyr-bar ${l.id===State.sel?'selected':''}`;
+                    lyrBar.style.background = l.tag; lyrBar.style.left = `${xp}%`; lyrBar.style.width = `${wp}%`;
+                    lyrBar.innerHTML = `<div class="trim-handle left"></div><div class="trim-handle right"></div><div style="pointer-events:none; white-space:nowrap; text-shadow:1px 1px 2px rgba(0,0,0,0.8);">${l.name}</div>`;
+                    
+                    lyrBar.onmousedown = ev => {
+                        ev.stopPropagation(); App.select(l.id);
+                        const trk = document.getElementById('tl-right'); const startX = ev.clientX;
+                        const isLeft = ev.target.classList.contains('left'), isRight = ev.target.classList.contains('right');
+                        const oriIn = l.in, oriOut = l.out;
+                        const kfsSnap = {}; for(let pk in l.props) kfsSnap[pk] = l.props[pk].kfs.map(k => ({ id: k.id, t: k.t }));
+                        
+                        window.onmousemove = moveEv => {
+                            const deltaT = ((moveEv.clientX - startX) / trk.getBoundingClientRect().width) * State.T;
+                            if (isLeft) l.in = Math.max(0, Math.min(l.out - 100, oriIn + deltaT)); 
+                            else if (isRight) l.out = Math.max(l.in + 100, Math.min(State.T, oriOut + deltaT)); 
+                            else {
+                                let nIn = oriIn + deltaT; if (nIn < 0) nIn = 0; if (nIn + (oriOut - oriIn) > State.T) nIn = State.T - (oriOut - oriIn);
+                                l.in = nIn; l.out = nIn + (oriOut - oriIn);
+                                for(let pk in l.props) l.props[pk].kfs.forEach(k => { const sn = kfsSnap[pk].find(x=>x.id===k.id); if(sn) k.t = sn.t + (l.in - oriIn); });
+                            }
+                            App.evaluateAnimation(); UI.fastUpdate(); UI.renderTree();
+                        };
+                        window.onmouseup = () => { window.onmousemove = null; window.onmouseup = null; BezierUI.draw(); };
+                    };
+                    brR.appendChild(lyrBar); tK.appendChild(brR);
 
                     if(l.exp) {
-                        tr.innerHTML+=`<div class="t-row grp-row"><span class="xp ${l.expT?'op':''}" onclick="App.tSw('${l.id}','expT');">▶</span> Transform</div>`;
-                        tK.innerHTML+=`<div class="tk-row"></div>`;
-                        
+                        tr.innerHTML+=`<div class="t-row grp-row"><span class="xp ${l.expT?'op':''}" onclick="App.tSw('${l.id}','expT');">▶</span> Transform</div>`; tK.innerHTML+=`<div class="tk-row"></div>`;
                         if(l.expT) {
                             for(let pk in l.props) {
                                 if(META[pk].req3D && !l.is3D) continue;
@@ -727,17 +654,12 @@
                                 
                                 const pR = document.createElement('div'); pR.className=`t-row prp-row ${isGrSel?'graph-active':''}`;
                                 pR.innerHTML=`
-                                    <div class="ic" style="margin-right:5px; color:${p.sw?'var(--accent)':'#555'}" onclick="App.toggleSW('${l.id}','${pk}')">⏱</div>
-                                    <div class="ic" style="color:${hkf?'var(--accent)':'#555'}" onclick="App.toggleExplicitKF('${l.id}','${pk}')">${hkf?'♦':'♢'}</div>
+                                    <div class="ic" style="margin-right:5px; color:${p.sw?'var(--accent-hov)':'#555'}" onclick="App.toggleSW('${l.id}','${pk}')">⏱</div>
+                                    <div class="ic" style="color:${hkf?'var(--accent-hov)':'#555'}; font-size:18px;" onclick="App.toggleExplicitKF('${l.id}','${pk}')">${hkf?'♦':'♢'}</div>
                                     <div style="flex:1;">${META[pk].n}</div>
                                     <div class="val-scrub" id="v_${l.id}_${pk}">${p.val.toFixed(1)}${META[pk].u}</div>
                                 `;
-                                
-                                // SETTING UP GRAPH EDITING IF IN GRAPH MODE
-                                if (State.graphMode) {
-                                    pR.onclick = () => { State.graphActiveProp = { lId: l.id, propKey: pk }; UI.renderTree(); GraphEditor.draw(); };
-                                    pR.style.cursor = 'pointer';
-                                }
+                                if (State.graphMode) { pR.onclick = () => { State.graphActiveProp = { lId: l.id, propKey: pk }; UI.renderTree(); GraphEditor.draw(); }; pR.style.cursor = 'pointer'; }
                                 tr.appendChild(pR);
 
                                 const tk = document.createElement('div'); tk.className='tk-row';
@@ -745,26 +667,41 @@
                                     p.kfs.forEach(kf=>{
                                         if(kf.t >= l.in && kf.t <= l.out) {
                                             const d = document.createElement('div');
-                                            const iksf = State.selKfs.some(x=>x.kid===kf.id);
-                                            d.className = `kf-dim ${iksf?'selected':''}`;
+                                            const isEase = kf.bz[0] !== 0 || kf.bz[1] !== 0 || kf.bz[2] !== 1 || kf.bz[3] !== 1;
+                                            d.className = `kf-dim ${State.selKfs.some(x=>x.kid===kf.id)?'selected':''} ${isEase?'kf-ease':''}`;
                                             d.style.left = `${(kf.t/State.T)*100}%`;
-                                            d.onmousedown=ev=>App.selKF(ev,l.id,pk,kf.id);
+                                            d.onmousedown = ev => {
+                                                ev.stopPropagation();
+                                                if(!ev.shiftKey && !State.selKfs.some(x=>x.kid===kf.id)) State.selKfs =[{lid:l.id, pkey:pk, kid:kf.id}];
+                                                else if (ev.shiftKey) { if(State.selKfs.some(x=>x.kid===kf.id)) State.selKfs = State.selKfs.filter(x=>x.kid!==kf.id); else State.selKfs.push({lid:l.id, pkey:pk, kid:kf.id}); }
+                                                UI.renderTree(); BezierUI.draw();
+                                                
+                                                if (State.selKfs.length > 0) {
+                                                    const trk = document.getElementById('tl-right'); const startX = ev.clientX;
+                                                    const init = State.selKfs.map(sel => { const pRef = State.layers.find(x=>x.id===sel.lid).props[sel.pkey]; return { kf: pRef.kfs.find(k=>k.id===sel.kid), startT: pRef.kfs.find(k=>k.id===sel.kid).t, prop: pRef }; });
+                                                    let dragged = false;
+                                                    window.onmousemove = moveEv => { dragged = true;
+                                                        const deltaT = ((moveEv.clientX - startX) / trk.getBoundingClientRect().width) * State.T;
+                                                        init.forEach(it => { it.kf.t = Math.max(0, Math.min(State.T, it.startT + deltaT)); });
+                                                        init.forEach(it => it.prop.kfs.sort((a,b)=>a.t - b.t));
+                                                        App.evaluateAnimation(); UI.fastUpdate(); UI.renderTree();
+                                                    };
+                                                    window.onmouseup = () => { window.onmousemove=null; window.onmouseup=null; if(dragged && State.graphMode) GraphEditor.draw(); };
+                                                }
+                                            };
                                             tk.appendChild(d);
                                         }
                                     });
                                 }
                                 tK.appendChild(tk);
 
-                                // Number scrubbing event logic
                                 const sn = pR.querySelector('.val-scrub');
                                 sn.onmousedown = (e) => {
-                                    if(State.graphMode) return; // Prevent number changing if just activating graph
-                                    e.preventDefault(); if(State.play) App.togglePlay();
+                                    if(State.graphMode) return;  e.preventDefault(); if(State.play) App.togglePlay();
                                     const ix = e.clientX, iv = p.val;
                                     window.onmousemove = ev => {
-                                        p.val = iv + (ev.clientX-ix)*(pk==='scale'||pk==='opacity'?0.5:1);
-                                        if(p.sw) App.makeKf(p, State.time, p.val);
-                                        UI.fastUpdate();
+                                        p.val = iv + (ev.clientX-ix)*((pk==='scale'||pk==='opacity'||pk.includes('rot'))?0.5:1);
+                                        if(p.sw) App.makeKf(p, State.time, p.val); UI.fastUpdate();
                                     };
                                     window.onmouseup=()=>{window.onmousemove=null;window.onmouseup=null; UI.syncView();}
                                 };
@@ -777,16 +714,147 @@
             syncView() { this.fastUpdate(); this.renderTree(); GraphEditor.draw(); }
         };
 
-        // KEYBINDS OVERRIDE GLOBAL
+        /** =========================================================================
+         *   COMPOSER (3D & Presets)
+         *  ========================================================================= */
+        const Composer = {
+            createCube() {
+                const size = 150; const h = size/2;
+                const colors =['#f44336', '#2196f3', '#4caf50', '#ffeb3b', '#9c27b0', '#ff9800'];
+                const tfs =[{z: h}, {z: -h, rotX: 180}, {x: h, rotY: 90}, {x: -h, rotY: -90}, {y: h, rotX: -90}, {y: -h, rotX: 90}];
+                
+                tfs.forEach((t, i) => {
+                    App.addLyr('solid', `Cube Face ${i+1}`); let l = State.layers[0];
+                    l.is3D = true; l.col = colors[i]; l.props.scale.val = 150; // Size
+                    if(t.z) l.props.z.val = t.z; if(t.x) l.props.x.val = META.x.d + t.x; if(t.y) l.props.y.val = META.y.d + t.y;
+                    if(t.rotX) l.props.rotX.val = t.rotX; if(t.rotY) l.props.rotY.val = t.rotY;
+                });
+                Camera.rotX = -25; Camera.rotY = 45; show3DGrid = true;
+                document.getElementById('grid-3d').style.display = 'block'; document.getElementById('comp-bg').style.display = 'none';
+                UI.closePlugin(); UI.updateCamera(); UI.renderTree(); UI.syncView();
+            },
+
+            inject(preset, mode) {
+                if(!State.sel) return;
+                const l = State.layers.find(x=>x.id===State.sel); const isIn = mode==='in';
+                const T0 = isIn ? l.in : l.out-1000, T1 = isIn ? l.in+1000 : l.out;
+                
+                if(preset==='slideX') {
+                    l.props.x.sw=true; const bv = l.props.x.val;
+                    App.makeKf(l.props.x, T0, isIn?bv-800:bv,[0.1, 1.0, 0.2, 1.0]); App.makeKf(l.props.x, T1, isIn?bv:bv-800,[0.33, 0, 0.67, 1]); 
+                } else if(preset==='pop') {
+                    l.props.scale.sw=true;
+                    App.makeKf(l.props.scale, T0, isIn?0:100,[0.17, 0.89, 0.32, 1.6]); App.makeKf(l.props.scale, T1, isIn?100:0,[0.33, 0, 0.67, 1]);
+                } else if(preset==='spin3D') {
+                    l.is3D=true; l.props.z.sw=true; l.props.rotX.sw=true; l.props.rotY.sw=true; l.props.rotZ.sw=true; l.props.scale.sw=true;
+                    const crv =[0, 0.75, 0.15, 1]; 
+                    App.makeKf(l.props.z, T0, isIn?-2000:0, crv); App.makeKf(l.props.z, T1, isIn?0:2000, crv);
+                    App.makeKf(l.props.rotX, T0, isIn?180:0, crv); App.makeKf(l.props.rotX, T1, isIn?0:180, crv);
+                    App.makeKf(l.props.rotY, T0, isIn?180:0, crv); App.makeKf(l.props.rotY, T1, isIn?0:180, crv);
+                    App.makeKf(l.props.rotZ, T0, isIn?-270:0, crv); App.makeKf(l.props.rotZ, T1, isIn?0:270, crv);
+                    App.makeKf(l.props.scale, T0, isIn?0:100, crv); App.makeKf(l.props.scale, T1, isIn?100:0, crv);
+                }
+                l.exp = true; l.expT = true; UI.closePlugin(); App.evaluateAnimation(); UI.renderTree(); UI.syncView();
+            }
+        };
+
+        /** =========================================================================
+         *   BEZIER & GRAPH EDITOR
+         *  ========================================================================= */
+        const BezierUI = {
+            draw() {
+                const svg = document.getElementById('bezier-svg'), valInput = document.getElementById('bz-input');
+                if (!State.selKfs.length) { svg.innerHTML = '<text x="110" y="110" fill="#666" text-anchor="middle" font-size="12">Select a Keyframe</text>'; valInput.value = '-'; return; }
+                const sel = State.selKfs[0]; const lyr = State.layers.find(l=>l.id===sel.lid); if(!lyr) return;
+                const kf = lyr.props[sel.pkey].kfs.find(k=>k.id===sel.kid); if(!kf) return;
+                
+                const bz = kf.bz; valInput.value = `${bz[0].toFixed(2)}, ${bz[1].toFixed(2)}, ${bz[2].toFixed(2)}, ${bz[3].toFixed(2)}`;
+                const W = 220, H = 220, pad = 30, innerW = W - 2*pad, innerH = H - 2*pad;
+                const p0x = pad, p0y = H - pad, p3x = W - pad, p3y = pad;
+                const p1x = p0x + bz[0] * innerW, p1y = p0y - bz[1] * innerH;
+                const p2x = p0x + bz[2] * innerW, p2y = p0y - bz[3] * innerH;
+                
+                svg.innerHTML = `
+                    <rect x="${pad}" y="${pad}" width="${innerW}" height="${innerH}" fill="none" stroke="#333" stroke-width="1"/>
+                    <line x1="${pad}" y1="${p0y}" x2="${W-pad}" y2="${p0y}" stroke="#555" stroke-width="1"/>
+                    <line x1="${pad}" y1="${pad}" x2="${pad}" y2="${H-pad}" stroke="#555" stroke-width="1"/>
+                    <path d="M ${p0x} ${p0y} C ${p1x} ${p1y}, ${p2x} ${p2y}, ${p3x} ${p3y}" fill="none" stroke="var(--accent-hov)" stroke-width="3" />
+                    <line x1="${p0x}" y1="${p0y}" x2="${p1x}" y2="${p1y}" stroke="var(--graph-handle)" stroke-width="1.5" />
+                    <line x1="${p3x}" y1="${p3y}" x2="${p2x}" y2="${p2y}" stroke="var(--graph-handle)" stroke-width="1.5" />
+                    <circle cx="${p1x}" cy="${p1y}" r="6" fill="var(--graph-handle)" stroke="#000" stroke-width="2" class="b-handle" data-idx="0" style="cursor:pointer;" />
+                    <circle cx="${p2x}" cy="${p2y}" r="6" fill="var(--graph-handle)" stroke="#000" stroke-width="2" class="b-handle" data-idx="1" style="cursor:pointer;" />
+                    <circle cx="${p0x}" cy="${p0y}" r="4" fill="#fff"/><circle cx="${p3x}" cy="${p3y}" r="4" fill="#fff"/>
+                `;
+                
+                svg.querySelectorAll('.b-handle').forEach(h => {
+                    h.onmousedown = (e) => {
+                        e.preventDefault(); e.stopPropagation(); const isH1 = h.getAttribute('data-idx') === '0', rect = svg.getBoundingClientRect();
+                        document.onmousemove = (ev) => {
+                            let rx = Math.max(0, Math.min(1, (ev.clientX - rect.left - pad) / innerW));
+                            let ry = (innerH - (ev.clientY - rect.top - pad)) / innerH;
+                            if (isH1) { kf.bz[0] = rx; kf.bz[1] = ry; } else { kf.bz[2] = rx; kf.bz[3] = ry; }
+                            BezierUI.draw(); if(State.graphMode) GraphEditor.draw(); App.evaluateAnimation(); UI.fastUpdate();
+                        };
+                        document.onmouseup = () => { document.onmousemove = null; document.onmouseup = null; };
+                    };
+                });
+            },
+            setPreset(bzArray) {
+                if (!State.selKfs.length) return;
+                State.selKfs.forEach(sel => { const kf = State.layers.find(l=>l.id===sel.lid)?.props[sel.pkey].kfs.find(k=>k.id===sel.kid); if(kf) kf.bz = [...bzArray]; });
+                this.draw(); if(State.graphMode) GraphEditor.draw(); App.evaluateAnimation(); UI.fastUpdate();
+            },
+            applyInput() {
+                const arr = document.getElementById('bz-input').value.split(',').map(x=>parseFloat(x.trim()));
+                if(arr.length===4 && arr.every(x=>!isNaN(x))) { arr[0] = Math.max(0, Math.min(1, arr[0])); arr[2] = Math.max(0, Math.min(1, arr[2])); this.setPreset(arr); }
+            }
+        };
+
+        const GraphEditor = {
+            draw() {
+                const svg = document.getElementById('svg-graph'); svg.innerHTML = '';
+                if(!State.graphMode || !State.graphActiveProp) { document.getElementById('graph-editor').style.display = 'none'; return; }
+                document.getElementById('graph-editor').style.display = 'block';
+
+                const W = document.getElementById('tl-right').offsetWidth, H = Math.max(document.getElementById('graph-editor').offsetHeight, 100);
+                const {lId, propKey} = State.graphActiveProp; const lyr = State.layers.find(x=>x.id===lId); if(!lyr) return;
+                const kfs = lyr.props[propKey].kfs; if(kfs.length < 2) return;
+
+                let mV = Math.min(...kfs.map(k=>k.val)), xV = Math.max(...kfs.map(k=>k.val)); if (mV === xV) { mV -= 100; xV += 100; } 
+                const pad = 40, toScreenY = (raw) => H - pad - ((raw - mV) / (xV - mV)) * (H - 2*pad), toScreenX = (time) => (time / State.T) * W;
+                let htmlContent = '';
+
+                for(let i=0; i<kfs.length-1; i++) {
+                    const px1 = toScreenX(kfs[i].t), py1 = toScreenY(kfs[i].val), px2 = toScreenX(kfs[i+1].t), py2 = toScreenY(kfs[i+1].val);
+                    const c1x = px1 + kfs[i].bz[0] * (px2 - px1), c1y = py1 + kfs[i].bz[1] * (py2 - py1);
+                    const c2x = px1 + kfs[i].bz[2] * (px2 - px1), c2y = py1 + kfs[i].bz[3] * (py2 - py1);
+
+                    htmlContent += `<path class="g-line" d="M ${px1} ${py1} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${px2} ${py2}" />`;
+                    htmlContent += `<line x1="${px1}" y1="${py1}" x2="${c1x}" y2="${c1y}" stroke="var(--graph-handle)" stroke-width="1.5"/>`;
+                    htmlContent += `<line x1="${px2}" y1="${py2}" x2="${c2x}" y2="${c2y}" stroke="var(--graph-handle)" stroke-width="1.5"/>`;
+                    htmlContent += `<circle cx="${c1x}" cy="${c1y}" r="4" fill="var(--graph-handle)" stroke="#000" />`;
+                    htmlContent += `<circle cx="${c2x}" cy="${c2y}" r="4" fill="var(--graph-handle)" stroke="#000" />`;
+                    htmlContent += `<rect x="${px1-4}" y="${py1-4}" width="8" height="8" fill="#fff" transform="rotate(45 ${px1} ${py1})"/>`;
+                    htmlContent += `<rect x="${px2-4}" y="${py2-4}" width="8" height="8" fill="#fff" transform="rotate(45 ${px2} ${py2})"/>`;
+                }
+                svg.innerHTML = htmlContent;
+            }
+        };
+
         window.addEventListener('keydown', e => {
             const tk = e.key.toLowerCase(); if(e.target.tagName==='INPUT') return;
             if(tk === ' ' || tk==='spacebar') { e.preventDefault(); App.togglePlay(); }
-            else if(tk === 'c') { e.preventDefault(); App.split(); }
+            else if(tk === 'c' && !e.ctrlKey) { e.preventDefault(); UI.setTool('c'); }
+            else if((e.ctrlKey || e.metaKey) && tk === 'd') { e.preventDefault(); App.duplicate(); }
             else if(e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); App.deleteKF(); }
-            else if(tk === 'v') UI.setTool('v'); else if(tk === 'h') UI.setTool('h');
+            else if(e.key === 'F9') { e.preventDefault(); BezierUI.setPreset([0.33, 0, 0.67, 1]); }
+            else if(tk === 'v') UI.setTool('v'); else if(tk === 'h') UI.setTool('h'); else if(tk === 'y') UI.setTool('y');
+            else if(State.sel) {
+                const l = State.layers.find(x=>x.id===State.sel);
+                if(l &&['p','s','r','t','a'].includes(tk)) { l.exp = true; l.expT = true; UI.renderTree(); }
+            }
         });
 
-        // INIT EXEC
         window.onload = () => App.init();
     </script>
 </body>
