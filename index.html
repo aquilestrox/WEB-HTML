@@ -36,6 +36,14 @@
         }
         
         .mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* TIPOGRAFÍA SOLICITADA: Small text UPPERCASE */
+        .small-text-uppercase {
+            font-size: 11px !important;
+            text-transform: uppercase !important;
+            letter-spacing: 1.5px !important;
+            font-weight: 700 !important;
+        }
         
         /* GEMINI AI INPUT STYLE */
         .ai-input-container {
@@ -287,11 +295,11 @@
             <!-- VISTA 1: GLOBAL -->
             <div id="view-global" class="p-6 space-y-6">
                 <div>
-                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Identificador (YML)</label>
+                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider small-text-uppercase">Identificador (YML)</label>
                     <input type="text" id="menu-id" value="menu_principal" class="w-full bg-[#0a0a0b] border border-[var(--border-color)] rounded-xl px-4 py-3.5 text-sm outline-none focus:border-blue-400 transition-colors font-mono text-blue-300 shadow-inner">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider flex justify-between items-center">
+                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider flex justify-between items-center small-text-uppercase">
                         <span>Título Visual</span>
                         <button onclick="openGradientModal()" class="text-purple-400 hover:text-purple-300 flex items-center gap-1 normal-case text-[10px] bg-purple-500/10 px-2 py-1 rounded-md border border-purple-500/20 transition-all">
                             <i data-lucide="palette" class="w-3 h-3"></i> RGB
@@ -300,7 +308,7 @@
                     <input type="text" id="menu-title" value="&8Menú Principal" class="w-full bg-[#0a0a0b] border border-[var(--border-color)] rounded-xl px-4 py-3.5 text-sm outline-none focus:border-blue-400 transition-colors shadow-inner">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Capacidad del Cofre</label>
+                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider small-text-uppercase">Capacidad del Cofre</label>
                     <select id="menu-rows" class="w-full bg-[#0a0a0b] border border-[var(--border-color)] rounded-xl px-4 py-3.5 text-sm outline-none focus:border-blue-400 transition-colors cursor-pointer shadow-inner">
                         <option value="1">1 Fila (9 slots)</option>
                         <option value="2">2 Filas (18 slots)</option>
@@ -328,7 +336,7 @@
 
                 <!-- Input de Material con Botón de Catálogo -->
                 <div id="material-box">
-                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider flex justify-between items-center">
+                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider flex justify-between items-center small-text-uppercase">
                         <span>ID del Material</span>
                     </label>
                     <div class="flex gap-2">
@@ -341,7 +349,7 @@
 
                 <div class="grid grid-cols-4 gap-3">
                     <div class="col-span-3">
-                        <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider flex justify-between items-center">
+                        <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider flex justify-between items-center small-text-uppercase">
                             <span>Nombre a mostrar</span>
                             <button onclick="openGradientModal()" class="text-purple-400 hover:text-purple-300 flex items-center gap-1 normal-case text-[10px] bg-purple-500/10 px-2 py-1 rounded-md border border-purple-500/20 transition-all">
                                 <i data-lucide="palette" class="w-3 h-3"></i> RGB
@@ -350,20 +358,20 @@
                         <input type="text" id="item-name" placeholder="&eEspada Legendaria" class="w-full bg-[#0a0a0b] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm outline-none focus:border-blue-400 shadow-inner">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider text-center">Cant.</label>
+                        <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider text-center small-text-uppercase">Cant.</label>
                         <input type="number" id="item-amount" value="1" min="1" max="64" class="w-full bg-[#0a0a0b] border border-[var(--border-color)] rounded-xl px-2 py-3 text-sm outline-none focus:border-blue-400 text-center font-mono shadow-inner">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider flex justify-between items-center">
+                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider flex justify-between items-center small-text-uppercase">
                         <span>Descripción (Lore)</span>
                     </label>
                     <textarea id="item-lore" rows="3" placeholder="&7Daño: &c+10&#10;&7Rareza: &6Épica" class="w-full bg-[#0a0a0b] border border-[var(--border-color)] rounded-xl p-3.5 text-sm outline-none focus:border-blue-400 resize-none font-mono shadow-inner leading-relaxed"></textarea>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider flex justify-between">
+                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider flex justify-between small-text-uppercase">
                         <span>Comandos / Acciones</span>
                     </label>
                     <div class="flex flex-wrap gap-1.5 mb-2.5">
@@ -444,15 +452,15 @@
             <div class="p-6 space-y-6">
                 <div class="flex gap-4">
                     <div class="flex-1">
-                        <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Texto a colorear</label>
+                        <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider small-text-uppercase">Texto a colorear</label>
                         <input type="text" id="grad-text" placeholder="Ej: Mi Super Espada" value="Texto Épico" oninput="generateGradient()" class="w-full bg-[#0a0a0b] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm outline-none focus:border-purple-400 text-white shadow-inner">
                     </div>
                     <div class="w-24">
-                        <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Color Inicial</label>
+                        <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider small-text-uppercase">Color Inicial</label>
                         <input type="color" id="grad-c1" value="#ff0000" oninput="generateGradient()" class="w-full h-[46px] rounded-xl cursor-pointer bg-transparent border-none">
                     </div>
                     <div class="w-24">
-                        <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Color Final</label>
+                        <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider small-text-uppercase">Color Final</label>
                         <input type="color" id="grad-c2" value="#0055ff" oninput="generateGradient()" class="w-full h-[46px] rounded-xl cursor-pointer bg-transparent border-none">
                     </div>
                 </div>
@@ -477,12 +485,12 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Resultado YML (Código)</label>
+                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider small-text-uppercase">Resultado YML (Código)</label>
                     <textarea id="grad-output" readonly rows="2" class="w-full bg-[#0a0a0b] border border-[var(--border-color)] rounded-xl p-3 text-sm outline-none resize-none font-mono text-purple-300 shadow-inner"></textarea>
                 </div>
                 
                 <div>
-                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Vista Previa In-Game</label>
+                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider small-text-uppercase">Vista Previa In-Game</label>
                     <div id="grad-preview" class="w-full bg-[#0a0a0b] border border-[var(--border-color)] rounded-xl p-4 text-xl font-mono shadow-inner min-h-[65px] flex items-center justify-center text-center tracking-wide" style="text-shadow: 2px 2px 0 #000;">
                     </div>
                 </div>
