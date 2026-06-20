@@ -210,7 +210,7 @@
                     <div class="p-3 bg-[#0a0a0b] rounded-xl border border-[var(--border-color)] shadow-inner">
                         <i data-lucide="sparkles" class="w-5 h-5 text-blue-400"></i>
                     </div>
-                    <input type="text" id="ai-prompt" placeholder="Ej: Crea un menú de tienda, un menú de warps de 4 filas, un selector de modalidades, un menú de rangos..." 
+                    <input type="text" id="ai-prompt" placeholder="Ej: Crea un menú de tienda de 4 filas con cristal azul en cuadricula..." 
                            class="flex-1 bg-transparent border-none outline-none text-[15px] text-gray-200 placeholder-gray-500 font-light"
                            onkeypress="if(event.key === 'Enter') generateMenuAI()">
                     <button onclick="generateMenuAI()" class="px-6 py-3.5 rounded-xl bg-blue-500/10 hover:bg-blue-500 hover:text-white text-blue-400 border border-blue-500/20 font-bold text-sm transition-all flex items-center gap-2">
@@ -503,12 +503,11 @@
             return html;
         }
 
-        // SISTEMA 100% FIABLE DE IMÁGENES MEDIANTE CDN OFICIAL DE JSDELIVR
+        // SISTEMA DE IMÁGENES MEDIANTE CDN OFICIAL DE JSDELIVR
         const ASSET_BASE = "https://cdn.jsdelivr.net/gh/InventivetalentDev/minecraft-assets@1.20.1/assets/minecraft/textures";
 
         function getSafeMaterialName(mat) {
             let clean = mat.toLowerCase().replace(/ /g, "_");
-            // Truco: Para los paneles de cristal usados de borde, usaremos la textura del bloque completo, así se ve perfectamente coloreado.
             if (clean.includes("stained_glass_pane")) {
                 return clean.replace("_pane", "");
             }
@@ -536,18 +535,19 @@
 
             for (let i = 0; i < total; i++) {
                 const slot = document.createElement('div');
+                slot.dataset.index = i; // Identificador clave para evitar recargas visuales completas
                 slot.className = `mc-slot flex flex-col items-center justify-center p-1 text-[10px] ${STATE.selectedSlot === i ? 'active' : ''}`;
                 
                 if (STATE.items[i]) {
                     const node = STATE.items[i];
                     let pName = parseMCColor(node.name || node.material);
-                    
                     let isHead = node.type === 'custom_head' || node.material.toUpperCase().startsWith('HEAD;');
                     
                     if (isHead) {
                         let headUrl = getHeadUrl(node.material);
+                        // El atributo alt="" vacío evita que salga el texto roto antes de que cargue la imagen
                         slot.innerHTML = `
-                            <img src="${headUrl}" class="slot-img mb-0.5 z-10 rounded-sm border border-black/30" alt="head">
+                            <img src="${headUrl}" class="slot-img mb-0.5 z-10 rounded-sm border border-black/30" alt="">
                             ${node.amount > 1 ? `<span class="absolute bottom-1 right-1 text-white font-mono text-[13px] font-bold drop-shadow-[2px_2px_0_#000] z-20">${node.amount}</span>` : ''}
                             <div class="mc-tooltip text-left min-w-[150px]">
                                 <p class="font-bold text-white text-sm">${(node.name || node.material).replace(/&[0-9a-fk-or]/gi, '')}</p>
@@ -560,12 +560,11 @@
                         let urlBlock = `${ASSET_BASE}/block/${cleanMat}.png`;
                         let urlBarrier = `${ASSET_BASE}/item/barrier.png`;
 
-                        // Lógica de fallback súper robusta:
-                        // Intenta cargar como ITEM -> Si falla, intenta como BLOCK -> Si falla, pone una BARRERA.
+                        // Lógica OnError perfeccionada: prueba bloque, si falla pone barrera, sin parpadeos feos.
                         slot.innerHTML = `
                             <img src="${urlItem}" 
-                                 onerror="this.onerror=null; this.src='${urlBlock}'; setTimeout(() => { if(this.naturalWidth === 0) this.src='${urlBarrier}'; }, 50);" 
-                                 class="slot-img mb-0.5 z-10" alt="${cleanMat}">
+                                 onerror="if(this.src !== '${urlBlock}') { this.src='${urlBlock}'; } else { this.src='${urlBarrier}'; }" 
+                                 class="slot-img mb-0.5 z-10" alt="">
                             ${node.amount > 1 ? `<span class="absolute bottom-1 right-1 text-white font-mono text-[13px] font-bold drop-shadow-[2px_2px_0_#000] z-20">${node.amount}</span>` : ''}
                             <div class="mc-tooltip text-left min-w-[150px]">
                                 <p class="font-bold text-white text-sm">${(node.name || node.material).replace(/&[0-9a-fk-or]/gi, '')}</p>
@@ -580,7 +579,7 @@
             }
         }
 
-        // PANEL Y CONTEXTO
+        // PANEL Y CONTEXTO - MEJORADO PARA FLUIDEZ EXTREMA (Sin parpadeos)
         function selectSlot(id) {
             STATE.selectedSlot = id;
             document.getElementById('view-global').classList.add('hidden');
@@ -588,8 +587,12 @@
             document.getElementById('btn-close-item').classList.remove('hidden');
             document.getElementById('panel-title').innerHTML = `<i data-lucide="box" class="w-4 h-4 text-blue-400"></i> Editando Casilla ${id}`;
             
+            // MAGIA: En vez de recargar todo el canvas, solo actualizamos el CSS de la casilla (0 parpadeos)
+            document.querySelectorAll('.mc-slot').forEach(slot => {
+                if(parseInt(slot.dataset.index) === id) slot.classList.add('active');
+                else slot.classList.remove('active');
+            });
             lucide.createIcons();
-            renderCanvas();
 
             if (STATE.items[id]) {
                 const t = STATE.items[id];
@@ -615,8 +618,10 @@
             document.getElementById('view-global').classList.remove('hidden');
             document.getElementById('btn-close-item').classList.add('hidden');
             document.getElementById('panel-title').innerHTML = `<i data-lucide="settings" class="w-4 h-4 text-blue-400"></i> Propiedades Globales`;
+            
+            // Quitamos el borde activo sin recargar visualmente el DOM
+            document.querySelectorAll('.mc-slot').forEach(slot => slot.classList.remove('active'));
             lucide.createIcons();
-            renderCanvas();
         }
 
         function switchContextType(type) {
@@ -655,11 +660,18 @@
         function deleteItem() {
             if(STATE.selectedSlot !== null && STATE.items[STATE.selectedSlot]) {
                 delete STATE.items[STATE.selectedSlot];
-                selectSlot(STATE.selectedSlot);
+                renderCanvas();
+                updateYAML();
+                // Limpiamos los campos del panel lateral
+                document.getElementById('item-material').value = '';
+                document.getElementById('item-name').value = '';
+                document.getElementById('item-amount').value = '1';
+                document.getElementById('item-lore').value = '';
+                document.getElementById('item-commands').value = '';
             }
         }
 
-        // --- SISTEMA DE CATÁLOGO CORREGIDO ---
+        // --- SISTEMA DE CATÁLOGO ---
         function openCatalog() {
             const modal = document.getElementById('catalog-modal');
             const content = document.getElementById('catalog-modal-content');
@@ -704,7 +716,7 @@
                         let urlBarrier = `${ASSET_BASE}/item/barrier.png`;
                         
                         item.innerHTML = `
-                            <img src="${urlItem}" onerror="this.onerror=null; this.src='${urlBlock}'; setTimeout(() => { if(this.naturalWidth === 0) this.src='${urlBarrier}'; }, 50);" alt="${mat}">
+                            <img src="${urlItem}" onerror="if(this.src !== '${urlBlock}') { this.src='${urlBlock}'; } else { this.src='${urlBarrier}'; }" alt="">
                             <span class="text-[10px] text-gray-300 font-mono break-all leading-tight">${mat}</span>
                         `;
                         item.onclick = () => {
@@ -721,7 +733,7 @@
                         const item = document.createElement('div');
                         item.className = 'catalog-item';
                         item.innerHTML = `
-                            <img src="https://mc-heads.net/avatar/${head.id}/64" alt="${head.label}">
+                            <img src="https://mc-heads.net/avatar/${head.id}/64" alt="">
                             <span class="text-[11px] font-bold text-gray-200 mb-1">${head.label}</span>
                             <span class="text-[9px] text-blue-400 font-mono break-all">${head.id}</span>
                         `;
@@ -743,7 +755,7 @@
             renderCatalogGrid(document.getElementById('catalog-search').value);
         }
 
-        // --- SISTEMA DE INTELIGENCIA ARTIFICIAL AMPLIADO (10+ PLANTILLAS) ---
+        // --- IA PROCEDURAL (GENERADOR INFINITO DE MENÚS) ---
         function generateMenuAI() {
             const input = document.getElementById('ai-prompt');
             const prompt = input.value.toLowerCase();
@@ -751,123 +763,91 @@
 
             const status = document.getElementById('ai-status');
             status.style.opacity = '1';
-            status.innerText = 'Pensando y estructurando tu interfaz... ✨';
+            status.innerText = 'Calculando algoritmos y creando estructura... ✨';
 
             setTimeout(() => {
                 STATE.items = {};
                 
-                // Analizar filas solicitadas por el usuario
+                // 1. Detectar Filas Dinámicas (1 a 6)
                 let filasMatch = prompt.match(/(\d+)\s*fila/);
-                if(filasMatch) {
-                    STATE.rows = parseInt(filasMatch[1]);
-                    if(STATE.rows > 6) STATE.rows = 6;
-                } else {
-                    STATE.rows = 6; // Por defecto lo hacemos grande y vistoso
-                }
-
+                STATE.rows = filasMatch ? Math.min(Math.max(parseInt(filasMatch[1]), 1), 6) : (prompt.includes('pequeño') ? 3 : 6);
+                
                 const total = STATE.rows * 9;
-                const mid = Math.floor(STATE.rows / 2) * 9;
+                
+                // 2. Diccionario de Temáticas (Pool de ítems)
+                const themes = {
+                    tienda: [ {m:'GOLD_INGOT', n:'&eTienda General'}, {m:'DIAMOND_SWORD', n:'&cArmas'}, {m:'IRON_CHESTPLATE', n:'&fArmaduras'}, {m:'APPLE', n:'&aComida'}, {m:'OAK_LOG', n:'&6Bloques'} ],
+                    skyblock: [ {m:'GRASS_BLOCK', n:'&aTu Isla'}, {m:'WATER_BUCKET', n:'&bGenerador'}, {m:'CHEST', n:'&eMisiones'}, {m:'EMERALD', n:'&aTienda'}, {m:'DIAMOND_PICKAXE', n:'&7Mejoras'} ],
+                    factions: [ {m:'TNT', n:'&cRaid'}, {m:'DIAMOND_SWORD', n:'&4PvP'}, {m:'OBSIDIAN', n:'&5Base'}, {m:'GOLDEN_APPLE', n:'&6Kits'}, {m:'BOW', n:'&eShop'} ],
+                    perfil: [ {m:'%player_name%', type:'custom_head', n:'&eTus Stats'}, {m:'DIAMOND', n:'&bLogros'}, {m:'GOLD_NUGGET', n:'&6Economía'}, {m:'BOOK', n:'&fMisiones'} ],
+                    admin: [ {m:'BARRIER', n:'&cBanear'}, {m:'IRON_AXE', n:'&cKickear'}, {m:'ENDER_PEARL', n:'&bVanish'}, {m:'COMPASS', n:'&eTeleport'}, {m:'COMMAND_BLOCK', n:'&5Consola'} ],
+                    default: [ {m:'COMPASS', n:'&bMenú'}, {m:'NETHER_STAR', n:'&eOpciones'}, {m:'CHEST', n:'&6Cofres'}, {m:'ENDER_EYE', n:'&dViajes'} ]
+                };
 
-                // 1. TIENDA
-                if (prompt.includes('tienda') || prompt.includes('shop')) {
-                    STATE.menuTitle = '&8Tienda Global';
-                    STATE.menuId = 'tienda_main';
-                    STATE.items[4] = { type: 'normal', material: 'EMERALD', name: '&a&lTu Dinero', amount: 1, lore: ['&7Saldo: &2$5,000'], commands: [] };
-                    STATE.items[mid + 1] = { type: 'normal', material: 'DIAMOND_SWORD', name: '&bArmas', amount: 1, lore: ['&7Compra espadas y arcos'], commands: ['[opengui] tienda_armas'] };
-                    STATE.items[mid + 3] = { type: 'normal', material: 'IRON_CHESTPLATE', name: '&fArmaduras', amount: 1, lore: ['&7Equipamiento'], commands: ['[opengui] tienda_armaduras'] };
-                    STATE.items[mid + 5] = { type: 'normal', material: 'GRASS_BLOCK', name: '&eBloques', amount: 1, lore: ['&7Materiales de construcción'], commands: ['[opengui] tienda_bloques'] };
-                    STATE.items[mid + 7] = { type: 'normal', material: 'GOLDEN_APPLE', name: '&cComida', amount: 1, lore: ['&7Alimentos y pociones'], commands: ['[opengui] tienda_comida'] };
-                } 
-                // 2. SELECTOR DE MODALIDADES / LOBBY
-                else if (prompt.includes('lobby') || prompt.includes('modalidades') || prompt.includes('selector')) {
-                    STATE.rows = 3; // Forzamos 3 filas que es lo estético para lobbies
-                    STATE.menuTitle = '&8Selecciona una Modalidad';
-                    STATE.menuId = 'selector';
-                    STATE.items[11] = { type: 'normal', material: 'GRASS_BLOCK', name: '&a&lSurvival', amount: 1, lore: ['&7Construye y sobrevive', '', '&e▶ Clic para unirte'], commands: ['[connect] survival'] };
-                    STATE.items[13] = { type: 'normal', material: 'DIAMOND_SWORD', name: '&c&lSkyWars', amount: 1, lore: ['&7Lucha en islas flotantes', '', '&e▶ Clic para unirte'], commands: ['[connect] skywars'] };
-                    STATE.items[15] = { type: 'normal', material: 'TNT', name: '&e&lFactions', amount: 1, lore: ['&7Crea tu clan y domina', '', '&e▶ Clic para unirte'], commands: ['[connect] factions'] };
-                }
-                // 3. PERFIL / STATS
-                else if (prompt.includes('perfil') || prompt.includes('stats') || prompt.includes('estadisticas')) {
-                    STATE.menuTitle = '&8Perfil de Usuario';
-                    STATE.menuId = 'perfil';
-                    STATE.items[4] = { type: 'custom_head', material: '%player_name%', name: '&e&lEstadísticas de %player_name%', amount: 1, lore: ['&7Rango: &bVIP', '&7Asesinatos: &f120', '&7Muertes: &f45', '&7K/D Ratio: &e2.66'], commands: [] };
-                    STATE.items[19] = { type: 'normal', material: 'DIAMOND', name: '&bLogros', amount: 1, lore: ['&7Revisa tus metas cumplidas'], commands: [] };
-                    STATE.items[22] = { type: 'normal', material: 'CHEST', name: '&aRecompensas Diarias', amount: 1, lore: ['&7¡Reclama tus premios!'], commands: ['[player] rewards'] };
-                    STATE.items[25] = { type: 'normal', material: 'COMPARATOR', name: '&6Opciones', amount: 1, lore: ['&7Ajustes personales'], commands: ['[opengui] settings'] };
-                }
-                // 4. WARPS / TELETRANSPORTES
-                else if (prompt.includes('warp') || prompt.includes('viaje') || prompt.includes('teleport')) {
-                    STATE.menuTitle = '&8Viaje Rápido (Warps)';
-                    STATE.menuId = 'warps';
-                    STATE.items[mid + 1] = { type: 'normal', material: 'BEACON', name: '&eSpawn Principal', amount: 1, lore: ['&7Ir al centro del servidor'], commands: ['[player] warp spawn'] };
-                    STATE.items[mid + 3] = { type: 'normal', material: 'IRON_SWORD', name: '&cPvP Arena', amount: 1, lore: ['&7Lucha contra otros'], commands: ['[player] warp pvp'] };
-                    STATE.items[mid + 5] = { type: 'normal', material: 'ENDER_CHEST', name: '&dCajas Misteriosas', amount: 1, lore: ['&7Abre tus llaves'], commands: ['[player] warp crates'] };
-                    STATE.items[mid + 7] = { type: 'normal', material: 'OAK_LOG', name: '&aMundo Libre', amount: 1, lore: ['&7Zona de construcción'], commands: ['[player] warp survival'] };
-                }
-                // 5. KITS
-                else if (prompt.includes('kit')) {
-                    STATE.menuTitle = '&8Selector de Kits';
-                    STATE.menuId = 'kits';
-                    STATE.items[mid + 2] = { type: 'normal', material: 'STONE_SWORD', name: '&7Kit Inicial', amount: 1, lore: ['&7Equipamiento básico', '&7Cooldown: &e1 hora'], commands: ['[player] kit inicial'] };
-                    STATE.items[mid + 4] = { type: 'normal', material: 'GOLDEN_SWORD', name: '&eKit VIP', amount: 1, lore: ['&7Equipamiento avanzado', '&7Cooldown: &e12 horas'], commands: ['[player] kit vip'] };
-                    STATE.items[mid + 6] = { type: 'normal', material: 'DIAMOND_SWORD', name: '&bKit MVP', amount: 1, lore: ['&7Equipamiento épico', '&7Cooldown: &e24 horas'], commands: ['[player] kit mvp'] };
-                }
-                // 6. RANGOS
-                else if (prompt.includes('rango') || prompt.includes('rank')) {
-                    STATE.menuTitle = '&8Información de Rangos';
-                    STATE.menuId = 'rangos';
-                    STATE.items[mid + 1] = { type: 'normal', material: 'COAL', name: '&8Rango Usuario', amount: 1, lore: ['&7El rango por defecto'], commands: [] };
-                    STATE.items[mid + 3] = { type: 'normal', material: 'IRON_INGOT', name: '&fRango VIP', amount: 1, lore: ['&7Ventajas especiales'], commands: ['[player] buy vip'] };
-                    STATE.items[mid + 5] = { type: 'normal', material: 'GOLD_INGOT', name: '&eRango PRO', amount: 1, lore: ['&7Más comandos y kits'], commands: ['[player] buy pro'] };
-                    STATE.items[mid + 7] = { type: 'normal', material: 'DIAMOND', name: '&bRango ÉLITE', amount: 1, lore: ['&7¡El mejor rango de todos!'], commands: ['[player] buy elite'] };
-                }
-                // 7. TRABAJOS (JOBS)
-                else if (prompt.includes('trabajo') || prompt.includes('job')) {
-                    STATE.menuTitle = '&8Agencia de Empleo';
-                    STATE.menuId = 'jobs';
-                    STATE.items[mid + 1] = { type: 'normal', material: 'DIAMOND_PICKAXE', name: '&7Minero', amount: 1, lore: ['&7Gana dinero picando'], commands: ['[player] jobs join minero'] };
-                    STATE.items[mid + 3] = { type: 'normal', material: 'DIAMOND_AXE', name: '&2Leñador', amount: 1, lore: ['&7Gana dinero talando'], commands: ['[player] jobs join lenador'] };
-                    STATE.items[mid + 5] = { type: 'normal', material: 'DIAMOND_HOE', name: '&eGranjero', amount: 1, lore: ['&7Gana dinero cultivando'], commands: ['[player] jobs join granjero'] };
-                    STATE.items[mid + 7] = { type: 'normal', material: 'DIAMOND_SWORD', name: '&cCazador', amount: 1, lore: ['&7Gana dinero matando mobs'], commands: ['[player] jobs join cazador'] };
-                }
-                // 8. MASCOTAS
-                else if (prompt.includes('mascota') || prompt.includes('pet')) {
-                    STATE.menuTitle = '&8Tus Mascotas';
-                    STATE.menuId = 'mascotas';
-                    STATE.items[mid + 2] = { type: 'custom_head', material: 'MHF_Pig', name: '&dCerdito', amount: 1, lore: ['&7Invocar mascota'], commands: ['[player] pet call pig'] };
-                    STATE.items[mid + 4] = { type: 'custom_head', material: 'MHF_Cow', name: '&fVaca', amount: 1, lore: ['&7Invocar mascota'], commands: ['[player] pet call cow'] };
-                    STATE.items[mid + 6] = { type: 'custom_head', material: 'MHF_Chicken', name: '&ePollo', amount: 1, lore: ['&7Invocar mascota'], commands: ['[player] pet call chicken'] };
-                }
-                // 9. PANEL DE ADMIN
-                else if (prompt.includes('admin') || prompt.includes('staff')) {
-                    STATE.menuTitle = '&4&lPanel de Administración';
-                    STATE.menuId = 'admin_panel';
-                    STATE.items[10] = { type: 'normal', material: 'DIAMOND_SWORD', name: '&cModo Supervivencia', amount: 1, lore: ['&7Cambiar a gamemode 0'], commands: ['[player] gm 0'] };
-                    STATE.items[12] = { type: 'normal', material: 'GRASS_BLOCK', name: '&aModo Creativo', amount: 1, lore: ['&7Cambiar a gamemode 1'], commands: ['[player] gm 1'] };
-                    STATE.items[14] = { type: 'normal', material: 'ENDER_PEARL', name: '&bVanish', amount: 1, lore: ['&7Ocultarse de jugadores'], commands: ['[player] vanish'] };
-                    STATE.items[16] = { type: 'normal', material: 'CLOCK', name: '&eTiempo: Día', amount: 1, lore: ['&7Hacer de día'], commands: ['[console] time set day'] };
-                }
-                // 10. DEFAULT (GENÉRICO)
-                else {
-                    STATE.menuTitle = '&8Menú Personalizado';
-                    STATE.menuId = 'menu_custom';
-                    STATE.items[mid + 4] = { type: 'normal', material: 'COMPASS', name: '&bMenú Principal', amount: 1, lore: ['&7Usa comandos para configurar'], commands: [] };
-                }
+                // 3. Detectar Temática
+                let activeTheme = themes.default;
+                STATE.menuTitle = '&8Menú Custom';
+                STATE.menuId = 'menu_generado';
 
-                // Generar Bordes Inteligentes
-                if(prompt.includes('borde') || prompt.includes('decorado') || prompt.includes('cristales')) {
-                    for(let i=0; i<total; i++) {
-                        if (i < 9 || i >= (total - 9) || i % 9 === 0 || i % 9 === 8) {
-                            if (!STATE.items[i]) STATE.items[i] = { type: 'normal', material: 'BLACK_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] };
-                        }
+                if(prompt.includes('tienda') || prompt.includes('shop')) { activeTheme = themes.tienda; STATE.menuTitle = '&8Tienda Principal'; STATE.menuId = 'tienda'; }
+                else if(prompt.includes('skyblock')) { activeTheme = themes.skyblock; STATE.menuTitle = '&8Menú Skyblock'; STATE.menuId = 'skyblock'; }
+                else if(prompt.includes('faction')) { activeTheme = themes.factions; STATE.menuTitle = '&8Menú Factions'; STATE.menuId = 'factions'; }
+                else if(prompt.includes('perfil') || prompt.includes('stats')) { activeTheme = themes.perfil; STATE.menuTitle = '&8Tu Perfil'; STATE.menuId = 'perfil'; }
+                else if(prompt.includes('admin') || prompt.includes('staff')) { activeTheme = themes.admin; STATE.menuTitle = '&4Panel Admin'; STATE.menuId = 'admin'; }
+
+                // 4. Elegir Color del Cristal Decorativo
+                let glassType = 'BLACK_STAINED_GLASS_PANE';
+                if(prompt.includes('rojo')) glassType = 'RED_STAINED_GLASS_PANE';
+                else if(prompt.includes('azul')) glassType = 'BLUE_STAINED_GLASS_PANE';
+                else if(prompt.includes('verde')) glassType = 'GREEN_STAINED_GLASS_PANE';
+                else if(prompt.includes('blanco')) glassType = 'WHITE_STAINED_GLASS_PANE';
+
+                // 5. Algoritmos de Layout Geométrico
+                let layoutType = prompt.includes('esquinas') ? 'corners' : 
+                                 prompt.includes('cuadricula') ? 'checkered' : 
+                                 prompt.includes('sin borde') ? 'none' : 'border';
+
+                for(let i=0; i<total; i++) {
+                    const isTop = i < 9;
+                    const isBottom = i >= (total - 9);
+                    const isLeft = i % 9 === 0;
+                    const isRight = i % 9 === 8;
+
+                    if(layoutType === 'border' && (isTop || isBottom || isLeft || isRight)) {
+                        STATE.items[i] = { type: 'normal', material: glassType, name: ' ', amount: 1, lore: [], commands: [] };
+                    } else if(layoutType === 'corners' && ((isTop && (isLeft || isRight)) || (isBottom && (isLeft || isRight)))) {
+                        STATE.items[i] = { type: 'normal', material: glassType, name: ' ', amount: 1, lore: [], commands: [] };
+                    } else if(layoutType === 'checkered' && i % 2 === 0) {
+                        STATE.items[i] = { type: 'normal', material: glassType, name: ' ', amount: 1, lore: [], commands: [] };
                     }
                 }
 
-                // Generar botón de cerrar automático en la parte inferior central
+                // 6. Colocar los Ítems Temáticos Dinámicamente en el centro
+                let validSlots = [];
+                for(let i=0; i<total; i++) {
+                    if(!STATE.items[i] && i > 8 && i < total-9) validSlots.push(i);
+                }
+
+                if(validSlots.length > 0) {
+                    let step = Math.max(Math.floor(validSlots.length / activeTheme.length), 1);
+                    for(let j=0; j<activeTheme.length; j++) {
+                        let targetSlot = validSlots[Math.min(j * step + Math.floor(step/2), validSlots.length - 1)];
+                        let itemDef = activeTheme[j];
+                        STATE.items[targetSlot] = { 
+                            type: itemDef.type || 'normal', 
+                            material: itemDef.m, 
+                            name: itemDef.n, 
+                            amount: 1, 
+                            lore: ['&7Autogenerado por IA'], 
+                            commands: [] 
+                        };
+                    }
+                }
+
+                // Botón de salir siempre al final
                 const centerBottom = total - 5;
-                if (!STATE.items[centerBottom] && STATE.rows >= 3) {
-                    STATE.items[centerBottom] = { type: 'normal', material: 'BARRIER', name: '&c&lCerrar Menú', amount: 1, lore: ['&7Cierra esta ventana'], commands: ['[close]'] };
+                if(STATE.rows >= 3) {
+                    STATE.items[centerBottom] = { type: 'normal', material: 'BARRIER', name: '&c&lCerrar Menú', amount: 1, lore: [], commands: ['[close]'] };
                 }
 
                 // Actualizar UI
@@ -882,6 +862,7 @@
                 
                 deselectSlot();
                 updateYAML();
+                renderCanvas(); // Renderizamos solo una vez al terminar de generar todo
 
                 setTimeout(() => { status.style.opacity = '0'; }, 3000);
             }, 1000);
@@ -899,7 +880,9 @@
         function clearAllData() {
             if(confirm('¿Seguro que deseas limpiar todo el canvas? Esta acción es irreversible.')){
                 STATE.items = {};
-                deselectSlot(); updateYAML();
+                deselectSlot();
+                renderCanvas(); 
+                updateYAML();
             }
         }
 
@@ -918,7 +901,9 @@
             document.getElementById('menu-rows').addEventListener('change', e => {
                 STATE.rows = parseInt(e.target.value);
                 document.getElementById('size-indicator').innerText = (STATE.rows * 9) + ' Slots';
-                deselectSlot(); updateYAML();
+                deselectSlot();
+                renderCanvas();
+                updateYAML();
             });
             document.getElementById('menu-id').addEventListener('input', e => { STATE.menuId = e.target.value; updateYAML(); });
         }
