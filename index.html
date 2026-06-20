@@ -3,21 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeluxeMenus Studio Pro</title>
+    <title>DeluxeMenus Studio Enterprise</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; }
         .mono { font-family: 'JetBrains Mono', monospace; }
-        
-        /* Contenedor del inventario estilo Minecraft Premium */
-        .mc-container {
-            background: #212121;
-            border: 4px solid #151515;
-            border-radius: 8px;
-            box-shadow: inset 0 4px 0 rgba(255,255,255,0.1), 0 20px 25px -5px rgba(0,0,0,0.5);
-        }
         .mc-slot {
             aspect-ratio: 1;
             background: #8b8b8b;
@@ -25,270 +17,394 @@
             border-left: 3px solid #373737;
             border-bottom: 3px solid #fff;
             border-right: 3px solid #fff;
-            transition: all 0.1s ease;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .mc-slot:hover {
             background: #b0b0b0;
-            filter: brightness(1.1);
+            transform: scale(1.02);
+            z-index: 10;
         }
         .mc-slot.active {
             border: 3px solid #10b981 !important;
-            background: #4b5563;
-            box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+            background: #374151;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.6);
         }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-emerald-500/30">
+<body class="text-slate-100 min-h-screen flex flex-col antialiased">
 
-    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50 px-6 py-4">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div class="flex items-center gap-3">
-                <div class="bg-gradient-to-tr from-emerald-500 to-teal-400 p-2 rounded-xl shadow-lg shadow-emerald-500/20">
-                    <i data-lucide="layout-grid" class="w-6 h-6 text-slate-950"></i>
-                </div>
-                <div>
-                    <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">DeluxeMenus Studio <span class="text-xs font-semibold px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20 ml-2">v2.0 PRO</span></h1>
-                    <p class="text-xs text-slate-400">Diseñador visual con soporte HDB y Cabezas</p>
-                </div>
+    <!-- TOP APPLICATION BAR -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4 shadow-xl">
+        <div class="flex items-center gap-3">
+            <div class="bg-gradient-to-tr from-emerald-500 to-cyan-500 p-2.5 rounded-xl shadow-lg shadow-emerald-500/10">
+                <i data-lucide="cpu" class="w-6 h-6 text-slate-950"></i>
             </div>
-            <div class="flex items-center gap-3">
-                <button onclick="resetMenu()" class="text-xs font-medium text-slate-400 hover:text-rose-400 bg-slate-800/60 hover:bg-rose-500/10 border border-slate-700/60 px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer">
-                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Limpiar Todo
-                </button>
+            <div>
+                <h1 class="text-lg font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">DeluxeMenus Studio <span class="text-xs font-semibold px-2 py-0.5 bg-cyan-500/10 text-cyan-400 rounded-full border border-cyan-500/20 ml-2">v3.0 Enterprise</span></h1>
+                <p class="text-xs text-slate-400">Entorno de desarrollo visual guiado por componentes</p>
             </div>
+        </div>
+        
+        <!-- Quick Actions & Persistent State indicators -->
+        <div class="flex flex-wrap items-center gap-2">
+            <div class="text-xs bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 flex items-center gap-2 text-slate-400">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Autosave Activo (Local)
+            </div>
+            <button onclick="quickFillBorders()" class="text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/50 px-3 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer">
+                <i data-lucide="grid-3x3" class="w-3.5 h-3.5 text-cyan-400"></i> Rellenar Bordes
+            </button>
+            <button onclick="clearAllData()" class="text-xs font-semibold text-rose-400 bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/20 px-3 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Reset
+            </button>
         </div>
     </header>
 
-    <main class="max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
+    <!-- WORKSPACE CONTAINER -->
+    <main class="max-w-[1600px] w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
         
-        <div class="lg:col-span-7 space-y-6">
-            
-            <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 backdrop-blur-sm shadow-xl">
-                <h2 class="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4 flex items-center gap-2">
-                    <i data-lucide="sliders" class="w-4 h-4 text-emerald-400"></i> Configuración del Menú
+        <!-- SIDEBAR IZQUIERDO: Plantillas y Config General (3 Cols) -->
+        <div class="lg:col-span-3 space-y-6">
+            <!-- Panel de Plantillas Oficiales -->
+            <div class="bg-slate-900/50 border border-slate-800/60 rounded-2xl p-4 shadow-lg">
+                <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <i data-lucide="folder-heart" class="w-4 h-4 text-cyan-400"></i> Plantillas Listas
                 </h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-1.5">ID / Archivo del Menú</label>
-                        <input type="text" id="menu-id" value="menu_principal" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 rounded-xl px-3 py-2 text-sm transition-all outline-none mono text-emerald-400">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-1.5">Título (Soporta colores)</label>
-                        <input type="text" id="menu-title" value="&8&lMí Menú Custom" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 rounded-xl px-3 py-2 text-sm transition-all outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-1.5">Filas del Inventario</label>
-                        <select id="menu-rows" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 rounded-xl px-3 py-2 text-sm transition-all outline-none cursor-pointer">
-                            <option value="1">1 Fila (9 slots)</option>
-                            <option value="2">2 Filas (18 slots)</option>
-                            <option value="3">3 Filas (27 slots)</option>
-                            <option value="4">4 Filas (36 slots)</option>
-                            <option value="5">5 Filas (45 slots)</option>
-                            <option value="6" selected>6 Filas (54 slots)</option>
-                        </select>
-                    </div>
+                <div class="space-y-2">
+                    <button onclick="loadSystemTemplate('lobby')" class="w-full text-left bg-slate-950 hover:bg-slate-800/80 border border-slate-800 hover:border-slate-700 p-2.5 rounded-xl transition-all group flex items-center justify-between cursor-pointer">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-200 group-hover:text-cyan-400">Selector de Modalidades</p>
+                            <p class="text-[10px] text-slate-500">Menú clásico de Lobby con bordes y 3 modos</p>
+                        </div>
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-600 group-hover:text-cyan-400 transition-all"></i>
+                    </button>
+                    <button onclick="loadSystemTemplate('profile')" class="w-full text-left bg-slate-950 hover:bg-slate-800/80 border border-slate-800 hover:border-slate-700 p-2.5 rounded-xl transition-all group flex items-center justify-between cursor-pointer">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-200 group-hover:text-cyan-400">Perfil del Jugador</p>
+                            <p class="text-[10px] text-slate-500">Usa cabezas dinámicas y estadísticas</p>
+                        </div>
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-600 group-hover:text-cyan-400 transition-all"></i>
+                    </button>
                 </div>
             </div>
 
-            <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 backdrop-blur-sm shadow-xl flex flex-col">
+            <!-- Parámetros Estructurales -->
+            <div class="bg-slate-900/50 border border-slate-800/60 rounded-2xl p-4 shadow-lg space-y-4">
+                <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                    <i data-lucide="settings" class="w-4 h-4 text-emerald-400"></i> Propiedades Core
+                </h2>
+                <div>
+                    <label class="block text-[11px] text-slate-400 mb-1">Nombre del Archivo YML</label>
+                    <input type="text" id="menu-id" value="menu_principal" class="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500/50 rounded-xl px-3 py-2 text-xs transition-all outline-none mono text-cyan-400">
+                </div>
+                <div>
+                    <label class="block text-[11px] text-slate-400 mb-1">Título de la GUI</label>
+                    <input type="text" id="menu-title" value="&8&lServidor Network" class="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500/50 rounded-xl px-3 py-2 text-xs transition-all outline-none">
+                </div>
+                <div>
+                    <label class="block text-[11px] text-slate-400 mb-1">Tamaño / Filas del Cofre</label>
+                    <select id="menu-rows" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs transition-all outline-none cursor-pointer">
+                        <option value="1">1 Fila (9 slots)</option>
+                        <option value="2">2 Filas (18 slots)</option>
+                        <option value="3">3 Filas (27 slots)</option>
+                        <option value="4">4 Filas (36 slots)</option>
+                        <option value="5">5 Filas (45 slots)</option>
+                        <option value="6" selected>6 Filas (54 slots)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- CENTRO: Grid View / Canvas (5 Cols) -->
+        <div class="lg:col-span-5 space-y-6">
+            <div class="bg-slate-900/50 border border-slate-800/60 rounded-2xl p-5 shadow-lg flex flex-col h-full">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-sm font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                        <i data-lucide="eye" class="w-4 h-4 text-emerald-400"></i> Vista Previa del Inventario
+                    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                        <i data-lucide="eye" class="w-4 h-4 text-emerald-400"></i> Renderizador de Canvas
                     </h2>
-                    <div id="live-title-preview" class="text-xs bg-slate-950 px-3 py-1 rounded-lg border border-slate-800 text-yellow-400 font-medium">
-                        &8&lMí Menú Custom
+                    <div id="live-title" class="text-xs bg-slate-950 px-3 py-1 rounded-lg border border-slate-800 text-yellow-400 font-medium">
+                        &8&lServidor Network
                     </div>
                 </div>
                 
-                <div class="p-4 bg-slate-950/40 rounded-xl border border-slate-800/50 flex justify-center items-center">
-                    <div class="mc-container w-full max-w-md p-2">
-                        <div id="inventory-grid" class="grid grid-cols-9 gap-1">
-                            </div>
+                <div class="p-4 bg-slate-950/60 rounded-xl border border-slate-800/40 flex justify-center items-center flex-1">
+                    <div class="bg-[#212121] border-4 border-[#151515] p-2 rounded-lg w-full max-w-md shadow-2xl">
+                        <div id="grid-canvas" class="grid grid-cols-9 gap-1">
+                            <!-- Inyectado vía JS -->
+                        </div>
                     </div>
-                </div>
-                <div class="mt-3 flex gap-4 text-xs text-slate-400 justify-center">
-                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-slate-500"></span> Vacío</span>
-                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500"></span> Con Ítem</span>
-                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-purple-500"></span> Cabeza/HDB</span>
                 </div>
             </div>
         </div>
 
-        <div class="lg:col-span-5 space-y-6">
-            
-            <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 backdrop-blur-sm shadow-xl">
-                <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-3">
-                    <h2 class="text-sm font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                        <i data-lucide="edit-3" class="w-4 h-4 text-emerald-400"></i> Configurar Slot
+        <!-- DERECHA: Editor Inteligente Contextual (4 Cols) -->
+        <div class="lg:col-span-4 space-y-6">
+            <div class="bg-slate-900/50 border border-slate-800/60 rounded-2xl p-5 shadow-lg">
+                <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
+                    <h2 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                        <i data-lucide="pencil-line" class="w-4 h-4 text-cyan-400"></i> Inspector de Propiedades
                     </h2>
-                    <span id="slot-badge" class="text-xs font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded">SLOT: 0</span>
+                    <span id="active-slot-badge" class="text-xs font-mono bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-2 py-0.5 rounded">SLOT: 0</span>
                 </div>
 
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-1.5">Tipo de Material</label>
-                        <div class="grid grid-cols-3 gap-2">
-                            <button type="button" onclick="setItemType('normal')" id="type-normal" class="type-btn text-xs font-medium py-2 rounded-xl border bg-emerald-500/10 border-emerald-500/30 text-emerald-400 transition-all cursor-pointer">
-                                Bloque/Ítem
-                            </button>
-                            <button type="button" onclick="setItemType('hdb')" id="type-hdb" class="type-btn text-xs font-medium py-2 rounded-xl border bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200 transition-all cursor-pointer">
-                                HeadsDB (HDB)
-                            </button>
-                            <button type="button" onclick="setItemType('player')" id="type-player" class="type-btn text-xs font-medium py-2 rounded-xl border bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200 transition-all cursor-pointer">
-                                Cabeza Jugador
-                            </button>
+                <!-- SELECTOR DE COMPONENTE -->
+                <div class="mb-4">
+                    <label class="block text-[11px] text-slate-400 mb-1.5 font-medium">Arquitectura de Ítem</label>
+                    <div class="grid grid-cols-3 gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800">
+                        <button onclick="switchContextType('normal')" id="ctx-normal" class="ctx-btn text-[10px] font-semibold py-1.5 rounded-lg text-center transition-all bg-cyan-500 text-slate-950 cursor-pointer">Bloque</button>
+                        <button onclick="switchContextType('hdb')" id="ctx-hdb" class="ctx-btn text-[10px] font-semibold py-1.5 rounded-lg text-center transition-all text-slate-400 hover:text-white cursor-pointer">HDB</button>
+                        <button onclick="switchContextType('custom_head')" id="ctx-custom_head" class="ctx-btn text-[10px] font-semibold py-1.5 rounded-lg text-center transition-all text-slate-400 hover:text-white cursor-pointer">Cabezas</button>
+                    </div>
+                </div>
+
+                <!-- CAMPOS DINÁMICOS -->
+                <div class="space-y-3">
+                    <div id="material-box">
+                        <!-- Inyección reactiva -->
+                    </div>
+
+                    <!-- PRESETS ASISTIDOS (Se muestra si aplica) -->
+                    <div id="presets-container" class="hidden bg-slate-950 border border-slate-800/80 p-2 rounded-xl">
+                        <p class="text-[10px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Presets Rápidos:</p>
+                        <div id="presets-grid" class="flex flex-wrap gap-1.5">
+                            <!-- Botones inyectados dinámicamente -->
                         </div>
                     </div>
 
-                    <div id="material-input-container">
-                        <label class="block text-xs font-medium text-slate-400 mb-1.5">ID del Material (Minecraft Vanilla)</label>
-                        <input type="text" id="item-material" placeholder="DIAMOND_SWORD" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 rounded-xl px-3 py-2 text-sm transition-all outline-none uppercase font-mono">
-                    </div>
-
-                    <div class="grid grid-cols-3 gap-3">
+                    <div class="grid grid-cols-3 gap-2">
                         <div class="col-span-2">
-                            <label class="block text-xs font-medium text-slate-400 mb-1.5">Nombre en Pantalla</label>
-                            <input type="text" id="item-name" placeholder="&a¡Item Épico!" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 rounded-xl px-3 py-2 text-sm transition-all outline-none">
+                            <label class="block text-[11px] text-slate-400 mb-1">Nombre Visual</label>
+                            <input type="text" id="item-name" placeholder="&eEjemplo Ítem" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs outline-none focus:border-cyan-500/50">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-slate-400 mb-1.5">Cantidad</label>
-                            <input type="number" id="item-amount" value="1" min="1" max="64" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 rounded-xl px-3 py-2 text-sm transition-all outline-none font-mono">
+                            <label class="block text-[11px] text-slate-400 mb-1">Cantidad</label>
+                            <input type="number" id="item-amount" value="1" min="1" max="64" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs outline-none font-mono">
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-1.5">Lore / Descripción (Línea por línea)</label>
-                        <textarea id="item-lore" rows="3" placeholder="&7Línea uno de descripción&#10;&eHaz clic para comprar" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 rounded-xl px-3 py-2 text-xs transition-all outline-none font-mono resize-none"></textarea>
+                        <label class="block text-[11px] text-slate-400 mb-1">Lore / Descripción</label>
+                        <textarea id="item-lore" rows="2" placeholder="&7Línea informativa" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs outline-none font-mono resize-none"></textarea>
                     </div>
 
+                    <!-- ASISTENTE DE COMANDOS -->
                     <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-1.5">Comandos al hacer Clic</label>
-                        <textarea id="item-commands" rows="2" placeholder="[player] spawn&#10;[console] give %player_name% diamond 1" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 rounded-xl px-3 py-2 text-xs transition-all outline-none font-mono resize-none"></textarea>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-[11px] text-slate-400">Acciones / Comandos</label>
+                            <span class="text-[9px] text-cyan-400 font-mono">Click para autoinyectar</span>
+                        </div>
+                        <div class="flex gap-1 mb-1.5 overflow-x-auto pb-1">
+                            <button onclick="injectCommandPrefix('[player] ')" class="text-[9px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-0.5 rounded border border-slate-700/60 cursor-pointer whitespace-nowrap">[player]</button>
+                            <button onclick="injectCommandPrefix('[console] ')" class="text-[9px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-0.5 rounded border border-slate-700/60 cursor-pointer whitespace-nowrap">[console]</button>
+                            <button onclick="injectCommandPrefix('[opengui] ')" class="text-[9px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-0.5 rounded border border-slate-700/60 cursor-pointer whitespace-nowrap">[opengui]</button>
+                            <button onclick="injectCommandPrefix('[close]')" class="text-[9px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-0.5 rounded border border-slate-700/60 cursor-pointer whitespace-nowrap">[close]</button>
+                        </div>
+                        <textarea id="item-commands" rows="2" placeholder="[player] spawn" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs outline-none font-mono resize-none"></textarea>
                     </div>
 
-                    <div class="flex gap-2 pt-2">
-                        <button type="button" onclick="saveActiveSlot()" class="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-slate-950 font-bold py-2 px-4 rounded-xl text-xs transition-all shadow-lg shadow-emerald-600/10 cursor-pointer flex items-center justify-center gap-1">
-                            <i data-lucide="check" class="w-4 h-4"></i> Guardar Slot
-                        </button>
-                        <button type="button" onclick="clearActiveSlot()" class="bg-rose-500/10 hover:bg-rose-500 border border-rose-500/20 text-rose-400 hover:text-white px-4 rounded-xl text-xs transition-all cursor-pointer flex items-center gap-1">
-                            <i data-lucide="x" class="w-4 h-4"></i> Vaciar
-                        </button>
+                    <div class="flex gap-2 pt-1">
+                        <button onclick="saveSlotData()" class="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold py-2 rounded-xl text-xs shadow-lg shadow-emerald-500/10 hover:brightness-110 transition-all cursor-pointer">Guardar Cambios</button>
+                        <button onclick="clearSlotData()" class="bg-rose-500/10 border border-rose-500/20 text-rose-400 px-3 rounded-xl text-xs hover:bg-rose-500 hover:text-white transition-all cursor-pointer"><i data-lucide="trash" class="w-4 h-4"></i></button>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 backdrop-blur-sm shadow-xl flex flex-col h-[320px]">
-                <div class="flex justify-between items-center mb-3">
-                    <h2 class="text-sm font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                        <i data-lucide="code" class="w-4 h-4 text-emerald-400"></i> Código YAML Generado
-                    </h2>
-                    <button type="button" onclick="copyYamlCode()" id="btn-copy" class="text-xs font-medium bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700/80 px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 cursor-pointer">
-                        <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copiar
+            <!-- TERMINAL YAML CODE -->
+            <div class="bg-slate-900/50 border border-slate-800/60 rounded-2xl p-4 shadow-lg flex flex-col h-[240px]">
+                <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+                        <p class="text-xs font-bold text-slate-300 uppercase tracking-wider">Compilado Realtime YML</p>
+                    </div>
+                    <button onclick="copyToClipboard()" id="btn-copy" class="text-[10px] bg-slate-800 text-cyan-400 border border-slate-700 px-2.5 py-1 rounded-lg hover:bg-slate-700 transition-all cursor-pointer flex items-center gap-1">
+                        <i data-lucide="copy" class="w-3 h-3"></i> Copiar Código
                     </button>
                 </div>
-                <textarea id="yaml-output" readonly class="w-full flex-1 bg-slate-950/80 border border-slate-800 rounded-xl p-3 text-xs font-mono text-emerald-400/90 resize-none focus:outline-none overflow-y-auto border-dashed"></textarea>
+                <textarea id="yaml-code" readonly class="w-full flex-1 bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-[11px] font-mono text-emerald-400 resize-none focus:outline-none overflow-y-auto border-dashed"></textarea>
             </div>
-
         </div>
     </main>
 
+    <!-- MAIN ENGINE CONTROLLER -->
     <script>
-        // Estado global
-        let currentRows = 6;
-        let selectedSlot = 0;
-        let itemType = 'normal'; // 'normal', 'hdb', 'player'
-        let menuItems = {}; 
-
-        // Inicialización
-        window.onload = function() {
-            lucide.createIcons();
-            renderGrid();
-            setupConfigListeners();
-            updateYAML();
+        // Memory Architecture & Engine State
+        let STATE = {
+            rows: 6,
+            selectedSlot: 0,
+            activeType: 'normal',
+            menuId: 'menu_principal',
+            menuTitle: '&8&lServidor Network',
+            items: {}
         };
 
-        // Renderizar cuadrícula adaptativa
-        function renderGrid() {
-            const grid = document.getElementById('inventory-grid');
-            grid.innerHTML = '';
-            const totalSlots = currentRows * 9;
+        // Static Presets Database (Senior Level Curation)
+        const DICTIONARY = {
+            heads: [
+                { name: 'Flecha Der.', id: 'head;MHF_ArrowRight', label: '➡ Der' },
+                { name: 'Flecha Izq.', id: 'head;MHF_ArrowLeft', label: '⬅ Izq' },
+                { name: 'Cofre Tesoro', id: 'head;MHF_Chest', label: '📦 Chest' },
+                { name: 'Signo Interr.', id: 'head;MHF_Question', label: '❓ Info' },
+                { name: 'Bloque de Oro', id: 'head;MHF_Gold', label: '💰 Coin' }
+            ],
+            hdb: [
+                { name: 'Spawn Icon', id: '1243', label: '🏠 Spawn' },
+                { name: 'Survival Head', id: '41432', label: '🌍 Survival' },
+                { name: 'Skyblock Icon', id: '193', label: '☁ Skyblock' },
+                { name: 'Discord Head', id: '2433', label: '💬 Discord' }
+            ]
+        };
+
+        const SYSTEM_TEMPLATES = {
+            lobby: {
+                rows: 3, menuId: 'selector_modalidades', menuTitle: '&8&l» Servidor Selector',
+                items: {
+                    0: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
+                    1: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
+                    2: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
+                    3: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
+                    4: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
+                    5: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
+                    6: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
+                    7: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
+                    8: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
+                    9: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
+                    11: { type: 'hdb', material: '41432', name: '&a&lSURVIVAL CUSTOM', amount: 1, lore: ['&7Mundo abierto y economía','','&e▶ Haz clic para conectar'], commands: ['[connect] survival'] },
+                    13: { type: 'normal', material: 'DIAMOND_SWORD', name: '&c&lSKYWARS PvP', amount: 1, lore: ['&7Combates en las alturas','','&e▶ Haz clic para jugar'], commands: ['[connect] skywars'] },
+                    15: { type: 'hdb', material: '193', name: '&b&lSKYBLOCK EVOLUTION', amount: 1, lore: ['&7Crea tu propia isla flotante','','&e▶ Haz clic para entrar'], commands: ['[connect] skyblock'] },
+                    17: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
+                    18: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
+                    19: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
+                    20: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
+                    21: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
+                    22: { type: 'normal', material: 'BARRIER', name: '&c&lCerrar Menú', amount: 1, lore: ['&7Salir de la interfaz'], commands: ['[close]'] },
+                    23: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
+                    24: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
+                    25: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
+                    26: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
+                }
+            },
+            profile: {
+                rows: 4, menuId: 'perfil_usuario', menuTitle: '&8&lTu Perfil',
+                items: {
+                    13: { type: 'custom_head', material: '%player_name%', name: '&e&lTu Cuenta: &f%player_name%', amount: 1, lore: ['&7Rango: &bVIP+','&7Monedas: &a$5,400'], commands: [] },
+                    20: { type: 'normal', material: 'CHEST', name: '&aMis Recompensas', amount: 1, lore: ['&7Reclama tus premios diarios.'], commands: ['[player] claim'] },
+                    22: { type: 'normal', material: 'REDSTONE_THORCH', name: '&cConfiguración', amount: 1, lore: ['&7Alternar opciones globales.'], commands: ['[opengui] settings'] }
+                }
+            }
+        };
+
+        window.onload = function() {
+            loadFromLocalStorage();
+            lucide.createIcons();
+            renderGridCanvas();
+            switchContextType(STATE.activeType);
+            updateYAMLCompiler();
+            setupCoreListeners();
+        };
+
+        // Render Canvas Matrix
+        function renderGridCanvas() {
+            const canvas = document.getElementById('grid-canvas');
+            canvas.innerHTML = '';
+            const totalSlots = STATE.rows * 9;
 
             for (let i = 0; i < totalSlots; i++) {
                 const slot = document.createElement('div');
-                slot.className = `mc-slot rounded cursor-pointer flex flex-col items-center justify-center p-1 text-[10px] relative font-semibold select-none ${i === selectedSlot ? 'active' : ''}`;
-                slot.dataset.slotId = i;
+                slot.className = `mc-slot rounded flex flex-col items-center justify-center p-0.5 text-[9px] relative font-semibold select-none ${i === STATE.selectedSlot ? 'active' : ''}`;
+                slot.dataset.id = i;
 
-                if (menuItems[i]) {
-                    const item = menuItems[i];
-                    // Colores temáticos de ayuda visual rápida
-                    if (item.type === 'hdb' || item.type === 'player') {
-                        slot.classList.add('bg-purple-950/60', 'border-purple-500/40');
-                        slot.innerHTML = `<span class="text-purple-400 font-bold block truncate w-full text-center">💀 Head</span>`;
+                if (STATE.items[i]) {
+                    const node = STATE.items[i];
+                    if (node.type === 'hdb' || node.type === 'custom_head') {
+                        slot.classList.add('bg-purple-950/70', 'border-purple-400/40');
+                        slot.innerHTML = `<span class="text-purple-300 font-bold tracking-tight truncate w-full text-center px-0.5">💀 HEAD</span>`;
                     } else {
-                        slot.classList.add('bg-amber-950/40', 'border-amber-500/30');
-                        let cleanName = item.name || item.material;
-                        cleanName = cleanName.replace(/&[0-9a-fk-or]/gi, ''); // Limpiar códigos color para visualización
-                        slot.innerHTML = `<span class="text-amber-400 truncate w-full text-center block">${cleanName}</span><span class="text-[8px] text-slate-400">x${item.amount}</span>`;
+                        if(node.material === 'GRAY_STAINED_GLASS_PANE' && node.name === ' ') {
+                            slot.classList.add('bg-slate-700/50', 'border-slate-500/20');
+                            slot.innerHTML = `<span class="opacity-20 text-slate-400">⏹</span>`;
+                        } else {
+                            slot.classList.add('bg-amber-950/40', 'border-amber-500/30');
+                            let visualName = node.name || node.material;
+                            visualName = visualName.replace(/&[0-9a-fk-or]/gi, ''); // Clean formatting
+                            slot.innerHTML = `<span class="text-amber-400 truncate w-full text-center block px-0.5">${visualName}</span>`;
+                        }
                     }
                 } else {
-                    slot.innerHTML = `<span class="text-slate-600/70 font-mono text-[9px]">${i}</span>`;
+                    slot.innerHTML = `<span class="text-slate-600/60 font-mono text-[8px]">${i}</span>`;
                 }
 
-                slot.onclick = () => selectSlot(i);
-                grid.appendChild(slot);
+                slot.onclick = () => selectSlotContext(i);
+                canvas.appendChild(slot);
             }
         }
 
-        // Cambiar dinámicamente los inputs según el tipo de item (Normal, HDB o Cabeza)
-        function setItemType(type) {
-            itemType = type;
-            document.querySelectorAll('.type-btn').forEach(btn => {
-                btn.classList.remove('bg-emerald-500/10', 'border-emerald-500/30', 'text-emerald-400');
-                btn.classList.add('bg-slate-950', 'border-slate-800', 'text-slate-400');
+        // Context Manager
+        function switchContextType(type) {
+            STATE.activeType = type;
+            document.querySelectorAll('.ctx-btn').forEach(b => {
+                b.className = "ctx-btn text-[10px] font-semibold py-1.5 rounded-lg text-center transition-all text-slate-400 hover:text-white cursor-pointer";
             });
+            document.getElementById(`ctx-${type}`).className = "ctx-btn text-[10px] font-semibold py-1.5 rounded-lg text-center transition-all bg-cyan-500 text-slate-950 cursor-pointer";
 
-            const activeBtn = document.getElementById(`type-${type}`);
-            activeBtn.classList.remove('bg-slate-950', 'border-slate-800', 'text-slate-400');
-            activeBtn.classList.add('bg-emerald-500/10', 'border-emerald-500/30', 'text-emerald-400');
+            const container = document.getElementById('material-box');
+            const presetsContainer = document.getElementById('presets-container');
+            const presetsGrid = document.getElementById('presets-grid');
 
-            const container = document.getElementById('material-input-container');
             if (type === 'normal') {
                 container.innerHTML = `
-                    <label class="block text-xs font-medium text-slate-400 mb-1.5">ID del Material (Minecraft Vanilla)</label>
-                    <input type="text" id="item-material" placeholder="DIAMOND_SWORD" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 rounded-xl px-3 py-2 text-sm transition-all outline-none uppercase font-mono">
+                    <label class="block text-[11px] text-slate-400 mb-1">ID del Material (Vanilla)</label>
+                    <input type="text" id="item-material" placeholder="DIAMOND_SWORD" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs outline-none focus:border-cyan-500/50 uppercase font-mono">
                 `;
+                presetsContainer.classList.add('hidden');
             } else if (type === 'hdb') {
                 container.innerHTML = `
-                    <label class="block text-xs font-medium text-slate-400 mb-1.5">ID de HeadsDatabase (Solo el Número)</label>
-                    <input type="text" id="item-material" placeholder="1243" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 rounded-xl px-3 py-2 text-sm transition-all outline-none font-mono">
+                    <label class="block text-[11px] text-slate-400 mb-1">ID numérico de HeadsDatabase</label>
+                    <input type="text" id="item-material" placeholder="1243" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs outline-none focus:border-cyan-500/50 font-mono">
                 `;
-            } else if (type === 'player') {
+                presetsContainer.classList.remove('hidden');
+                presetsGrid.innerHTML = DICTIONARY.hdb.map(h => `<button onclick="applyQuickPreset('${h.id}')" class="text-[9px] bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 px-2 py-1 rounded-md transition-all cursor-pointer">${h.label}</button>`).join('');
+            } else if (type === 'custom_head') {
                 container.innerHTML = `
-                    <label class="block text-xs font-medium text-slate-400 mb-1.5">Nombre del Jugador o Placeholder</label>
-                    <input type="text" id="item-material" placeholder="%player_name% o Notch" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 rounded-xl px-3 py-2 text-sm transition-all outline-none font-mono">
+                    <label class="block text-[11px] text-slate-400 mb-1">Nombre/Placeholder u Objeto Cabeza</label>
+                    <input type="text" id="item-material" placeholder="%player_name%" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs outline-none focus:border-cyan-500/50 font-mono">
                 `;
+                presetsContainer.classList.remove('hidden');
+                presetsGrid.innerHTML = DICTIONARY.heads.map(h => `<button onclick="applyQuickPreset('${h.id}')" class="text-[9px] bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 px-2 py-1 rounded-md transition-all cursor-pointer">${h.label}</button>`).join('');
             }
         }
 
-        function selectSlot(id) {
-            selectedSlot = id;
+        function applyQuickPreset(value) {
+            let sanitized = value.replace('head;', '');
+            document.getElementById('item-material').value = sanitized;
+        }
+
+        function injectCommandPrefix(prefix) {
+            const area = document.getElementById('item-commands');
+            area.value += (area.value ? '\n' : '') + prefix;
+            area.focus();
+        }
+
+        function selectSlotContext(id) {
+            STATE.selectedSlot = id;
             document.querySelectorAll('.mc-slot').forEach(s => s.classList.remove('active'));
-            const activeSlotEl = document.querySelector(`[data-slot-id="${id}"]`);
-            if (activeSlotEl) activeSlotEl.classList.add('active');
-            
-            document.getElementById('slot-badge').innerText = `SLOT: ${id}`;
-            
-            // Cargar datos si existen
-            if (menuItems[id]) {
-                const item = menuItems[id];
-                setItemType(item.type);
-                document.getElementById('item-material').value = item.material;
-                document.getElementById('item-name').value = item.name;
-                document.getElementById('item-amount').value = item.amount;
-                document.getElementById('item-lore').value = item.lore.join('\n');
-                document.getElementById('item-commands').value = item.commands.join('\n');
+            const node = document.querySelector(`[data-id="${id}"]`);
+            if (node) node.classList.add('active');
+
+            document.getElementById('active-slot-badge').innerText = `SLOT: ${id}`;
+
+            if (STATE.items[id]) {
+                const target = STATE.items[id];
+                switchContextType(target.type);
+                document.getElementById('item-material').value = target.material;
+                document.getElementById('item-name').value = target.name;
+                document.getElementById('item-amount').value = target.amount;
+                document.getElementById('item-lore').value = target.lore.join('\n');
+                document.getElementById('item-commands').value = target.commands.join('\n');
             } else {
-                // Resetear formulario manteniendo tipo actual
                 document.getElementById('item-material').value = '';
                 document.getElementById('item-name').value = '';
                 document.getElementById('item-amount').value = '1';
@@ -297,144 +413,182 @@
             }
         }
 
-        function saveActiveSlot() {
-            const rawMat = document.getElementById('item-material').value.trim();
-            if (!rawMat) {
-                alert('Introduce un identificador o material válido.');
-                return;
-            }
+        function saveSlotData() {
+            const material = document.getElementById('item-material').value.trim();
+            if(!material) return alert("Define el material o identificador del componente.");
 
-            menuItems[selectedSlot] = {
-                type: itemType,
-                material: rawMat,
+            STATE.items[STATE.selectedSlot] = {
+                type: STATE.activeType,
+                material: material,
                 name: document.getElementById('item-name').value.trim(),
                 amount: parseInt(document.getElementById('item-amount').value) || 1,
                 lore: document.getElementById('item-lore').value.split('\n').filter(l => l.trim() !== ''),
                 commands: document.getElementById('item-commands').value.split('\n').filter(l => l.trim() !== '')
             };
 
-            renderGrid();
-            updateYAML();
+            saveToLocalStorage();
+            renderGridCanvas();
+            updateYAMLCompiler();
         }
 
-        function clearActiveSlot() {
-            delete menuItems[selectedSlot];
-            document.getElementById('item-material').value = '';
-            document.getElementById('item-name').value = '';
-            document.getElementById('item-amount').value = '1';
-            document.getElementById('item-lore').value = '';
-            document.getElementById('item-commands').value = '';
-            renderGrid();
-            updateYAML();
+        function clearSlotData() {
+            delete STATE.items[STATE.selectedSlot];
+            selectSlotContext(STATE.selectedSlot);
+            saveToLocalStorage();
+            renderGridCanvas();
+            updateYAMLCompiler();
         }
 
-        function resetMenu() {
-            if (confirm('¿Seguro que quieres borrar todo el diseño actual?')) {
-                menuItems = {};
-                selectedSlot = 0;
-                renderGrid();
-                updateYAML();
+        // Intelligently Fills Borders (Saves hours to network admins)
+        function quickFillBorders() {
+            const total = STATE.rows * 9;
+            for(let i=0; i<total; i++) {
+                const top = i < 9;
+                const bottom = i >= (total - 9);
+                const left = i % 9 === 0;
+                const right = i % 9 === 8;
+
+                if (top || bottom || left || right) {
+                    if (!STATE.items[i]) {
+                        STATE.items[i] = {
+                            type: 'normal',
+                            material: 'GRAY_STAINED_GLASS_PANE',
+                            name: ' ',
+                            amount: 1,
+                            lore: [],
+                            commands: []
+                        };
+                    }
+                }
+            }
+            saveToLocalStorage();
+            renderGridCanvas();
+            updateYAMLCompiler();
+        }
+
+        function loadSystemTemplate(key) {
+            if(confirm("¿Deseas sobreescribir el diseño actual por esta plantilla?")) {
+                const data = SYSTEM_TEMPLATES[key];
+                STATE.rows = data.rows;
+                STATE.menuId = data.menuId;
+                STATE.menuTitle = data.menuTitle;
+                STATE.items = JSON.parse(JSON.stringify(data.items)); // Deep Copy
+
+                document.getElementById('menu-rows').value = data.rows;
+                document.getElementById('menu-id').value = data.menuId;
+                document.getElementById('menu-title').value = data.menuTitle;
+                document.getElementById('live-title').innerText = data.menuTitle;
+
+                STATE.selectedSlot = 0;
+                saveToLocalStorage();
+                renderGridCanvas();
+                updateYAMLCompiler();
             }
         }
 
-        function setupConfigListeners() {
+        function setupCoreListeners() {
             document.getElementById('menu-title').oninput = function(e) {
-                document.getElementById('live-title-preview').innerText = e.target.value || 'Menú sin título';
-                updateYAML();
+                STATE.menuTitle = e.target.value;
+                document.getElementById('live-title').innerText = e.target.value || 'GUI';
+                saveToLocalStorage(); updateYAMLCompiler();
             };
-            document.getElementById('menu-id').oninput = updateYAML;
+            document.getElementById('menu-id').oninput = function(e) {
+                STATE.menuId = e.target.value;
+                saveToLocalStorage(); updateYAMLCompiler();
+            };
             document.getElementById('menu-rows').onchange = function(e) {
-                currentRows = parseInt(e.target.value);
-                const max = currentRows * 9;
-                if (selectedSlot >= max) selectedSlot = 0;
-                renderGrid();
-                updateYAML();
+                STATE.rows = parseInt(e.target.value);
+                const max = STATE.rows * 9;
+                if(STATE.selectedSlot >= max) STATE.selectedSlot = 0;
+                saveToLocalStorage();
+                renderGridCanvas();
+                updateYAMLCompiler();
             };
         }
 
-        // Generador inteligente de YAML formateado bajo estándares limpios de DeluxeMenus
-        function updateYAML() {
-            const menuId = document.getElementById('menu-id').value.trim() || 'menu';
-            const title = document.getElementById('menu-title').value.trim() || 'Menú';
-            const size = currentRows * 9;
-
-            let yaml = `# -----------------------------------------------------\n`;
-            yaml += `# Generado dinámicamente con DeluxeMenus Studio Pro\n`;
-            yaml += `# -----------------------------------------------------\n\n`;
-            yaml += `menu_title: '${title}'\n`;
-            yaml += `open_command: ${menuId}\n`;
-            yaml += `size: ${size}\n`;
+        function updateYAMLCompiler() {
+            const totalSlots = STATE.rows * 9;
+            let yaml = `# =====================================================\n`;
+            yaml += `# COMPILADO CON DELUXEMENUS STUDIO ENTERPRISE PRO\n`;
+            yaml += `# =====================================================\n\n`;
+            yaml += `menu_title: '${STATE.menuTitle}'\n`;
+            yaml += `open_command: ${STATE.menuId}\n`;
+            yaml += `size: ${totalSlots}\n`;
             yaml += `items:\n`;
 
-            let itemsExist = false;
+            let hasValues = false;
+            for(const slot in STATE.items) {
+                if(parseInt(slot) >= totalSlots) continue;
+                hasValues = true;
+                const node = STATE.items[slot];
 
-            for (const slot in menuItems) {
-                if (parseInt(slot) >= size) continue; // Ignorar si se achicaron las filas temporalmente
-                itemsExist = true;
-                const item = menuItems[slot];
-                
-                yaml += `  'item_slot_${slot}':\n`;
-                
-                // Formateo inteligente según el tipo de cabeza / HDB o item normal
-                if (item.type === 'hdb') {
-                    yaml += `    material: 'hdb-${item.material}'\n`;
-                } else if (item.type === 'player') {
-                    // Soporte estándar de cabezas custom / placeholders en DeluxeMenus
-                    yaml += `    material: 'head;${item.material}'\n`;
+                yaml += `  'node_slot_${slot}':\n`;
+                if(node.type === 'hdb') {
+                    yaml += `    material: 'hdb-${node.material}'\n`;
+                } else if(node.type === 'custom_head') {
+                    yaml += `    material: 'head;${node.material}'\n`;
                 } else {
-                    yaml += `    material: '${item.material.toUpperCase()}'\n`;
+                    yaml += `    material: '${node.material.toUpperCase()}'\n`;
                 }
-
                 yaml += `    slot: ${slot}\n`;
+                if(node.amount > 1) yaml += `    amount: ${node.amount}\n`;
+                if(node.name) yaml += `    display_name: '${node.name}'\n`;
                 
-                if (item.amount > 1) {
-                    yaml += `    amount: ${item.amount}\n`;
-                }
-                if (item.name) {
-                    yaml += `    display_name: '${item.name}'\n`;
-                }
-                if (item.lore && item.lore.length > 0) {
+                if(node.lore && node.lore.length > 0) {
                     yaml += `    lore:\n`;
-                    item.lore.forEach(line => {
-                        yaml += `    - '${line}'\n`;
-                    });
+                    node.lore.forEach(l => yaml += `    - '${l}'\n`);
                 }
-                if (item.commands && item.commands.length > 0) {
+                if(node.commands && node.commands.length > 0) {
                     yaml += `    left_click_commands:\n`;
-                    item.commands.forEach(cmd => {
-                        yaml += `    - '${cmd}'\n`;
-                    });
+                    node.commands.forEach(c => yaml += `    - '${c}'\n`);
                     yaml += `    right_click_commands:\n`;
-                    item.commands.forEach(cmd => {
-                        yaml += `    - '${cmd}'\n`;
-                    });
+                    node.commands.forEach(c => yaml += `    - '${c}'\n`);
                 }
             }
-
-            if (!itemsExist) {
-                yaml += `  # [!] Haz clic en cualquier slot de la vista previa para añadir ítems.\n`;
-            }
-
-            document.getElementById('yaml-output').value = yaml;
+            if(!hasValues) yaml += `  # [Info] Agrega componentes desde el inspector dinámico.\n`;
+            document.getElementById('yaml-code').value = yaml;
         }
 
-        function copyYamlCode() {
-            const area = document.getElementById('yaml-output');
-            area.select();
-            document.execCommand('copy');
-            
-            const btn = document.getElementById('btn-copy');
-            btn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5"></i> ¡Copiado!`;
-            btn.classList.replace('text-emerald-400', 'text-slate-950');
-            btn.classList.replace('bg-slate-800', 'bg-emerald-400');
-            lucide.createIcons();
+        // Persistence Layer (LocalStorage Pattern)
+        function saveToLocalStorage() {
+            localStorage.setItem('DM_STUDIO_STATE', JSON.stringify(STATE));
+        }
 
+        function loadFromLocalStorage() {
+            const cached = localStorage.getItem('DM_STUDIO_STATE');
+            if (cached) {
+                try {
+                    STATE = JSON.parse(cached);
+                    document.getElementById('menu-rows').value = STATE.rows;
+                    document.getElementById('menu-id').value = STATE.menuId;
+                    document.getElementById('menu-title').value = STATE.menuTitle;
+                    document.getElementById('live-title').innerText = STATE.menuTitle;
+                } catch(e) { console.error("Error parsed cache memory", e); }
+            }
+        }
+
+        function clearAllData() {
+            if(confirm("¿Restaurar todo el espacio de trabajo de fábrica?")) {
+                localStorage.removeItem('DM_STUDIO_STATE');
+                STATE = { rows: 6, selectedSlot: 0, activeType: 'normal', menuId: 'menu_principal', menuTitle: '&8&lServidor Network', items: {} };
+                document.getElementById('menu-rows').value = 6;
+                document.getElementById('menu-id').value = 'menu_principal';
+                document.getElementById('menu-title').value = '&8&lServidor Network';
+                document.getElementById('live-title').innerText = '&8&lServidor Network';
+                selectSlotContext(0); renderGridCanvas(); updateYAMLCompiler();
+            }
+        }
+
+        function copyToClipboard() {
+            const area = document.getElementById('yaml-code');
+            area.select(); document.execCommand('copy');
+            const btn = document.getElementById('btn-copy');
+            btn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5"></i> ¡Copiado con éxito!`;
             setTimeout(() => {
-                btn.innerHTML = `<i data-lucide="copy" class="w-3.5 h-3.5"></i> Copiar`;
-                btn.classList.replace('text-slate-950', 'text-emerald-400');
-                btn.classList.replace('bg-emerald-400', 'bg-slate-800');
+                btn.innerHTML = `<i data-lucide="copy" class="w-3 h-3"></i> Copiar Código`;
                 lucide.createIcons();
             }, 2000);
+            lucide.createIcons();
         }
     </script>
 </body>
