@@ -107,6 +107,12 @@
             z-index: 20;
         }
 
+        /* EFECTO DRAG OVER */
+        .mc-slot.drag-over {
+            border: 3px dashed #60a5fa !important;
+            background-color: rgba(96, 165, 250, 0.3) !important;
+        }
+
         /* Imágenes dentro del slot */
         .slot-img {
             width: 44px; 
@@ -298,7 +304,7 @@
 
                 <div class="p-4 rounded-xl bg-blue-500/5 border border-blue-500/10 text-sm text-blue-200 leading-relaxed">
                     <i data-lucide="mouse-pointer-click" class="w-4 h-4 inline-block mb-1 text-blue-400"></i> 
-                    Para empezar a construir, haz clic en cualquier casilla vacía del inventario en el centro de la pantalla.
+                    Para empezar a construir, haz clic en cualquier casilla. ¡También puedes <b>arrastrar y soltar</b> los ítems para moverlos fácilmente!
                 </div>
             </div>
 
@@ -476,6 +482,8 @@
             menuTitle: '&8Menú Principal',
             items: {}
         };
+        
+        let draggedSlotIndex = null; // Variable Global para manejar el Drag and Drop
 
         const MC_COLORS = {
             '0': '#000000', '1': '#0000AA', '2': '#00AA00', '3': '#00AAAA', '4': '#AA0000', '5': '#AA00AA', '6': '#FFAA00', '7': '#AAAAAA',
@@ -520,7 +528,7 @@
             updateYAML();
         };
 
-        // --- SISTEMA DE RENDERIZADO FLUIDO (0 PARPADEOS) ---
+        // --- SISTEMA DE RENDERIZADO FLUIDO CON DRAG & DROP ---
         function renderCanvas() {
             const canvas = document.getElementById('grid-canvas');
             canvas.innerHTML = '';
@@ -531,6 +539,71 @@
                 slot.dataset.index = i; 
                 slot.className = `mc-slot flex flex-col items-center justify-center p-1 text-[10px] ${STATE.selectedSlot === i ? 'active' : ''}`;
                 
+                // --- LÓGICA DE DRAG & DROP ---
+                if (STATE.items[i]) {
+                    slot.draggable = true;
+                }
+
+                slot.ondragstart = (e) => {
+                    if (!STATE.items[i]) {
+                        e.preventDefault();
+                        return;
+                    }
+                    draggedSlotIndex = i;
+                    e.dataTransfer.effectAllowed = 'move';
+                };
+
+                slot.ondragover = (e) => {
+                    e.preventDefault(); // Necesario para permitir soltar el objeto
+                    e.dataTransfer.dropEffect = 'move';
+                    slot.classList.add('drag-over');
+                };
+
+                slot.ondragleave = (e) => {
+                    slot.classList.remove('drag-over');
+                };
+
+                slot.ondrop = (e) => {
+                    e.preventDefault();
+                    slot.classList.remove('drag-over');
+
+                    if (draggedSlotIndex !== null && draggedSlotIndex !== i) {
+                        // Lógica de SWAP (Intercambio de ítems)
+                        const temp = STATE.items[i];
+                        
+                        // Mover el dragged a la posición actual
+                        if (STATE.items[draggedSlotIndex]) {
+                            STATE.items[i] = STATE.items[draggedSlotIndex];
+                        } else {
+                            delete STATE.items[i];
+                        }
+                        
+                        // Poner el que estaba en la posición actual donde estaba el dragged
+                        if (temp) {
+                            STATE.items[draggedSlotIndex] = temp;
+                        } else {
+                            delete STATE.items[draggedSlotIndex];
+                        }
+
+                        // Mantener la selección correcta en el panel derecho si se movió el ítem seleccionado
+                        if (STATE.selectedSlot === draggedSlotIndex) {
+                            STATE.selectedSlot = i;
+                        } else if (STATE.selectedSlot === i) {
+                            STATE.selectedSlot = draggedSlotIndex;
+                        }
+
+                        draggedSlotIndex = null;
+                        renderCanvas(); // Refrescar el canvas con la nueva disposición
+                        updateYAML();
+                        
+                        // Refrescar panel derecho
+                        if (STATE.selectedSlot !== null) {
+                            selectSlot(STATE.selectedSlot);
+                        }
+                    }
+                };
+                // --- FIN LÓGICA DRAG & DROP ---
+
                 if (STATE.items[i]) {
                     const node = STATE.items[i];
                     let pName = parseMCColor(node.name || node.material);
@@ -565,7 +638,8 @@
                     }
                 }
 
-                slot.onclick = () => selectSlot(i);
+                // Usamos onmousedown en lugar de onclick para que no haya conflictos con el drag&drop en algunos navegadores.
+                slot.onmousedown = () => selectSlot(i);
                 canvas.appendChild(slot);
             }
         }
@@ -660,7 +734,7 @@
             }
         }
 
-        // --- CEREBRO IA: MOTOR DE INFERENCIA SEMÁNTICA (Modificaciones Contextuales y Generación) ---
+        // --- CEREBRO IA: MOTOR DE INFERENCIA SEMÁNTICA ---
         const AI_KNOWLEDGE_BASE = {
             rtp: { title: '&8Teletransporte Aleatorio', id: 'menu_rtp', items: [
                 { m: 'GRASS_BLOCK', n: '&aMundo Supervivencia', l: ['&7Viaja a un lugar aleatorio'], c: '[player] rtp survival' },
@@ -715,6 +789,11 @@
                 { m: 'ENDER_PEARL', n: '&bVanish', l: ['&7Ocultarte del mundo'], c: '[player] vanish' },
                 { m: 'COMMAND_BLOCK', n: '&eConsola Local', l: ['&7Ejecutar comandos'], c: '' },
                 { m: 'CLOCK', n: '&eHacer de Día', l: ['&7Cambiar el tiempo'], c: '[console] time set day' }
+            ]},
+            mascotas: { title: '&8Tus Mascotas', id: 'menu_mascotas', items: [
+                { m: 'BONE', n: '&eLobo', l: ['&7Invocar'], c: '[player] pet call wolf' },
+                { m: 'FEATHER', n: '&fLoro', l: ['&7Invocar'], c: '[player] pet call parrot' },
+                { m: 'SLIME_BALL', n: '&aSlime', l: ['&7Invocar'], c: '[player] pet call slime' }
             ]}
         };
 
