@@ -193,6 +193,10 @@
             margin-bottom: 8px;
             filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.4));
         }
+
+        /* COLOR PICKER OVERRIDE */
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: 2px solid #2a2b2f; border-radius: 8px; }
     </style>
 </head>
 <body class="flex flex-col h-screen">
@@ -287,7 +291,12 @@
                     <input type="text" id="menu-id" value="menu_principal" class="w-full bg-[#0a0a0b] border border-[var(--border-color)] rounded-xl px-4 py-3.5 text-sm outline-none focus:border-blue-400 transition-colors font-mono text-blue-300 shadow-inner">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Título Visual (& colores)</label>
+                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider flex justify-between items-center">
+                        <span>Título Visual</span>
+                        <button onclick="openGradientModal()" class="text-purple-400 hover:text-purple-300 flex items-center gap-1 normal-case text-[10px] bg-purple-500/10 px-2 py-1 rounded-md border border-purple-500/20 transition-all">
+                            <i data-lucide="palette" class="w-3 h-3"></i> RGB
+                        </button>
+                    </label>
                     <input type="text" id="menu-title" value="&8Menú Principal" class="w-full bg-[#0a0a0b] border border-[var(--border-color)] rounded-xl px-4 py-3.5 text-sm outline-none focus:border-blue-400 transition-colors shadow-inner">
                 </div>
                 <div>
@@ -332,7 +341,12 @@
 
                 <div class="grid grid-cols-4 gap-3">
                     <div class="col-span-3">
-                        <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Nombre a mostrar</label>
+                        <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider flex justify-between items-center">
+                            <span>Nombre a mostrar</span>
+                            <button onclick="openGradientModal()" class="text-purple-400 hover:text-purple-300 flex items-center gap-1 normal-case text-[10px] bg-purple-500/10 px-2 py-1 rounded-md border border-purple-500/20 transition-all">
+                                <i data-lucide="palette" class="w-3 h-3"></i> RGB
+                            </button>
+                        </label>
                         <input type="text" id="item-name" placeholder="&eEspada Legendaria" class="w-full bg-[#0a0a0b] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm outline-none focus:border-blue-400 shadow-inner">
                     </div>
                     <div>
@@ -342,9 +356,8 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider flex justify-between">
+                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider flex justify-between items-center">
                         <span>Descripción (Lore)</span>
-                        <span class="text-[10px] text-gray-600 normal-case">Una línea por Enter</span>
                     </label>
                     <textarea id="item-lore" rows="3" placeholder="&7Daño: &c+10&#10;&7Rareza: &6Épica" class="w-full bg-[#0a0a0b] border border-[var(--border-color)] rounded-xl p-3.5 text-sm outline-none focus:border-blue-400 resize-none font-mono shadow-inner leading-relaxed"></textarea>
                 </div>
@@ -374,6 +387,8 @@
 
         </div>
     </main>
+
+    <!-- MODALES DE LA APLICACIÓN -->
 
     <!-- MODAL YAML CODE -->
     <div id="yaml-modal" class="fixed inset-0 z-50 flex justify-center items-center hidden opacity-0 transition-opacity modal-overlay">
@@ -411,6 +426,79 @@
                 </button>
             </div>
             <div class="flex-1 overflow-y-auto p-6 bg-[#0a0a0b]" id="catalog-container"></div>
+        </div>
+    </div>
+
+    <!-- MODAL DE DEGRADADOS RGB (CLON BIRD FLOP) -->
+    <div id="gradient-modal" class="fixed inset-0 z-50 flex justify-center items-center hidden opacity-0 transition-opacity modal-overlay">
+        <div class="bg-[#141516] border border-[#2a2b2f] rounded-2xl w-full max-w-3xl flex flex-col shadow-2xl overflow-hidden transform scale-95 transition-transform" id="gradient-modal-content">
+            <div class="flex justify-between items-center p-5 border-b border-[#2a2b2f] bg-[#0a0a0b]">
+                <h3 class="text-lg font-bold flex items-center gap-2 text-white">
+                    <i data-lucide="palette" class="w-5 h-5 text-purple-400"></i> Generador de Degradados RGB
+                </h3>
+                <button onclick="closeModal('gradient-modal', 'gradient-modal-content')" class="p-2 bg-rose-500/10 hover:bg-rose-500 hover:text-white rounded-lg text-rose-400 transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 space-y-6">
+                <div class="flex gap-4">
+                    <div class="flex-1">
+                        <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Texto a colorear</label>
+                        <input type="text" id="grad-text" placeholder="Ej: Mi Super Espada" value="Texto Épico" oninput="generateGradient()" class="w-full bg-[#0a0a0b] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm outline-none focus:border-purple-400 text-white shadow-inner">
+                    </div>
+                    <div class="w-24">
+                        <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Color Inicial</label>
+                        <input type="color" id="grad-c1" value="#ff0000" oninput="generateGradient()" class="w-full h-[46px] rounded-xl cursor-pointer bg-transparent border-none">
+                    </div>
+                    <div class="w-24">
+                        <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Color Final</label>
+                        <input type="color" id="grad-c2" value="#0055ff" oninput="generateGradient()" class="w-full h-[46px] rounded-xl cursor-pointer bg-transparent border-none">
+                    </div>
+                </div>
+
+                <div class="flex gap-4 p-4 bg-[#0a0a0b] border border-[#2a2b2f] rounded-xl">
+                    <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                        <input type="checkbox" id="grad-bold" checked onchange="generateGradient()" class="w-4 h-4 rounded bg-[#1e1f22] border-gray-600 focus:ring-purple-500">
+                        <span class="font-bold">Negrita (&l)</span>
+                    </label>
+                    <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                        <input type="checkbox" id="grad-italic" onchange="generateGradient()" class="w-4 h-4 rounded bg-[#1e1f22] border-gray-600 focus:ring-purple-500">
+                        <span class="italic">Cursiva (&o)</span>
+                    </label>
+                    <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                        <input type="checkbox" id="grad-underline" onchange="generateGradient()" class="w-4 h-4 rounded bg-[#1e1f22] border-gray-600 focus:ring-purple-500">
+                        <span class="underline">Subrayado (&n)</span>
+                    </label>
+                    <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                        <input type="checkbox" id="grad-strike" onchange="generateGradient()" class="w-4 h-4 rounded bg-[#1e1f22] border-gray-600 focus:ring-purple-500">
+                        <span class="line-through">Tachado (&m)</span>
+                    </label>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Resultado YML (Código)</label>
+                    <textarea id="grad-output" readonly rows="2" class="w-full bg-[#0a0a0b] border border-[var(--border-color)] rounded-xl p-3 text-sm outline-none resize-none font-mono text-purple-300 shadow-inner"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Vista Previa In-Game</label>
+                    <div id="grad-preview" class="w-full bg-[#0a0a0b] border border-[var(--border-color)] rounded-xl p-4 text-xl font-mono shadow-inner min-h-[65px] flex items-center justify-center text-center tracking-wide" style="text-shadow: 2px 2px 0 #000;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-5 border-t border-[#2a2b2f] bg-[#0a0a0b] flex gap-3">
+                <button onclick="insertGradientTo('name')" class="flex-1 bg-purple-500 hover:bg-purple-400 text-white font-bold py-3.5 rounded-xl text-sm transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)]">
+                    Insertar en Nombre
+                </button>
+                <button onclick="insertGradientTo('lore')" class="flex-1 bg-blue-500 hover:bg-blue-400 text-white font-bold py-3.5 rounded-xl text-sm transition-all shadow-[0_0_15px_rgba(59,130,246,0.3)]">
+                    Añadir al Lore
+                </button>
+                <button onclick="copyGradientCode()" id="btn-copy-grad" class="px-8 bg-[#1e1f22] hover:bg-[#2a2b2f] text-white font-bold py-3.5 rounded-xl text-sm transition-all border border-[#2a2b2f]">
+                    Copiar
+                </button>
+            </div>
         </div>
     </div>
 
@@ -483,27 +571,43 @@
             items: {}
         };
         
-        let draggedSlotIndex = null; // Variable Global para manejar el Drag and Drop
+        let draggedSlotIndex = null;
 
         const MC_COLORS = {
             '0': '#000000', '1': '#0000AA', '2': '#00AA00', '3': '#00AAAA', '4': '#AA0000', '5': '#AA00AA', '6': '#FFAA00', '7': '#AAAAAA',
             '8': '#555555', '9': '#5555FF', 'a': '#55FF55', 'b': '#55FFFF', 'c': '#FF5555', 'd': '#FF55FF', 'e': '#FFFF55', 'f': '#FFFFFF'
         };
 
+        // PARSER REESCRITO PARA LEER COLORES HEX Y FORMATOS DE BIRD FLOP
         function parseMCColor(text) {
             if (!text) return '';
-            let parts = text.split('&');
-            if(parts.length === 1) return parts[0];
-            let html = parts[0];
-            for (let i = 1; i < parts.length; i++) {
-                let code = parts[i].charAt(0).toLowerCase();
-                let rest = parts[i].substring(1);
-                if (MC_COLORS[code]) html += `<span style="color: ${MC_COLORS[code]}; ${code==='l'?'font-weight:bold;':''}">${rest}</span>`;
-                else if (code === 'l') html += `<span style="font-weight: bold;">${rest}</span>`;
-                else if (code === 'r') html += `</span>${rest}`;
-                else html += `&${parts[i]}`;
+            let html = '';
+            let i = 0;
+            
+            while (i < text.length) {
+                if (text[i] === '&') {
+                    // Soporte para Hex: &#RRGGBB
+                    if (text[i+1] === '#' && i + 7 < text.length) {
+                        let hex = text.substring(i+2, i+8);
+                        html += `</span><span style="color: #${hex};">`;
+                        i += 8;
+                        continue;
+                    }
+                    let code = text[i+1]?.toLowerCase();
+                    if (MC_COLORS[code]) {
+                        html += `</span><span style="color: ${MC_COLORS[code]};">`;
+                        i += 2;
+                        continue;
+                    } else if (code === 'l') { html += `</span><span style="font-weight: bold;">`; i += 2; continue; } 
+                    else if (code === 'o') { html += `</span><span style="font-style: italic;">`; i += 2; continue; } 
+                    else if (code === 'n') { html += `</span><span style="text-decoration: underline;">`; i += 2; continue; } 
+                    else if (code === 'm') { html += `</span><span style="text-decoration: line-through;">`; i += 2; continue; } 
+                    else if (code === 'r') { html += `</span><span>`; i += 2; continue; }
+                }
+                html += text[i];
+                i++;
             }
-            return html;
+            return `<span>${html}</span>`;
         }
 
         const ASSET_BASE = "https://cdn.jsdelivr.net/gh/InventivetalentDev/minecraft-assets@1.20.1/assets/minecraft/textures";
@@ -526,6 +630,7 @@
             setupListeners();
             renderCanvas();
             updateYAML();
+            generateGradient(); // Initialize the gradient tool preview
         };
 
         // --- SISTEMA DE RENDERIZADO FLUIDO CON DRAG & DROP ---
@@ -539,70 +644,43 @@
                 slot.dataset.index = i; 
                 slot.className = `mc-slot flex flex-col items-center justify-center p-1 text-[10px] ${STATE.selectedSlot === i ? 'active' : ''}`;
                 
-                // --- LÓGICA DE DRAG & DROP ---
+                // DRAG & DROP
                 if (STATE.items[i]) {
                     slot.draggable = true;
                 }
 
                 slot.ondragstart = (e) => {
-                    if (!STATE.items[i]) {
-                        e.preventDefault();
-                        return;
-                    }
+                    if (!STATE.items[i]) { e.preventDefault(); return; }
                     draggedSlotIndex = i;
                     e.dataTransfer.effectAllowed = 'move';
                 };
 
                 slot.ondragover = (e) => {
-                    e.preventDefault(); // Necesario para permitir soltar el objeto
+                    e.preventDefault();
                     e.dataTransfer.dropEffect = 'move';
                     slot.classList.add('drag-over');
                 };
 
-                slot.ondragleave = (e) => {
-                    slot.classList.remove('drag-over');
-                };
+                slot.ondragleave = (e) => { slot.classList.remove('drag-over'); };
 
                 slot.ondrop = (e) => {
                     e.preventDefault();
                     slot.classList.remove('drag-over');
 
                     if (draggedSlotIndex !== null && draggedSlotIndex !== i) {
-                        // Lógica de SWAP (Intercambio de ítems)
                         const temp = STATE.items[i];
-                        
-                        // Mover el dragged a la posición actual
-                        if (STATE.items[draggedSlotIndex]) {
-                            STATE.items[i] = STATE.items[draggedSlotIndex];
-                        } else {
-                            delete STATE.items[i];
-                        }
-                        
-                        // Poner el que estaba en la posición actual donde estaba el dragged
-                        if (temp) {
-                            STATE.items[draggedSlotIndex] = temp;
-                        } else {
-                            delete STATE.items[draggedSlotIndex];
-                        }
+                        if (STATE.items[draggedSlotIndex]) { STATE.items[i] = STATE.items[draggedSlotIndex]; } else { delete STATE.items[i]; }
+                        if (temp) { STATE.items[draggedSlotIndex] = temp; } else { delete STATE.items[draggedSlotIndex]; }
 
-                        // Mantener la selección correcta en el panel derecho si se movió el ítem seleccionado
-                        if (STATE.selectedSlot === draggedSlotIndex) {
-                            STATE.selectedSlot = i;
-                        } else if (STATE.selectedSlot === i) {
-                            STATE.selectedSlot = draggedSlotIndex;
-                        }
+                        if (STATE.selectedSlot === draggedSlotIndex) { STATE.selectedSlot = i; } 
+                        else if (STATE.selectedSlot === i) { STATE.selectedSlot = draggedSlotIndex; }
 
                         draggedSlotIndex = null;
-                        renderCanvas(); // Refrescar el canvas con la nueva disposición
+                        renderCanvas();
                         updateYAML();
-                        
-                        // Refrescar panel derecho
-                        if (STATE.selectedSlot !== null) {
-                            selectSlot(STATE.selectedSlot);
-                        }
+                        if (STATE.selectedSlot !== null) selectSlot(STATE.selectedSlot);
                     }
                 };
-                // --- FIN LÓGICA DRAG & DROP ---
 
                 if (STATE.items[i]) {
                     const node = STATE.items[i];
@@ -615,7 +693,7 @@
                             <img src="${headUrl}" class="slot-img mb-0.5 z-10 rounded-sm border border-black/30" alt="">
                             ${node.amount > 1 ? `<span class="absolute bottom-1 right-1 text-white font-mono text-[13px] font-bold drop-shadow-[2px_2px_0_#000] z-20">${node.amount}</span>` : ''}
                             <div class="mc-tooltip text-left min-w-[150px]">
-                                <p class="font-bold text-white text-sm">${(node.name || node.material).replace(/&[0-9a-fk-or]/gi, '')}</p>
+                                <p class="font-bold text-white text-sm">${pName}</p>
                                 ${node.lore && node.lore.length > 0 ? `<div class="mt-2 pt-2 border-t border-gray-600/50 text-xs text-gray-300 space-y-1">${node.lore.map(l => `<p>${parseMCColor(l)}</p>`).join('')}</div>` : ''}
                             </div>
                         `;
@@ -631,14 +709,13 @@
                                  class="slot-img mb-0.5 z-10" alt="">
                             ${node.amount > 1 ? `<span class="absolute bottom-1 right-1 text-white font-mono text-[13px] font-bold drop-shadow-[2px_2px_0_#000] z-20">${node.amount}</span>` : ''}
                             <div class="mc-tooltip text-left min-w-[150px]">
-                                <p class="font-bold text-white text-sm">${(node.name || node.material).replace(/&[0-9a-fk-or]/gi, '')}</p>
+                                <p class="font-bold text-white text-sm">${pName}</p>
                                 ${node.lore && node.lore.length > 0 ? `<div class="mt-2 pt-2 border-t border-gray-600/50 text-xs text-gray-300 space-y-1">${node.lore.map(l => `<p>${parseMCColor(l)}</p>`).join('')}</div>` : ''}
                             </div>
                         `;
                     }
                 }
 
-                // Usamos onmousedown en lugar de onclick para que no haya conflictos con el drag&drop en algunos navegadores.
                 slot.onmousedown = () => selectSlot(i);
                 canvas.appendChild(slot);
             }
@@ -652,7 +729,6 @@
             document.getElementById('btn-close-item').classList.remove('hidden');
             document.getElementById('panel-title').innerHTML = `<i data-lucide="box" class="w-4 h-4 text-blue-400"></i> Editando Casilla ${id}`;
             
-            // Actualización CSS sin recargar DOM completo
             document.querySelectorAll('.mc-slot').forEach(slot => {
                 if(parseInt(slot.dataset.index) === id) slot.classList.add('active');
                 else slot.classList.remove('active');
@@ -814,15 +890,13 @@
             }
 
             try {
-                // 1. Análisis de Intención (Modificar vs Crear)
                 let isCreate = prompt.includes('crea') || prompt.includes('haz') || prompt.includes('nuevo') || Object.keys(STATE.items).length === 0;
                 let isDistribute = prompt.includes('distribuy') || prompt.includes('orden') || prompt.includes('mejor') || prompt.includes('centra');
                 let isAdd = prompt.includes('añade') || prompt.includes('agrega') || prompt.includes('pon ');
 
-                // 2. Rutina de Creación Desde Cero
                 if (isCreate) {
                     await typeLog('Iniciando construcción de menú desde cero...', '#a8c7fa');
-                    STATE.items = {}; // Wipe canvas
+                    STATE.items = {}; 
                     
                     let foundModules = [];
                     for(const key in AI_KNOWLEDGE_BASE) {
@@ -831,12 +905,11 @@
                         }
                     }
                     
-                    if(foundModules.length === 0) foundModules = ['warps', 'tienda', 'perfil']; // Mix genérico
+                    if(foundModules.length === 0) foundModules = ['warps', 'tienda', 'perfil'];
                     
                     let filasMatch = prompt.match(/(\d+)\s*fila/);
                     STATE.rows = filasMatch ? Math.min(Math.max(parseInt(filasMatch[1]), 1), 6) : (prompt.includes('pequeño') ? 3 : 6);
 
-                    // Estética de Cristales
                     let glassType = 'BLACK_STAINED_GLASS_PANE';
                     if(prompt.includes('rojo')) glassType = 'RED_STAINED_GLASS_PANE';
                     else if(prompt.includes('azul')) glassType = 'BLUE_STAINED_GLASS_PANE';
@@ -861,7 +934,6 @@
                         }
                     }
 
-                    // Inyección de Nodos
                     let allItemsToInject = [];
                     foundModules.forEach(mod => allItemsToInject = allItemsToInject.concat(AI_KNOWLEDGE_BASE[mod].items));
 
@@ -894,7 +966,6 @@
                     await typeLog('Estructura base del menú generada exitosamente.');
                 }
 
-                // 3. Rutina de Adición Dinámica (Conserva lo actual)
                 if (isAdd && !isCreate) {
                     await typeLog('Buscando espacio para nuevos ítems en el canvas actual...', '#f59e0b');
                     let newItems = [];
@@ -918,12 +989,10 @@
                     }
                 }
 
-                // 4. Rutina de Redistribución (Organiza el caos visual)
                 if (isDistribute || prompt.includes('distribuye')) {
                     await typeLog('Activando motor de re-distribución espacial inteligente...', '#f59e0b');
                     let itemsToMove = [];
                     
-                    // Extraer solo items de peso (ignorar cristales y el boton cerrar inferior)
                     for(let i=0; i<STATE.rows*9; i++) {
                         let it = STATE.items[i];
                         if(it) {
@@ -931,12 +1000,11 @@
                             let isCloseBtn = it.commands && it.commands.includes('[close]');
                             if(!isDeco && !isCloseBtn) {
                                 itemsToMove.push(it);
-                                delete STATE.items[i]; // Sacamos del mapa
+                                delete STATE.items[i];
                             }
                         }
                     }
                     
-                    // Encontrar slots vacíos viables que NO sean bordes
                     let validCenterSlots = [];
                     for(let i=0; i<STATE.rows*9; i++) {
                         let isBorder = i < 9 || i >= (STATE.rows*9 - 9) || i % 9 === 0 || i % 9 === 8;
@@ -945,8 +1013,7 @@
                         }
                     }
 
-                    // Matemáticas de Distribución Geométrica
-                    let distribType = Math.floor(Math.random() * 3); // 0: Centro agrupado, 1: Espaciado, 2: Salto doble
+                    let distribType = Math.floor(Math.random() * 3);
                     await typeLog(`Calculando matriz de posicionamiento óptima (Algoritmo v${distribType})...`);
                     
                     if(distribType === 0) {
@@ -972,7 +1039,6 @@
                     await typeLog(`Re-posicionados ${itemsToMove.length} ítems respetando los bordes decorativos.`, '#34d399');
                 }
 
-                // Finalizar actualización de UI
                 document.getElementById('menu-rows').value = STATE.rows;
                 document.getElementById('menu-title').value = STATE.menuTitle;
                 document.getElementById('menu-id').value = STATE.menuId;
@@ -991,6 +1057,101 @@
             } catch(e) {
                 await typeLog(`ERROR: ${e.message}`, '#f87171');
             }
+        }
+
+        // --- SISTEMA DE GENERADOR DE DEGRADADOS (BIRD FLOP) ---
+        function hexToRgb(hex) {
+            let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
+        }
+
+        function rgbToHex(r, g, b) {
+            return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+        }
+
+        function generateGradient() {
+            let text = document.getElementById('grad-text').value;
+            let c1 = document.getElementById('grad-c1').value;
+            let c2 = document.getElementById('grad-c2').value;
+            
+            let isBold = document.getElementById('grad-bold').checked;
+            let isItalic = document.getElementById('grad-italic').checked;
+            let isUnderline = document.getElementById('grad-underline').checked;
+            let isStrike = document.getElementById('grad-strike').checked;
+
+            if(!text) {
+                document.getElementById('grad-output').value = '';
+                document.getElementById('grad-preview').innerHTML = '';
+                return;
+            }
+
+            let rgb1 = hexToRgb(c1);
+            let rgb2 = hexToRgb(c2);
+            
+            let formatCodes = "";
+            if(isBold) formatCodes += "&l";
+            if(isItalic) formatCodes += "&o";
+            if(isUnderline) formatCodes += "&n";
+            if(isStrike) formatCodes += "&m";
+
+            let result = "";
+            let steps = text.length - 1;
+            if(steps < 1) steps = 1;
+
+            for (let i = 0; i < text.length; i++) {
+                if(text[i] === ' ') {
+                    result += ' '; // Ignorar espacios para que no consuman color
+                    continue;
+                }
+                let ratio = i / steps;
+                let r = Math.round(rgb1.r + ratio * (rgb2.r - rgb1.r));
+                let g = Math.round(rgb1.g + ratio * (rgb2.g - rgb1.g));
+                let b = Math.round(rgb1.b + ratio * (rgb2.b - rgb1.b));
+                
+                let hexCode = rgbToHex(r,g,b).replace('#', '&#'); // DeluxeMenus format
+                result += hexCode + formatCodes + text[i];
+            }
+
+            document.getElementById('grad-output').value = result;
+            document.getElementById('grad-preview').innerHTML = parseMCColor(result);
+        }
+
+        function openGradientModal() {
+            const modal = document.getElementById('gradient-modal');
+            const content = document.getElementById('gradient-modal-content');
+            
+            // Si hay texto en el input seleccionado, lo pasamos al generador
+            let currentName = document.getElementById('item-name').value;
+            if(currentName && !currentName.includes('&#')) { // Solo texto limpio
+                document.getElementById('grad-text').value = currentName.replace(/&[a-f0-9lnokm]/gi, '');
+            }
+            generateGradient();
+
+            modal.classList.remove('hidden');
+            setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-95'); }, 10);
+        }
+
+        function insertGradientTo(target) {
+            let code = document.getElementById('grad-output').value;
+            if (!code) return;
+            
+            if (target === 'name') {
+                document.getElementById('item-name').value = code;
+            } else if (target === 'lore') {
+                let loreEl = document.getElementById('item-lore');
+                loreEl.value += (loreEl.value ? '\n' : '') + code;
+            }
+            
+            saveItem();
+            closeModal('gradient-modal', 'gradient-modal-content');
+        }
+
+        function copyGradientCode() {
+            const area = document.getElementById('grad-output');
+            area.select(); document.execCommand('copy');
+            const btn = document.getElementById('btn-copy-grad');
+            btn.innerText = '¡Copiado!';
+            setTimeout(() => { btn.innerText = 'Copiar'; }, 2000);
         }
 
         // --- CATÁLOGO ---
