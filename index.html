@@ -3,234 +3,378 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeluxeMenus Studio Enterprise</title>
+    <title>DeluxeMenus Studio PRO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+        
+        :root {
+            --mc-bg: #C6C6C6;
+            --mc-border-light: #FFFFFF;
+            --mc-border-dark: #555555;
+            --mc-slot-bg: #8B8B8B;
+            --mc-slot-border-light: #373737;
+            --mc-slot-border-dark: #FFFFFF;
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #020617; 
+            background-image: radial-gradient(circle at 50% 0%, #0f172a 0%, #020617 100%);
+            background-attachment: fixed;
+        }
+        
         .mono { font-family: 'JetBrains Mono', monospace; }
+        
+        /* Inventario estilo Minecraft */
+        .mc-inventory {
+            background-color: var(--mc-bg);
+            border-top: 4px solid var(--mc-border-light);
+            border-left: 4px solid var(--mc-border-light);
+            border-bottom: 4px solid var(--mc-border-dark);
+            border-right: 4px solid var(--mc-border-dark);
+            padding: 12px;
+            border-radius: 2px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Slots de Minecraft interactivos */
         .mc-slot {
             aspect-ratio: 1;
-            background: #8b8b8b;
-            border-top: 3px solid #373737;
-            border-left: 3px solid #373737;
-            border-bottom: 3px solid #fff;
-            border-right: 3px solid #fff;
-            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            background-color: var(--mc-slot-bg);
+            border-top: 3px solid var(--mc-slot-border-light);
+            border-left: 3px solid var(--mc-slot-border-light);
+            border-bottom: 3px solid var(--mc-slot-border-dark);
+            border-right: 3px solid var(--mc-slot-border-dark);
+            transition: all 0.1s ease;
+            position: relative;
+            cursor: grab;
         }
+        
+        .mc-slot:active { cursor: grabbing; }
+
         .mc-slot:hover {
-            background: #b0b0b0;
-            transform: scale(1.02);
+            background-color: #a0a0a0;
             z-index: 10;
         }
+
         .mc-slot.active {
             border: 3px solid #10b981 !important;
-            background: #374151;
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.6);
+            background-color: #4b5563;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.5), inset 0 0 15px rgba(0,0,0,0.5);
         }
+
+        .mc-slot.drag-over {
+            border: 3px dashed #06b6d4 !important;
+            background-color: rgba(6, 182, 212, 0.2);
+        }
+
+        /* Tooltip de Minecraft */
+        .mc-tooltip {
+            display: none;
+            position: absolute;
+            bottom: 110%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(16, 0, 16, 0.95);
+            border: 2px solid #3700b3;
+            padding: 6px 8px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            white-space: nowrap;
+            z-index: 50;
+            pointer-events: none;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+        }
+        .mc-slot:hover .mc-tooltip { display: block; }
+
         /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; border: 2px solid #0f172a; }
         ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body class="text-slate-100 min-h-screen flex flex-col antialiased">
 
     <!-- TOP APPLICATION BAR -->
-    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4 shadow-xl">
-        <div class="flex items-center gap-3">
-            <div class="bg-gradient-to-tr from-emerald-500 to-cyan-500 p-2.5 rounded-xl shadow-lg shadow-emerald-500/10">
-                <i data-lucide="cpu" class="w-6 h-6 text-slate-950"></i>
+    <header class="glass-panel sticky top-0 z-50 px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4 border-b border-slate-800/80">
+        <div class="flex items-center gap-4">
+            <div class="bg-gradient-to-tr from-emerald-500 to-cyan-500 p-2.5 rounded-xl shadow-lg shadow-emerald-500/20">
+                <i data-lucide="layers" class="w-6 h-6 text-slate-950"></i>
             </div>
             <div>
-                <h1 class="text-lg font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">DeluxeMenus Studio <span class="text-xs font-semibold px-2 py-0.5 bg-cyan-500/10 text-cyan-400 rounded-full border border-cyan-500/20 ml-2">v3.0 Enterprise</span></h1>
-                <p class="text-xs text-slate-400">Entorno de desarrollo visual guiado por componentes</p>
+                <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+                    DeluxeMenus Studio <span class="text-xs font-bold px-2.5 py-0.5 bg-cyan-500/10 text-cyan-400 rounded-full border border-cyan-500/20 ml-2 shadow-[0_0_10px_rgba(6,182,212,0.2)]">PRO</span>
+                </h1>
+                <p class="text-[11px] text-slate-400 font-medium mt-0.5"><i data-lucide="mouse-pointer-click" class="w-3 h-3 inline pb-0.5"></i> Soporta Arrastrar y Soltar (Drag & Drop)</p>
             </div>
         </div>
         
-        <!-- Quick Actions & Persistent State indicators -->
-        <div class="flex flex-wrap items-center gap-2">
-            <div class="text-xs bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 flex items-center gap-2 text-slate-400">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Autosave Activo (Local)
+        <!-- Quick Actions -->
+        <div class="flex flex-wrap items-center gap-2.5">
+            <div class="text-xs bg-slate-950/50 border border-slate-800/80 rounded-lg px-3 py-2 flex items-center gap-2 text-slate-400 font-mono">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]"></span> Auto-Guardado
             </div>
-            <button onclick="quickFillBorders()" class="text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/50 px-3 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer">
-                <i data-lucide="grid-3x3" class="w-3.5 h-3.5 text-cyan-400"></i> Rellenar Bordes
+            <div class="h-6 w-px bg-slate-800 mx-1"></div>
+            <button onclick="fillEmptyWithGlass()" class="text-xs font-semibold bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700/50 px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer">
+                <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-blue-400"></i> Rellenar Vacíos
             </button>
-            <button onclick="clearAllData()" class="text-xs font-semibold text-rose-400 bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/20 px-3 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer">
-                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Reset
+            <button onclick="quickFillBorders()" class="text-xs font-semibold bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700/50 px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer">
+                <i data-lucide="border-outer" class="w-3.5 h-3.5 text-purple-400"></i> Bordes
+            </button>
+            <div class="h-6 w-px bg-slate-800 mx-1"></div>
+            <button onclick="clearAllData()" class="text-xs font-bold text-rose-400 bg-rose-500/10 hover:bg-rose-500 hover:text-white border border-rose-500/20 px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer group">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5 group-hover:animate-bounce"></i> Limpiar Todo
             </button>
         </div>
     </header>
 
     <!-- WORKSPACE CONTAINER -->
-    <main class="max-w-[1600px] w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
+    <main class="max-w-[1800px] w-full mx-auto p-4 md:p-6 grid grid-cols-1 xl:grid-cols-12 gap-6 flex-1">
         
         <!-- SIDEBAR IZQUIERDO: Plantillas y Config General (3 Cols) -->
-        <div class="lg:col-span-3 space-y-6">
-            <!-- Panel de Plantillas Oficiales -->
-            <div class="bg-slate-900/50 border border-slate-800/60 rounded-2xl p-4 shadow-lg">
-                <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                    <i data-lucide="folder-heart" class="w-4 h-4 text-cyan-400"></i> Plantillas Listas
+        <div class="xl:col-span-3 space-y-5">
+            <!-- Parámetros Estructurales -->
+            <div class="glass-panel rounded-2xl p-5 space-y-4">
+                <h2 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2 mb-4">
+                    <i data-lucide="settings-2" class="w-4 h-4 text-emerald-400"></i> Configuración Global
                 </h2>
-                <div class="space-y-2">
-                    <button onclick="loadSystemTemplate('lobby')" class="w-full text-left bg-slate-950 hover:bg-slate-800/80 border border-slate-800 hover:border-slate-700 p-2.5 rounded-xl transition-all group flex items-center justify-between cursor-pointer">
-                        <div>
-                            <p class="text-xs font-semibold text-slate-200 group-hover:text-cyan-400">Selector de Modalidades</p>
-                            <p class="text-[10px] text-slate-500">Menú clásico de Lobby con bordes y 3 modos</p>
+                
+                <div class="space-y-3">
+                    <div class="relative group">
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1.5">Nombre del Archivo YML</label>
+                        <div class="relative">
+                            <i data-lucide="file-code" class="w-4 h-4 text-slate-500 absolute left-3 top-2.5"></i>
+                            <input type="text" id="menu-id" value="menu_principal" class="w-full bg-slate-950/80 border border-slate-800 focus:border-cyan-500/50 rounded-xl pl-9 pr-3 py-2 text-xs transition-all outline-none mono text-cyan-400 focus:ring-2 focus:ring-cyan-500/20">
                         </div>
-                        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-600 group-hover:text-cyan-400 transition-all"></i>
-                    </button>
-                    <button onclick="loadSystemTemplate('profile')" class="w-full text-left bg-slate-950 hover:bg-slate-800/80 border border-slate-800 hover:border-slate-700 p-2.5 rounded-xl transition-all group flex items-center justify-between cursor-pointer">
-                        <div>
-                            <p class="text-xs font-semibold text-slate-200 group-hover:text-cyan-400">Perfil del Jugador</p>
-                            <p class="text-[10px] text-slate-500">Usa cabezas dinámicas y estadísticas</p>
+                    </div>
+                    <div class="relative group">
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1.5">Título del Menú (Soporta colores &)</label>
+                        <div class="relative">
+                            <i data-lucide="type" class="w-4 h-4 text-slate-500 absolute left-3 top-2.5"></i>
+                            <input type="text" id="menu-title" value="&8&lServidor Network" class="w-full bg-slate-950/80 border border-slate-800 focus:border-cyan-500/50 rounded-xl pl-9 pr-3 py-2 text-xs transition-all outline-none focus:ring-2 focus:ring-cyan-500/20">
                         </div>
-                        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-600 group-hover:text-cyan-400 transition-all"></i>
-                    </button>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1.5">Tamaño del Inventario</label>
+                        <select id="menu-rows" class="w-full bg-slate-950/80 border border-slate-800 focus:border-emerald-500/50 rounded-xl px-3 py-2 text-xs transition-all outline-none cursor-pointer focus:ring-2 focus:ring-emerald-500/20">
+                            <option value="1">1 Fila (9 slots)</option>
+                            <option value="2">2 Filas (18 slots)</option>
+                            <option value="3">3 Filas (27 slots)</option>
+                            <option value="4">4 Filas (36 slots)</option>
+                            <option value="5">5 Filas (45 slots)</option>
+                            <option value="6" selected>6 Filas (54 slots)</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
-            <!-- Parámetros Estructurales -->
-            <div class="bg-slate-900/50 border border-slate-800/60 rounded-2xl p-4 shadow-lg space-y-4">
-                <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                    <i data-lucide="settings" class="w-4 h-4 text-emerald-400"></i> Propiedades Core
+            <!-- Panel de Plantillas Oficiales -->
+            <div class="glass-panel rounded-2xl p-5">
+                <h2 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <i data-lucide="library" class="w-4 h-4 text-cyan-400"></i> Plantillas Rápidas
                 </h2>
-                <div>
-                    <label class="block text-[11px] text-slate-400 mb-1">Nombre del Archivo YML</label>
-                    <input type="text" id="menu-id" value="menu_principal" class="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500/50 rounded-xl px-3 py-2 text-xs transition-all outline-none mono text-cyan-400">
-                </div>
-                <div>
-                    <label class="block text-[11px] text-slate-400 mb-1">Título de la GUI</label>
-                    <input type="text" id="menu-title" value="&8&lServidor Network" class="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500/50 rounded-xl px-3 py-2 text-xs transition-all outline-none">
-                </div>
-                <div>
-                    <label class="block text-[11px] text-slate-400 mb-1">Tamaño / Filas del Cofre</label>
-                    <select id="menu-rows" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs transition-all outline-none cursor-pointer">
-                        <option value="1">1 Fila (9 slots)</option>
-                        <option value="2">2 Filas (18 slots)</option>
-                        <option value="3">3 Filas (27 slots)</option>
-                        <option value="4">4 Filas (36 slots)</option>
-                        <option value="5">5 Filas (45 slots)</option>
-                        <option value="6" selected>6 Filas (54 slots)</option>
-                    </select>
+                <div class="space-y-2">
+                    <button onclick="loadSystemTemplate('lobby')" class="w-full text-left bg-slate-900/50 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500/30 p-3 rounded-xl transition-all group flex items-center justify-between cursor-pointer">
+                        <div>
+                            <p class="text-xs font-bold text-slate-200 group-hover:text-cyan-400 transition-colors">Selector Modalidades</p>
+                            <p class="text-[10px] text-slate-500 mt-0.5">3 modos con bordes decorativos</p>
+                        </div>
+                        <div class="bg-slate-950 p-1.5 rounded-lg group-hover:bg-cyan-500/10 transition-colors">
+                            <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-slate-500 group-hover:text-cyan-400"></i>
+                        </div>
+                    </button>
+                    <button onclick="loadSystemTemplate('profile')" class="w-full text-left bg-slate-900/50 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500/30 p-3 rounded-xl transition-all group flex items-center justify-between cursor-pointer">
+                        <div>
+                            <p class="text-xs font-bold text-slate-200 group-hover:text-cyan-400 transition-colors">Perfil de Jugador</p>
+                            <p class="text-[10px] text-slate-500 mt-0.5">Estadísticas y menú personal</p>
+                        </div>
+                        <div class="bg-slate-950 p-1.5 rounded-lg group-hover:bg-cyan-500/10 transition-colors">
+                            <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-slate-500 group-hover:text-cyan-400"></i>
+                        </div>
+                    </button>
                 </div>
             </div>
         </div>
 
         <!-- CENTRO: Grid View / Canvas (5 Cols) -->
-        <div class="lg:col-span-5 space-y-6">
-            <div class="bg-slate-900/50 border border-slate-800/60 rounded-2xl p-5 shadow-lg flex flex-col h-full">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                        <i data-lucide="eye" class="w-4 h-4 text-emerald-400"></i> Renderizador de Canvas
+        <div class="xl:col-span-5 flex flex-col gap-5">
+            <div class="glass-panel rounded-2xl p-6 flex flex-col flex-1 relative overflow-hidden">
+                <!-- Efecto de brillo de fondo -->
+                <div class="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="flex justify-between items-center mb-6 relative z-10">
+                    <h2 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                        <i data-lucide="monitor" class="w-4 h-4 text-emerald-400"></i> Vista Previa en Vivo
                     </h2>
-                    <div id="live-title" class="text-xs bg-slate-950 px-3 py-1 rounded-lg border border-slate-800 text-yellow-400 font-medium">
-                        &8&lServidor Network
+                    <div class="text-xs bg-slate-950/80 px-4 py-1.5 rounded-lg border border-slate-800/80 font-medium shadow-inner flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                        <span id="live-title" class="font-bold tracking-wide" style="color: #55FF55;">Servidor Network</span>
                     </div>
                 </div>
                 
-                <div class="p-4 bg-slate-950/60 rounded-xl border border-slate-800/40 flex justify-center items-center flex-1">
-                    <div class="bg-[#212121] border-4 border-[#151515] p-2 rounded-lg w-full max-w-md shadow-2xl">
-                        <div id="grid-canvas" class="grid grid-cols-9 gap-1">
+                <!-- CANVAS INVENTARIO -->
+                <div class="flex justify-center items-center flex-1 relative z-10">
+                    <div class="mc-inventory">
+                        <div id="grid-canvas" class="grid grid-cols-9 gap-[2px]">
                             <!-- Inyectado vía JS -->
                         </div>
                     </div>
                 </div>
+                
+                <div class="mt-4 text-center">
+                    <p class="text-[10px] text-slate-500 flex items-center justify-center gap-1.5 font-medium">
+                        <i data-lucide="info" class="w-3 h-3"></i> Haz clic en un slot para editar. Arrastra para mover un ítem.
+                    </p>
+                </div>
             </div>
         </div>
 
-        <!-- DERECHA: Editor Inteligente Contextual (4 Cols) -->
-        <div class="lg:col-span-4 space-y-6">
-            <div class="bg-slate-900/50 border border-slate-800/60 rounded-2xl p-5 shadow-lg">
-                <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
+        <!-- DERECHA: Editor e Inspector Contextual (4 Cols) -->
+        <div class="xl:col-span-4 flex flex-col gap-5">
+            <div class="glass-panel rounded-2xl p-5 flex-1 relative">
+                <div class="flex justify-between items-center mb-5 border-b border-slate-800/80 pb-3">
                     <h2 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                        <i data-lucide="pencil-line" class="w-4 h-4 text-cyan-400"></i> Inspector de Propiedades
+                        <i data-lucide="edit-3" class="w-4 h-4 text-cyan-400"></i> Editor de Componente
                     </h2>
-                    <span id="active-slot-badge" class="text-xs font-mono bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-2 py-0.5 rounded">SLOT: 0</span>
+                    <div class="flex items-center gap-2">
+                        <!-- Herramientas Copy/Paste -->
+                        <button onclick="copySlot()" title="Copiar Ítem" class="p-1.5 bg-slate-800 hover:bg-cyan-500/20 text-slate-400 hover:text-cyan-400 rounded-md transition-colors border border-transparent hover:border-cyan-500/30">
+                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button onclick="pasteSlot()" title="Pegar Ítem" class="p-1.5 bg-slate-800 hover:bg-emerald-500/20 text-slate-400 hover:text-emerald-400 rounded-md transition-colors border border-transparent hover:border-emerald-500/30">
+                            <i data-lucide="clipboard-paste" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <div class="w-px h-4 bg-slate-700 mx-1"></div>
+                        <span id="active-slot-badge" class="text-xs font-mono bg-slate-900 text-cyan-400 border border-slate-700 px-2.5 py-1 rounded shadow-inner">SLOT: 0</span>
+                    </div>
                 </div>
 
                 <!-- SELECTOR DE COMPONENTE -->
                 <div class="mb-4">
-                    <label class="block text-[11px] text-slate-400 mb-1.5 font-medium">Arquitectura de Ítem</label>
-                    <div class="grid grid-cols-3 gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800">
-                        <button onclick="switchContextType('normal')" id="ctx-normal" class="ctx-btn text-[10px] font-semibold py-1.5 rounded-lg text-center transition-all bg-cyan-500 text-slate-950 cursor-pointer">Bloque</button>
-                        <button onclick="switchContextType('hdb')" id="ctx-hdb" class="ctx-btn text-[10px] font-semibold py-1.5 rounded-lg text-center transition-all text-slate-400 hover:text-white cursor-pointer">HDB</button>
-                        <button onclick="switchContextType('custom_head')" id="ctx-custom_head" class="ctx-btn text-[10px] font-semibold py-1.5 rounded-lg text-center transition-all text-slate-400 hover:text-white cursor-pointer">Cabezas</button>
+                    <div class="grid grid-cols-3 gap-2 bg-slate-950/50 p-1.5 rounded-xl border border-slate-800/80">
+                        <button onclick="switchContextType('normal')" id="ctx-normal" class="ctx-btn text-[11px] font-bold py-2 rounded-lg text-center transition-all bg-cyan-500 text-slate-950 shadow-md">Ítem Base</button>
+                        <button onclick="switchContextType('hdb')" id="ctx-hdb" class="ctx-btn text-[11px] font-bold py-2 rounded-lg text-center transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800">Base Datos Heads</button>
+                        <button onclick="switchContextType('custom_head')" id="ctx-custom_head" class="ctx-btn text-[11px] font-bold py-2 rounded-lg text-center transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800">Cabeza Jugador</button>
                     </div>
                 </div>
 
                 <!-- CAMPOS DINÁMICOS -->
-                <div class="space-y-3">
-                    <div id="material-box">
+                <div class="space-y-4">
+                    <div id="material-box" class="relative">
                         <!-- Inyección reactiva -->
                     </div>
 
-                    <!-- PRESETS ASISTIDOS (Se muestra si aplica) -->
-                    <div id="presets-container" class="hidden bg-slate-950 border border-slate-800/80 p-2 rounded-xl">
-                        <p class="text-[10px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Presets Rápidos:</p>
-                        <div id="presets-grid" class="flex flex-wrap gap-1.5">
+                    <!-- PRESETS ASISTIDOS -->
+                    <div id="presets-container" class="hidden bg-slate-900/50 border border-slate-800 p-3 rounded-xl">
+                        <p class="text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wider flex items-center gap-1.5">
+                            <i data-lucide="zap" class="w-3 h-3 text-yellow-400"></i> Presets Rápidos
+                        </p>
+                        <div id="presets-grid" class="flex flex-wrap gap-2">
                             <!-- Botones inyectados dinámicamente -->
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-3 gap-2">
-                        <div class="col-span-2">
-                            <label class="block text-[11px] text-slate-400 mb-1">Nombre Visual</label>
-                            <input type="text" id="item-name" placeholder="&eEjemplo Ítem" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs outline-none focus:border-cyan-500/50">
+                    <div class="grid grid-cols-4 gap-3">
+                        <div class="col-span-3 relative group">
+                            <label class="block text-[11px] font-semibold text-slate-400 mb-1.5">Nombre Visual (Display Name)</label>
+                            <input type="text" id="item-name" placeholder="&eEspada Épica" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 text-xs outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all">
                         </div>
-                        <div>
-                            <label class="block text-[11px] text-slate-400 mb-1">Cantidad</label>
-                            <input type="number" id="item-amount" value="1" min="1" max="64" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs outline-none font-mono">
+                        <div class="relative group">
+                            <label class="block text-[11px] font-semibold text-slate-400 mb-1.5">Cant.</label>
+                            <input type="number" id="item-amount" value="1" min="1" max="64" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 text-xs outline-none font-mono text-center focus:border-cyan-500/50">
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-[11px] text-slate-400 mb-1">Lore / Descripción</label>
-                        <textarea id="item-lore" rows="2" placeholder="&7Línea informativa" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs outline-none font-mono resize-none"></textarea>
+                    <div class="relative group">
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1.5 flex justify-between">
+                            <span>Lore (Descripción)</span>
+                            <span class="text-[9px] text-slate-500 font-normal">Soporta múltiples líneas</span>
+                        </label>
+                        <textarea id="item-lore" rows="3" placeholder="&7Línea 1&#10;&7Línea 2" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl p-3 text-xs outline-none font-mono resize-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all leading-relaxed"></textarea>
                     </div>
 
                     <!-- ASISTENTE DE COMANDOS -->
-                    <div>
-                        <div class="flex justify-between items-center mb-1">
-                            <label class="block text-[11px] text-slate-400">Acciones / Comandos</label>
-                            <span class="text-[9px] text-cyan-400 font-mono">Click para autoinyectar</span>
+                    <div class="bg-slate-900/30 p-3 rounded-xl border border-slate-800/50">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="block text-[11px] font-semibold text-slate-400">Acciones al hacer Click</label>
+                            <span class="text-[9px] bg-cyan-500/10 text-cyan-400 px-1.5 py-0.5 rounded border border-cyan-500/20">Click = Insertar</span>
                         </div>
-                        <div class="flex gap-1 mb-1.5 overflow-x-auto pb-1">
-                            <button onclick="injectCommandPrefix('[player] ')" class="text-[9px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-0.5 rounded border border-slate-700/60 cursor-pointer whitespace-nowrap">[player]</button>
-                            <button onclick="injectCommandPrefix('[console] ')" class="text-[9px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-0.5 rounded border border-slate-700/60 cursor-pointer whitespace-nowrap">[console]</button>
-                            <button onclick="injectCommandPrefix('[opengui] ')" class="text-[9px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-0.5 rounded border border-slate-700/60 cursor-pointer whitespace-nowrap">[opengui]</button>
-                            <button onclick="injectCommandPrefix('[close]')" class="text-[9px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-0.5 rounded border border-slate-700/60 cursor-pointer whitespace-nowrap">[close]</button>
+                        <div class="flex flex-wrap gap-1.5 mb-2">
+                            <button onclick="injectCommandPrefix('[player] ')" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-200 px-2 py-1 rounded-md border border-slate-700 transition-colors font-mono cursor-pointer">[player]</button>
+                            <button onclick="injectCommandPrefix('[console] ')" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-200 px-2 py-1 rounded-md border border-slate-700 transition-colors font-mono cursor-pointer">[console]</button>
+                            <button onclick="injectCommandPrefix('[opengui] ')" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-200 px-2 py-1 rounded-md border border-slate-700 transition-colors font-mono cursor-pointer">[opengui]</button>
+                            <button onclick="injectCommandPrefix('[close]')" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-200 px-2 py-1 rounded-md border border-slate-700 transition-colors font-mono cursor-pointer">[close]</button>
+                            <button onclick="injectCommandPrefix('[message] ')" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-200 px-2 py-1 rounded-md border border-slate-700 transition-colors font-mono cursor-pointer">[message]</button>
                         </div>
-                        <textarea id="item-commands" rows="2" placeholder="[player] spawn" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs outline-none font-mono resize-none"></textarea>
+                        <textarea id="item-commands" rows="2" placeholder="[player] spawn" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl p-3 text-xs outline-none font-mono resize-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all"></textarea>
                     </div>
 
-                    <div class="flex gap-2 pt-1">
-                        <button onclick="saveSlotData()" class="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold py-2 rounded-xl text-xs shadow-lg shadow-emerald-500/10 hover:brightness-110 transition-all cursor-pointer">Guardar Cambios</button>
-                        <button onclick="clearSlotData()" class="bg-rose-500/10 border border-rose-500/20 text-rose-400 px-3 rounded-xl text-xs hover:bg-rose-500 hover:text-white transition-all cursor-pointer"><i data-lucide="trash" class="w-4 h-4"></i></button>
+                    <div class="flex gap-3 pt-2">
+                        <button onclick="saveSlotData()" class="flex-1 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-bold py-2.5 rounded-xl text-sm shadow-[0_0_15px_rgba(16,185,129,0.2)] hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] transition-all flex justify-center items-center gap-2">
+                            <i data-lucide="save" class="w-4 h-4"></i> Guardar Slot
+                        </button>
+                        <button onclick="clearSlotData()" title="Eliminar Ítem del Slot" class="bg-rose-500/10 border border-rose-500/20 text-rose-400 px-4 rounded-xl hover:bg-rose-500 hover:text-white transition-all flex justify-center items-center">
+                            <i data-lucide="trash" class="w-4 h-4"></i>
+                        </button>
                     </div>
                 </div>
             </div>
 
             <!-- TERMINAL YAML CODE -->
-            <div class="bg-slate-900/50 border border-slate-800/60 rounded-2xl p-4 shadow-lg flex flex-col h-[240px]">
-                <div class="flex justify-between items-center mb-2">
-                    <div class="flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
-                        <p class="text-xs font-bold text-slate-300 uppercase tracking-wider">Compilado Realtime YML</p>
+            <div class="glass-panel rounded-2xl p-4 flex flex-col h-[280px]">
+                <div class="flex justify-between items-center mb-3">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="terminal" class="w-4 h-4 text-emerald-400"></i>
+                        <p class="text-xs font-bold text-slate-300 uppercase tracking-wider">Código YAML Generado</p>
                     </div>
-                    <button onclick="copyToClipboard()" id="btn-copy" class="text-[10px] bg-slate-800 text-cyan-400 border border-slate-700 px-2.5 py-1 rounded-lg hover:bg-slate-700 transition-all cursor-pointer flex items-center gap-1">
-                        <i data-lucide="copy" class="w-3 h-3"></i> Copiar Código
+                    <button onclick="copyToClipboard()" id="btn-copy" class="text-[10px] bg-slate-800 text-cyan-400 border border-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-700 hover:text-white transition-all cursor-pointer flex items-center gap-1.5 font-bold shadow-sm">
+                        <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copiar
                     </button>
                 </div>
-                <textarea id="yaml-code" readonly class="w-full flex-1 bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-[11px] font-mono text-emerald-400 resize-none focus:outline-none overflow-y-auto border-dashed"></textarea>
+                <div class="relative flex-1 bg-[#0d1117] border border-slate-800 rounded-xl overflow-hidden group">
+                    <div class="absolute left-0 top-0 bottom-0 w-8 bg-[#161b22] border-r border-slate-800 flex flex-col items-center py-2 text-[10px] text-slate-600 font-mono select-none overflow-hidden" id="line-numbers">
+                        <!-- Generado por CSS/JS simple para decoración -->
+                    </div>
+                    <textarea id="yaml-code" readonly class="w-full h-full bg-transparent pl-10 pr-3 py-2 text-[11px] font-mono text-emerald-400/90 resize-none focus:outline-none overflow-y-auto leading-relaxed custom-scrollbar whitespace-pre"></textarea>
+                </div>
             </div>
         </div>
     </main>
 
     <!-- MAIN ENGINE CONTROLLER -->
     <script>
+        // DataLists para autocompletado nativo HTML
+        document.body.insertAdjacentHTML('beforeend', `
+            <datalist id="mc-materials">
+                <option value="GRAY_STAINED_GLASS_PANE">
+                <option value="BLACK_STAINED_GLASS_PANE">
+                <option value="BARRIER">
+                <option value="DIAMOND_SWORD">
+                <option value="CHEST">
+                <option value="EMERALD">
+                <option value="PLAYER_HEAD">
+                <option value="GRASS_BLOCK">
+                <option value="BOOK">
+                <option value="PAPER">
+                <option value="COMPASS">
+                <option value="CLOCK">
+            </datalist>
+        `);
+
         // Memory Architecture & Engine State
         let STATE = {
             rows: 6,
@@ -240,29 +384,63 @@
             menuTitle: '&8&lServidor Network',
             items: {}
         };
+        
+        let clipboardSlot = null; // Para Copiar/Pegar
 
-        // Static Presets Database (Senior Level Curation)
+        // Utilidad: Traducir códigos de color Minecraft a HTML Colors
+        const MC_COLORS = {
+            '0': '#000000', '1': '#0000AA', '2': '#00AA00', '3': '#00AAAA',
+            '4': '#AA0000', '5': '#AA00AA', '6': '#FFAA00', '7': '#AAAAAA',
+            '8': '#555555', '9': '#5555FF', 'a': '#55FF55', 'b': '#55FFFF',
+            'c': '#FF5555', 'd': '#FF55FF', 'e': '#FFFF55', 'f': '#FFFFFF'
+        };
+
+        function parseMCColor(text) {
+            if (!text) return '';
+            // Basic parsing: split by & and create spans
+            let parts = text.split('&');
+            if(parts.length === 1) return parts[0];
+            
+            let html = parts[0];
+            for (let i = 1; i < parts.length; i++) {
+                let code = parts[i].charAt(0).toLowerCase();
+                let rest = parts[i].substring(1);
+                
+                if (MC_COLORS[code]) {
+                    html += `<span style="color: ${MC_COLORS[code]}; ${code==='l'?'font-weight:bold;':''}">${rest}</span>`;
+                } else if (code === 'l') {
+                    html += `<span style="font-weight: bold;">${rest}</span>`;
+                } else if (code === 'r') {
+                    html += `</span>${rest}`;
+                } else {
+                    html += `&${parts[i]}`;
+                }
+            }
+            return html;
+        }
+
+        // Static Presets Database
         const DICTIONARY = {
             heads: [
                 { name: 'Flecha Der.', id: 'head;MHF_ArrowRight', label: '➡ Der' },
                 { name: 'Flecha Izq.', id: 'head;MHF_ArrowLeft', label: '⬅ Izq' },
-                { name: 'Cofre Tesoro', id: 'head;MHF_Chest', label: '📦 Chest' },
-                { name: 'Signo Interr.', id: 'head;MHF_Question', label: '❓ Info' },
-                { name: 'Bloque de Oro', id: 'head;MHF_Gold', label: '💰 Coin' }
+                { name: 'Cofre', id: 'head;MHF_Chest', label: '📦 Chest' },
+                { name: 'Info', id: 'head;MHF_Question', label: '❓ Info' },
+                { name: 'Moneda', id: 'head;MHF_Gold', label: '💰 Coin' }
             ],
             hdb: [
                 { name: 'Spawn Icon', id: '1243', label: '🏠 Spawn' },
-                { name: 'Survival Head', id: '41432', label: '🌍 Survival' },
-                { name: 'Skyblock Icon', id: '193', label: '☁ Skyblock' },
-                { name: 'Discord Head', id: '2433', label: '💬 Discord' }
+                { name: 'Earth', id: '41432', label: '🌍 Mundo' },
+                { name: 'Skyblock', id: '193', label: '☁ Nube' },
+                { name: 'Discord', id: '2433', label: '💬 Discord' }
             ]
         };
 
         const SYSTEM_TEMPLATES = {
             lobby: {
-                rows: 3, menuId: 'selector_modalidades', menuTitle: '&8&l» Servidor Selector',
+                rows: 3, menuId: 'selector_modalidades', menuTitle: '&8&l» &3Selector',
                 items: {
-                    0: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
+                    0: { type: 'normal', material: 'BLACK_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
                     1: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
                     2: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
                     3: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
@@ -270,13 +448,13 @@
                     5: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
                     6: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
                     7: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
-                    8: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
+                    8: { type: 'normal', material: 'BLACK_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
                     9: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
-                    11: { type: 'hdb', material: '41432', name: '&a&lSURVIVAL CUSTOM', amount: 1, lore: ['&7Mundo abierto y economía','','&e▶ Haz clic para conectar'], commands: ['[connect] survival'] },
-                    13: { type: 'normal', material: 'DIAMOND_SWORD', name: '&c&lSKYWARS PvP', amount: 1, lore: ['&7Combates en las alturas','','&e▶ Haz clic para jugar'], commands: ['[connect] skywars'] },
-                    15: { type: 'hdb', material: '193', name: '&b&lSKYBLOCK EVOLUTION', amount: 1, lore: ['&7Crea tu propia isla flotante','','&e▶ Haz clic para entrar'], commands: ['[connect] skyblock'] },
+                    11: { type: 'hdb', material: '41432', name: '&a&lSURVIVAL', amount: 1, lore: ['&7Mundo abierto y economía','','&e▶ Haz clic para conectar'], commands: ['[connect] survival'] },
+                    13: { type: 'normal', material: 'DIAMOND_SWORD', name: '&c&lSKYWARS', amount: 1, lore: ['&7Combates en las alturas','','&e▶ Haz clic para jugar'], commands: ['[connect] skywars'] },
+                    15: { type: 'hdb', material: '193', name: '&b&lSKYBLOCK', amount: 1, lore: ['&7Crea tu propia isla flotante','','&e▶ Haz clic para entrar'], commands: ['[connect] skyblock'] },
                     17: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
-                    18: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
+                    18: { type: 'normal', material: 'BLACK_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
                     19: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
                     20: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
                     21: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
@@ -284,15 +462,16 @@
                     23: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
                     24: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
                     25: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
-                    26: { type: 'normal', material: 'GRAY_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
+                    26: { type: 'normal', material: 'BLACK_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] },
                 }
             },
             profile: {
                 rows: 4, menuId: 'perfil_usuario', menuTitle: '&8&lTu Perfil',
                 items: {
-                    13: { type: 'custom_head', material: '%player_name%', name: '&e&lTu Cuenta: &f%player_name%', amount: 1, lore: ['&7Rango: &bVIP+','&7Monedas: &a$5,400'], commands: [] },
+                    13: { type: 'custom_head', material: '%player_name%', name: '&e&lCuenta: &f%player_name%', amount: 1, lore: ['&7Rango: &bVIP+','&7Monedas: &a$5,400'], commands: [] },
                     20: { type: 'normal', material: 'CHEST', name: '&aMis Recompensas', amount: 1, lore: ['&7Reclama tus premios diarios.'], commands: ['[player] claim'] },
-                    22: { type: 'normal', material: 'REDSTONE_THORCH', name: '&cConfiguración', amount: 1, lore: ['&7Alternar opciones globales.'], commands: ['[opengui] settings'] }
+                    22: { type: 'normal', material: 'REDSTONE_TORCH', name: '&cConfiguración', amount: 1, lore: ['&7Alternar opciones globales.'], commands: ['[opengui] settings'] },
+                    24: { type: 'normal', material: 'BOOK', name: '&dEstadísticas', amount: 1, lore: ['&7Kills: &f124','&7Muertes: &f12'], commands: [] }
                 }
             }
         };
@@ -304,9 +483,15 @@
             switchContextType(STATE.activeType);
             updateYAMLCompiler();
             setupCoreListeners();
+            generateLineNumbers();
+            
+            // Live title update
+            document.getElementById('live-title').innerHTML = parseMCColor(STATE.menuTitle) || 'GUI';
         };
 
-        // Render Canvas Matrix
+        let draggedSlotId = null;
+
+        // Render Canvas Matrix (Now with Drag & Drop and Colors)
         function renderGridCanvas() {
             const canvas = document.getElementById('grid-canvas');
             canvas.innerHTML = '';
@@ -314,41 +499,127 @@
 
             for (let i = 0; i < totalSlots; i++) {
                 const slot = document.createElement('div');
-                slot.className = `mc-slot rounded flex flex-col items-center justify-center p-0.5 text-[9px] relative font-semibold select-none ${i === STATE.selectedSlot ? 'active' : ''}`;
+                slot.className = `mc-slot flex flex-col items-center justify-center p-0.5 text-[10px] ${i === STATE.selectedSlot ? 'active' : ''}`;
                 slot.dataset.id = i;
 
                 if (STATE.items[i]) {
                     const node = STATE.items[i];
+                    
+                    // Drag and Drop Logic
+                    slot.draggable = true;
+                    slot.ondragstart = (e) => {
+                        draggedSlotId = i;
+                        e.dataTransfer.effectAllowed = "move";
+                        // Trick to set drag image transparent if wanted
+                    };
+                    slot.ondragover = (e) => {
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = "move";
+                        slot.classList.add('drag-over');
+                    };
+                    slot.ondragleave = (e) => {
+                        slot.classList.remove('drag-over');
+                    };
+                    slot.ondrop = (e) => {
+                        e.preventDefault();
+                        slot.classList.remove('drag-over');
+                        if(draggedSlotId !== null && draggedSlotId !== i) {
+                            // Move logic (Swap or Overwrite? Standard is Overwrite/Move, but let's Swap for better UX)
+                            const temp = STATE.items[i];
+                            STATE.items[i] = STATE.items[draggedSlotId];
+                            if(temp) STATE.items[draggedSlotId] = temp;
+                            else delete STATE.items[draggedSlotId];
+                            
+                            draggedSlotId = null;
+                            saveToLocalStorage();
+                            renderGridCanvas();
+                            updateYAMLCompiler();
+                            selectSlotContext(i);
+                        }
+                    };
+
+                    let visualName = node.name || node.material;
+                    let parsedName = parseMCColor(visualName);
+
+                    // Material Render Simulation
                     if (node.type === 'hdb' || node.type === 'custom_head') {
-                        slot.classList.add('bg-purple-950/70', 'border-purple-400/40');
-                        slot.innerHTML = `<span class="text-purple-300 font-bold tracking-tight truncate w-full text-center px-0.5">💀 HEAD</span>`;
+                        slot.innerHTML = `
+                            <div class="w-6 h-6 bg-[#3700b3]/80 border border-[#bb86fc] rounded shadow-sm flex items-center justify-center mb-0.5">
+                                <span class="text-[8px]">💀</span>
+                            </div>
+                            <span class="truncate w-full text-center block px-0.5 z-10 leading-none drop-shadow-md">${parsedName}</span>
+                            <div class="mc-tooltip text-left">
+                                <p class="font-bold text-[#bb86fc]">${visualName.replace(/&[0-9a-fk-or]/gi, '')}</p>
+                                <p class="text-slate-400 mt-1">Material: Head (${node.material})</p>
+                            </div>
+                        `;
                     } else {
-                        if(node.material === 'GRAY_STAINED_GLASS_PANE' && node.name === ' ') {
-                            slot.classList.add('bg-slate-700/50', 'border-slate-500/20');
-                            slot.innerHTML = `<span class="opacity-20 text-slate-400">⏹</span>`;
+                        // Background Pane Logic (Gray Stained Glass)
+                        if(node.material.includes('STAINED_GLASS_PANE') && node.name === ' ') {
+                            let color = node.material.split('_')[0].toLowerCase();
+                            let bgClass = "bg-slate-500/40"; // gray default
+                            if(color === 'black') bgClass = "bg-zinc-900/80";
+                            else if(color === 'red') bgClass = "bg-red-500/40";
+                            else if(color === 'blue') bgClass = "bg-blue-500/40";
+                            
+                            slot.innerHTML = `
+                                <div class="w-full h-full ${bgClass} absolute inset-0 m-0.5 border border-white/10 shadow-inner"></div>
+                                <div class="mc-tooltip"><p class="text-gray-400">Background Panel</p></div>
+                            `;
                         } else {
-                            slot.classList.add('bg-amber-950/40', 'border-amber-500/30');
-                            let visualName = node.name || node.material;
-                            visualName = visualName.replace(/&[0-9a-fk-or]/gi, ''); // Clean formatting
-                            slot.innerHTML = `<span class="text-amber-400 truncate w-full text-center block px-0.5">${visualName}</span>`;
+                            slot.innerHTML = `
+                                <div class="w-7 h-7 flex items-center justify-center mb-0.5 relative">
+                                    <img src="https://assets.mcfallout.net/items/${node.material.toLowerCase()}.png" 
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" 
+                                         class="max-w-full max-h-full pixelated drop-shadow-md z-10" alt="item">
+                                    <div class="hidden w-full h-full bg-amber-600/30 border border-amber-500/50 rounded flex items-center justify-center z-0 absolute">
+                                        <i data-lucide="box" class="w-4 h-4 text-amber-500"></i>
+                                    </div>
+                                    ${node.amount > 1 ? `<span class="absolute -bottom-1 -right-1 text-white font-mono text-[9px] drop-shadow-[1px_1px_0_#000] z-20">${node.amount}</span>` : ''}
+                                </div>
+                                <span class="truncate w-[120%] text-center block px-0.5 z-10 leading-tight drop-shadow-[1px_1px_0_rgba(0,0,0,0.8)] text-white">${parsedName}</span>
+                                <div class="mc-tooltip text-left min-w-[120px]">
+                                    <p class="font-bold text-white">${visualName.replace(/&[0-9a-fk-or]/gi, '')}</p>
+                                    ${node.lore && node.lore.length > 0 ? `<div class="mt-1 border-t border-slate-700 pt-1 space-y-0.5">${node.lore.map(l => `<p>${parseMCColor(l)}</p>`).join('')}</div>` : ''}
+                                </div>
+                            `;
                         }
                     }
                 } else {
-                    slot.innerHTML = `<span class="text-slate-600/60 font-mono text-[8px]">${i}</span>`;
+                    // Empty Slot - Still Drop Target
+                    slot.ondragover = (e) => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; slot.classList.add('drag-over'); };
+                    slot.ondragleave = (e) => { slot.classList.remove('drag-over'); };
+                    slot.ondrop = (e) => {
+                        e.preventDefault();
+                        slot.classList.remove('drag-over');
+                        if(draggedSlotId !== null && draggedSlotId !== i) {
+                            STATE.items[i] = STATE.items[draggedSlotId];
+                            delete STATE.items[draggedSlotId];
+                            draggedSlotId = null;
+                            saveToLocalStorage(); renderGridCanvas(); updateYAMLCompiler(); selectSlotContext(i);
+                        }
+                    };
+                    // Only show number slightly
+                    slot.innerHTML = `<span class="text-slate-800 font-mono text-[9px] font-bold">${i}</span>`;
                 }
 
-                slot.onclick = () => selectSlotContext(i);
+                // Click to select (handled here to avoid drag conflicts)
+                slot.onmousedown = (e) => {
+                    selectSlotContext(i);
+                };
+                
                 canvas.appendChild(slot);
             }
+            lucide.createIcons();
         }
 
         // Context Manager
         function switchContextType(type) {
             STATE.activeType = type;
             document.querySelectorAll('.ctx-btn').forEach(b => {
-                b.className = "ctx-btn text-[10px] font-semibold py-1.5 rounded-lg text-center transition-all text-slate-400 hover:text-white cursor-pointer";
+                b.className = "ctx-btn text-[11px] font-bold py-2 rounded-lg text-center transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800";
             });
-            document.getElementById(`ctx-${type}`).className = "ctx-btn text-[10px] font-semibold py-1.5 rounded-lg text-center transition-all bg-cyan-500 text-slate-950 cursor-pointer";
+            document.getElementById(`ctx-${type}`).className = "ctx-btn text-[11px] font-bold py-2 rounded-lg text-center transition-all bg-cyan-500 text-slate-950 shadow-md";
 
             const container = document.getElementById('material-box');
             const presetsContainer = document.getElementById('presets-container');
@@ -356,24 +627,30 @@
 
             if (type === 'normal') {
                 container.innerHTML = `
-                    <label class="block text-[11px] text-slate-400 mb-1">ID del Material (Vanilla)</label>
-                    <input type="text" id="item-material" placeholder="DIAMOND_SWORD" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs outline-none focus:border-cyan-500/50 uppercase font-mono">
+                    <label class="block text-[11px] font-semibold text-slate-400 mb-1.5 flex justify-between">
+                        <span>Material Vanilla</span>
+                        <a href="https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html" target="_blank" class="text-[9px] text-cyan-400 hover:underline">Ver Lista</a>
+                    </label>
+                    <input type="text" id="item-material" list="mc-materials" placeholder="DIAMOND_SWORD" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 text-xs outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 uppercase font-mono transition-all">
                 `;
                 presetsContainer.classList.add('hidden');
             } else if (type === 'hdb') {
                 container.innerHTML = `
-                    <label class="block text-[11px] text-slate-400 mb-1">ID numérico de HeadsDatabase</label>
-                    <input type="text" id="item-material" placeholder="1243" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs outline-none focus:border-cyan-500/50 font-mono">
+                    <label class="block text-[11px] font-semibold text-slate-400 mb-1.5 flex justify-between">
+                        <span>ID numérico (HeadsDatabase)</span>
+                        <a href="https://minecraft-heads.com/" target="_blank" class="text-[9px] text-cyan-400 hover:underline">Buscar</a>
+                    </label>
+                    <input type="text" id="item-material" placeholder="Ej: 1243" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 text-xs outline-none focus:border-cyan-500/50 font-mono focus:ring-2 focus:ring-cyan-500/20 transition-all">
                 `;
                 presetsContainer.classList.remove('hidden');
-                presetsGrid.innerHTML = DICTIONARY.hdb.map(h => `<button onclick="applyQuickPreset('${h.id}')" class="text-[9px] bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 px-2 py-1 rounded-md transition-all cursor-pointer">${h.label}</button>`).join('');
+                presetsGrid.innerHTML = DICTIONARY.hdb.map(h => `<button onclick="applyQuickPreset('${h.id}')" class="text-[10px] bg-slate-800 border border-slate-700 hover:border-cyan-500/50 hover:bg-slate-700 text-slate-300 px-2.5 py-1.5 rounded-lg transition-all cursor-pointer font-medium">${h.label}</button>`).join('');
             } else if (type === 'custom_head') {
                 container.innerHTML = `
-                    <label class="block text-[11px] text-slate-400 mb-1">Nombre/Placeholder u Objeto Cabeza</label>
-                    <input type="text" id="item-material" placeholder="%player_name%" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs outline-none focus:border-cyan-500/50 font-mono">
+                    <label class="block text-[11px] font-semibold text-slate-400 mb-1.5">Nombre Jugador o Placeholder</label>
+                    <input type="text" id="item-material" placeholder="%player_name%" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 text-xs outline-none focus:border-cyan-500/50 font-mono focus:ring-2 focus:ring-cyan-500/20 transition-all">
                 `;
                 presetsContainer.classList.remove('hidden');
-                presetsGrid.innerHTML = DICTIONARY.heads.map(h => `<button onclick="applyQuickPreset('${h.id}')" class="text-[9px] bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 px-2 py-1 rounded-md transition-all cursor-pointer">${h.label}</button>`).join('');
+                presetsGrid.innerHTML = DICTIONARY.heads.map(h => `<button onclick="applyQuickPreset('${h.id}')" class="text-[10px] bg-slate-800 border border-slate-700 hover:border-cyan-500/50 hover:bg-slate-700 text-slate-300 px-2.5 py-1.5 rounded-lg transition-all cursor-pointer font-medium">${h.label}</button>`).join('');
             }
         }
 
@@ -400,10 +677,10 @@
                 const target = STATE.items[id];
                 switchContextType(target.type);
                 document.getElementById('item-material').value = target.material;
-                document.getElementById('item-name').value = target.name;
-                document.getElementById('item-amount').value = target.amount;
-                document.getElementById('item-lore').value = target.lore.join('\n');
-                document.getElementById('item-commands').value = target.commands.join('\n');
+                document.getElementById('item-name').value = target.name || '';
+                document.getElementById('item-amount').value = target.amount || 1;
+                document.getElementById('item-lore').value = target.lore ? target.lore.join('\n') : '';
+                document.getElementById('item-commands').value = target.commands ? target.commands.join('\n') : '';
             } else {
                 document.getElementById('item-material').value = '';
                 document.getElementById('item-name').value = '';
@@ -413,9 +690,54 @@
             }
         }
 
-        function saveSlotData() {
+        // Herramientas de Edición Rápidas
+        function copySlot() {
+            if (STATE.items[STATE.selectedSlot]) {
+                clipboardSlot = JSON.parse(JSON.stringify(STATE.items[STATE.selectedSlot]));
+                showNotification("Componente copiado");
+            } else {
+                showNotification("Slot vacío, no hay nada que copiar", "error");
+            }
+        }
+
+        function pasteSlot() {
+            if (!clipboardSlot) {
+                showNotification("Portapapeles vacío", "error");
+                return;
+            }
+            STATE.items[STATE.selectedSlot] = JSON.parse(JSON.stringify(clipboardSlot));
+            saveSlotData(true); // Guarda silenciosamente y recarga
+            showNotification("Componente pegado");
+        }
+
+        function fillEmptyWithGlass() {
+            const total = STATE.rows * 9;
+            let filled = 0;
+            for(let i=0; i<total; i++) {
+                if (!STATE.items[i]) {
+                    STATE.items[i] = {
+                        type: 'normal',
+                        material: 'GRAY_STAINED_GLASS_PANE',
+                        name: ' ',
+                        amount: 1,
+                        lore: [],
+                        commands: []
+                    };
+                    filled++;
+                }
+            }
+            if(filled > 0) {
+                saveToLocalStorage(); renderGridCanvas(); updateYAMLCompiler();
+                showNotification(`Llenados ${filled} slots vacíos`);
+            }
+        }
+
+        function saveSlotData(silent = false) {
             const material = document.getElementById('item-material').value.trim();
-            if(!material) return alert("Define el material o identificador del componente.");
+            if(!material) {
+                if(!silent) alert("Define el material o identificador del componente.");
+                return;
+            }
 
             STATE.items[STATE.selectedSlot] = {
                 type: STATE.activeType,
@@ -429,6 +751,7 @@
             saveToLocalStorage();
             renderGridCanvas();
             updateYAMLCompiler();
+            if(!silent) showNotification("Slot guardado");
         }
 
         function clearSlotData() {
@@ -439,7 +762,6 @@
             updateYAMLCompiler();
         }
 
-        // Intelligently Fills Borders (Saves hours to network admins)
         function quickFillBorders() {
             const total = STATE.rows * 9;
             for(let i=0; i<total; i++) {
@@ -464,6 +786,7 @@
             saveToLocalStorage();
             renderGridCanvas();
             updateYAMLCompiler();
+            showNotification("Bordes autogenerados");
         }
 
         function loadSystemTemplate(key) {
@@ -472,24 +795,25 @@
                 STATE.rows = data.rows;
                 STATE.menuId = data.menuId;
                 STATE.menuTitle = data.menuTitle;
-                STATE.items = JSON.parse(JSON.stringify(data.items)); // Deep Copy
+                STATE.items = JSON.parse(JSON.stringify(data.items));
 
                 document.getElementById('menu-rows').value = data.rows;
                 document.getElementById('menu-id').value = data.menuId;
                 document.getElementById('menu-title').value = data.menuTitle;
-                document.getElementById('live-title').innerText = data.menuTitle;
+                document.getElementById('live-title').innerHTML = parseMCColor(data.menuTitle);
 
                 STATE.selectedSlot = 0;
                 saveToLocalStorage();
                 renderGridCanvas();
                 updateYAMLCompiler();
+                showNotification("Plantilla cargada");
             }
         }
 
         function setupCoreListeners() {
             document.getElementById('menu-title').oninput = function(e) {
                 STATE.menuTitle = e.target.value;
-                document.getElementById('live-title').innerText = e.target.value || 'GUI';
+                document.getElementById('live-title').innerHTML = parseMCColor(e.target.value) || 'GUI';
                 saveToLocalStorage(); updateYAMLCompiler();
             };
             document.getElementById('menu-id').oninput = function(e) {
@@ -500,16 +824,33 @@
                 STATE.rows = parseInt(e.target.value);
                 const max = STATE.rows * 9;
                 if(STATE.selectedSlot >= max) STATE.selectedSlot = 0;
+                // Cleanup out of bounds
+                for(let key in STATE.items) {
+                    if(parseInt(key) >= max) delete STATE.items[key];
+                }
                 saveToLocalStorage();
                 renderGridCanvas();
                 updateYAMLCompiler();
             };
+            
+            // Sync scrolling of textarea with line numbers
+            document.getElementById('yaml-code').onscroll = function(e) {
+                document.getElementById('line-numbers').style.transform = `translateY(-${e.target.scrollTop}px)`;
+            };
+        }
+
+        function generateLineNumbers() {
+            let numHtml = '';
+            for(let i=1; i<=150; i++) {
+                numHtml += `<span>${i}</span>`;
+            }
+            document.getElementById('line-numbers').innerHTML = numHtml;
         }
 
         function updateYAMLCompiler() {
             const totalSlots = STATE.rows * 9;
             let yaml = `# =====================================================\n`;
-            yaml += `# COMPILADO CON DELUXEMENUS STUDIO ENTERPRISE PRO\n`;
+            yaml += `# COMPILADO CON DELUXEMENUS STUDIO PRO\n`;
             yaml += `# =====================================================\n\n`;
             yaml += `menu_title: '${STATE.menuTitle}'\n`;
             yaml += `open_command: ${STATE.menuId}\n`;
@@ -517,8 +858,9 @@
             yaml += `items:\n`;
 
             let hasValues = false;
-            for(const slot in STATE.items) {
-                if(parseInt(slot) >= totalSlots) continue;
+            for(let slot = 0; slot < totalSlots; slot++) {
+                if(!STATE.items[slot]) continue;
+                
                 hasValues = true;
                 const node = STATE.items[slot];
 
@@ -544,38 +886,37 @@
                     yaml += `    right_click_commands:\n`;
                     node.commands.forEach(c => yaml += `    - '${c}'\n`);
                 }
+                yaml += `\n`;
             }
-            if(!hasValues) yaml += `  # [Info] Agrega componentes desde el inspector dinámico.\n`;
+            if(!hasValues) yaml += `  # [Info] Agrega componentes usando el editor visual.\n`;
             document.getElementById('yaml-code').value = yaml;
         }
 
-        // Persistence Layer (LocalStorage Pattern)
         function saveToLocalStorage() {
-            localStorage.setItem('DM_STUDIO_STATE', JSON.stringify(STATE));
+            localStorage.setItem('DM_STUDIO_PRO_STATE', JSON.stringify(STATE));
         }
 
         function loadFromLocalStorage() {
-            const cached = localStorage.getItem('DM_STUDIO_STATE');
+            const cached = localStorage.getItem('DM_STUDIO_PRO_STATE');
             if (cached) {
                 try {
                     STATE = JSON.parse(cached);
                     document.getElementById('menu-rows').value = STATE.rows;
                     document.getElementById('menu-id').value = STATE.menuId;
                     document.getElementById('menu-title').value = STATE.menuTitle;
-                    document.getElementById('live-title').innerText = STATE.menuTitle;
+                    document.getElementById('live-title').innerHTML = parseMCColor(STATE.menuTitle);
                 } catch(e) { console.error("Error parsed cache memory", e); }
             }
         }
 
         function clearAllData() {
-            if(confirm("¿Restaurar todo el espacio de trabajo de fábrica?")) {
-                localStorage.removeItem('DM_STUDIO_STATE');
-                STATE = { rows: 6, selectedSlot: 0, activeType: 'normal', menuId: 'menu_principal', menuTitle: '&8&lServidor Network', items: {} };
-                document.getElementById('menu-rows').value = 6;
-                document.getElementById('menu-id').value = 'menu_principal';
-                document.getElementById('menu-title').value = '&8&lServidor Network';
-                document.getElementById('live-title').innerText = '&8&lServidor Network';
-                selectSlotContext(0); renderGridCanvas(); updateYAMLCompiler();
+            if(confirm("¿Estás seguro de que deseas limpiar todo el inventario? Esta acción no se puede deshacer.")) {
+                STATE.items = {};
+                selectSlotContext(0); 
+                renderGridCanvas(); 
+                updateYAMLCompiler();
+                saveToLocalStorage();
+                showNotification("Inventario limpiado");
             }
         }
 
@@ -583,12 +924,34 @@
             const area = document.getElementById('yaml-code');
             area.select(); document.execCommand('copy');
             const btn = document.getElementById('btn-copy');
-            btn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5"></i> ¡Copiado con éxito!`;
+            btn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5"></i> Copiado`;
+            btn.classList.add('bg-emerald-500/20', 'text-emerald-400', 'border-emerald-500/50');
             setTimeout(() => {
-                btn.innerHTML = `<i data-lucide="copy" class="w-3 h-3"></i> Copiar Código`;
+                btn.innerHTML = `<i data-lucide="copy" class="w-3.5 h-3.5"></i> Copiar`;
+                btn.classList.remove('bg-emerald-500/20', 'text-emerald-400', 'border-emerald-500/50');
                 lucide.createIcons();
             }, 2000);
             lucide.createIcons();
+        }
+
+        // Simple Toast Notification System
+        function showNotification(msg, type="success") {
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-6 right-6 px-4 py-3 rounded-lg shadow-xl font-medium text-xs flex items-center gap-2 transform transition-all translate-y-10 opacity-0 z-50 glass-panel border ${type === 'success' ? 'border-emerald-500/50 text-emerald-400' : 'border-rose-500/50 text-rose-400'}`;
+            toast.innerHTML = `<i data-lucide="${type === 'success' ? 'check-circle' : 'alert-circle'}" class="w-4 h-4"></i> ${msg}`;
+            document.body.appendChild(toast);
+            lucide.createIcons();
+            
+            // Animate In
+            setTimeout(() => {
+                toast.classList.remove('translate-y-10', 'opacity-0');
+            }, 10);
+            
+            // Animate Out
+            setTimeout(() => {
+                toast.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
         }
     </script>
 </body>
