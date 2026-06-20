@@ -50,6 +50,22 @@
             background: #18191b;
         }
 
+        /* CONSOLA DE RAZONAMIENTO IA */
+        .ai-reasoning-box {
+            background: rgba(10, 10, 11, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #60a5fa;
+            display: none; /* Se activa con JS */
+            max-height: 100px;
+            overflow-y: auto;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
         /* INVENTARIO MINECRAFT */
         .mc-inventory {
             background-color: var(--mc-bg);
@@ -208,22 +224,24 @@
             <div class="w-full max-w-4xl mx-auto mt-8 px-6">
                 <div class="ai-input-container rounded-2xl p-2.5 flex items-center gap-3">
                     <div class="p-3 bg-[#0a0a0b] rounded-xl border border-[var(--border-color)] shadow-inner">
-                        <i data-lucide="sparkles" class="w-5 h-5 text-blue-400"></i>
+                        <i data-lucide="cpu" class="w-5 h-5 text-blue-400"></i>
                     </div>
-                    <input type="text" id="ai-prompt" placeholder="Ej: Crea un menú de tienda de 4 filas con cristal azul en cuadricula..." 
+                    <input type="text" id="ai-prompt" placeholder="Ej: Crea un menú de RTP, tienda de armaduras y warps todo en 6 filas con cristal azul..." 
                            class="flex-1 bg-transparent border-none outline-none text-[15px] text-gray-200 placeholder-gray-500 font-light"
-                           onkeypress="if(event.key === 'Enter') generateMenuAI()">
-                    <button onclick="generateMenuAI()" class="px-6 py-3.5 rounded-xl bg-blue-500/10 hover:bg-blue-500 hover:text-white text-blue-400 border border-blue-500/20 font-bold text-sm transition-all flex items-center gap-2">
-                        Generar Magia
+                           onkeypress="if(event.key === 'Enter') startAIReasoning()">
+                    <button onclick="startAIReasoning()" class="px-6 py-3.5 rounded-xl bg-blue-500/10 hover:bg-blue-500 hover:text-white text-blue-400 border border-blue-500/20 font-bold text-sm transition-all flex items-center gap-2">
+                        Pensar y Generar
                     </button>
                 </div>
-                <div id="ai-status" class="text-center mt-3 text-sm text-blue-400 opacity-0 transition-opacity font-medium h-5 tracking-wide">
-                    Procesando y construyendo estructura...
+                
+                <!-- Consola de Razonamiento -->
+                <div id="ai-reasoning" class="ai-reasoning-box">
+                    <div id="ai-text">Esperando prompt...</div>
                 </div>
             </div>
 
             <!-- CANVAS DEL INVENTARIO -->
-            <div class="flex-1 flex justify-center items-center p-8 min-h-[550px]">
+            <div class="flex-1 flex justify-center items-center p-4 min-h-[550px]">
                 <div class="relative">
                     <!-- Glow background -->
                     <div class="absolute inset-0 bg-blue-500/5 blur-[100px] rounded-full pointer-events-none"></div>
@@ -528,6 +546,7 @@
             updateYAML();
         };
 
+        // --- SISTEMA DE RENDERIZADO FLUIDO (0 PARPADEOS) ---
         function renderCanvas() {
             const canvas = document.getElementById('grid-canvas');
             canvas.innerHTML = '';
@@ -535,7 +554,7 @@
 
             for (let i = 0; i < total; i++) {
                 const slot = document.createElement('div');
-                slot.dataset.index = i; // Identificador clave para evitar recargas visuales completas
+                slot.dataset.index = i; 
                 slot.className = `mc-slot flex flex-col items-center justify-center p-1 text-[10px] ${STATE.selectedSlot === i ? 'active' : ''}`;
                 
                 if (STATE.items[i]) {
@@ -545,7 +564,6 @@
                     
                     if (isHead) {
                         let headUrl = getHeadUrl(node.material);
-                        // El atributo alt="" vacío evita que salga el texto roto antes de que cargue la imagen
                         slot.innerHTML = `
                             <img src="${headUrl}" class="slot-img mb-0.5 z-10 rounded-sm border border-black/30" alt="">
                             ${node.amount > 1 ? `<span class="absolute bottom-1 right-1 text-white font-mono text-[13px] font-bold drop-shadow-[2px_2px_0_#000] z-20">${node.amount}</span>` : ''}
@@ -560,7 +578,6 @@
                         let urlBlock = `${ASSET_BASE}/block/${cleanMat}.png`;
                         let urlBarrier = `${ASSET_BASE}/item/barrier.png`;
 
-                        // Lógica OnError perfeccionada: prueba bloque, si falla pone barrera, sin parpadeos feos.
                         slot.innerHTML = `
                             <img src="${urlItem}" 
                                  onerror="if(this.src !== '${urlBlock}') { this.src='${urlBlock}'; } else { this.src='${urlBarrier}'; }" 
@@ -579,7 +596,7 @@
             }
         }
 
-        // PANEL Y CONTEXTO - MEJORADO PARA FLUIDEZ EXTREMA (Sin parpadeos)
+        // PANEL Y CONTEXTO
         function selectSlot(id) {
             STATE.selectedSlot = id;
             document.getElementById('view-global').classList.add('hidden');
@@ -587,7 +604,7 @@
             document.getElementById('btn-close-item').classList.remove('hidden');
             document.getElementById('panel-title').innerHTML = `<i data-lucide="box" class="w-4 h-4 text-blue-400"></i> Editando Casilla ${id}`;
             
-            // MAGIA: En vez de recargar todo el canvas, solo actualizamos el CSS de la casilla (0 parpadeos)
+            // Actualización CSS sin recargar DOM
             document.querySelectorAll('.mc-slot').forEach(slot => {
                 if(parseInt(slot.dataset.index) === id) slot.classList.add('active');
                 else slot.classList.remove('active');
@@ -619,7 +636,6 @@
             document.getElementById('btn-close-item').classList.add('hidden');
             document.getElementById('panel-title').innerHTML = `<i data-lucide="settings" class="w-4 h-4 text-blue-400"></i> Propiedades Globales`;
             
-            // Quitamos el borde activo sin recargar visualmente el DOM
             document.querySelectorAll('.mc-slot').forEach(slot => slot.classList.remove('active'));
             lucide.createIcons();
         }
@@ -662,7 +678,6 @@
                 delete STATE.items[STATE.selectedSlot];
                 renderCanvas();
                 updateYAML();
-                // Limpiamos los campos del panel lateral
                 document.getElementById('item-material').value = '';
                 document.getElementById('item-name').value = '';
                 document.getElementById('item-amount').value = '1';
@@ -671,142 +686,129 @@
             }
         }
 
-        // --- SISTEMA DE CATÁLOGO ---
-        function openCatalog() {
-            const modal = document.getElementById('catalog-modal');
-            const content = document.getElementById('catalog-modal-content');
-            const title = document.getElementById('catalog-title');
-            const search = document.getElementById('catalog-search');
-            
-            search.value = '';
-            
-            if(STATE.activeType === 'normal') {
-                title.innerHTML = `<i data-lucide="blocks" class="w-5 h-5 text-blue-400"></i> Materiales Vanilla`;
-            } else {
-                title.innerHTML = `<i data-lucide="smile" class="w-5 h-5 text-blue-400"></i> Cabezas Custom`;
-            }
-            lucide.createIcons();
-            renderCatalogGrid('');
-            
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                modal.classList.remove('opacity-0');
-                content.classList.remove('scale-95');
-                search.focus();
-            }, 10);
-        }
+        // --- CEREBRO IA: MOTOR DE INFERENCIA SEMÁNTICA (1000+ Menús) ---
+        // Base de Datos Cognitiva (Módulos que la IA puede mezclar a voluntad)
+        const AI_KNOWLEDGE_BASE = {
+            rtp: { title: '&8Teletransporte Aleatorio', id: 'menu_rtp', items: [
+                { m: 'GRASS_BLOCK', n: '&aMundo Supervivencia', l: ['&7Viaja a un lugar aleatorio'], c: '[player] rtp survival' },
+                { m: 'NETHERRACK', n: '&cMundo Nether', l: ['&7Peligro de lava'], c: '[player] rtp nether' },
+                { m: 'END_STONE', n: '&eMundo End', l: ['&7Busca ciudades del end'], c: '[player] rtp end' },
+                { m: 'COMPASS', n: '&bBúsqueda Bioma', l: ['&7Elige donde caer'], c: '[player] rtp biome' }
+            ]},
+            tienda: { title: '&8Tienda Principal', id: 'menu_tienda', items: [
+                { m: 'DIAMOND_SWORD', n: '&cArmería', l: ['&7Armas y combate'], c: '[opengui] shop_armas' },
+                { m: 'IRON_CHESTPLATE', n: '&fEquipamiento', l: ['&7Armaduras fuertes'], c: '[opengui] shop_armaduras' },
+                { m: 'APPLE', n: '&aAlimentos', l: ['&7Comida y pociones'], c: '[opengui] shop_comida' },
+                { m: 'OAK_LOG', n: '&6Construcción', l: ['&7Bloques variados'], c: '[opengui] shop_bloques' },
+                { m: 'EMERALD', n: '&eMercado VIP', l: ['&7Ítems exclusivos'], c: '[opengui] shop_vip' }
+            ]},
+            economia: { title: '&8Tu Banco', id: 'menu_banco', items: [
+                { m: 'GOLD_INGOT', n: '&eVer Saldo', l: ['&7Comprueba tus monedas'], c: '[player] bal' },
+                { m: 'PAPER', n: '&fEnviar Dinero', l: ['&7Paga a un amigo'], c: '[player] pay' },
+                { m: 'CHEST', n: '&6Tus Transacciones', l: ['&7Historial de pagos'], c: '' }
+            ]},
+            warps: { title: '&8Warps del Servidor', id: 'menu_warps', items: [
+                { m: 'BEACON', n: '&eSpawn', l: ['&7Ir al centro'], c: '[player] warp spawn' },
+                { m: 'IRON_SWORD', n: '&cPvP Arena', l: ['&7¡Lucha a muerte!'], c: '[player] warp pvp' },
+                { m: 'ENDER_CHEST', n: '&dCajas (Crates)', l: ['&7Abre tus llaves'], c: '[player] warp crates' },
+                { m: 'ENCHANTING_TABLE', n: '&5Zona Encantamientos', l: ['&7Mejora tus armas'], c: '[player] warp enchant' }
+            ]},
+            rangos: { title: '&8Información de Rangos', id: 'menu_rangos', items: [
+                { m: 'COAL', n: '&8Rango Default', l: ['&7El inicial'], c: '' },
+                { m: 'IRON_INGOT', n: '&fRango VIP', l: ['&7Mejores kits'], c: '' },
+                { m: 'GOLD_INGOT', n: '&eRango PRO', l: ['&7Volar en el lobby'], c: '' },
+                { m: 'DIAMOND', n: '&bRango ÉLITE', l: ['&7Acceso total'], c: '' }
+            ]},
+            kits: { title: '&8Selector de Kits', id: 'menu_kits', items: [
+                { m: 'STONE_SWORD', n: '&7Kit Inicial', l: ['&7Cooldown: 1 hr'], c: '[player] kit inicial' },
+                { m: 'IRON_SWORD', n: '&fKit Guerrero', l: ['&7Cooldown: 12 hr'], c: '[player] kit guerrero' },
+                { m: 'GOLDEN_SWORD', n: '&eKit VIP', l: ['&7Cooldown: 24 hr'], c: '[player] kit vip' },
+                { m: 'DIAMOND_SWORD', n: '&bKit MVP', l: ['&7Cooldown: 3 días'], c: '[player] kit mvp' }
+            ]},
+            trabajos: { title: '&8Agencia de Empleo', id: 'menu_jobs', items: [
+                { m: 'DIAMOND_PICKAXE', n: '&7Minero', l: ['&7Gana minando'], c: '[player] jobs join minero' },
+                { m: 'DIAMOND_AXE', n: '&2Leñador', l: ['&7Gana talando'], c: '[player] jobs join lenador' },
+                { m: 'DIAMOND_HOE', n: '&eGranjero', l: ['&7Gana cultivando'], c: '[player] jobs join granjero' },
+                { m: 'DIAMOND_SHOVEL', n: '&6Excavador', l: ['&7Gana cavando'], c: '[player] jobs join excavador' },
+                { m: 'FISHING_ROD', n: '&b Pescador', l: ['&7Gana pescando'], c: '[player] jobs join pescador' }
+            ]},
+            perfil: { title: '&8Tu Perfil', id: 'menu_perfil', items: [
+                { m: '%player_name%', type: 'custom_head', n: '&eTus Stats', l: ['&7Rango: &bVIP', '&7Asesinatos: &f120'], c: '' },
+                { m: 'DIAMOND', n: '&bLogros', l: ['&7Tus trofeos'], c: '' },
+                { m: 'COMPARATOR', n: '&6Ajustes', l: ['&7Configura tu cuenta'], c: '[opengui] settings' }
+            ]},
+            admin: { title: '&4Panel de Administración', id: 'menu_admin', items: [
+                { m: 'BARRIER', n: '&cBanear Jugador', l: ['&7Abre la GUI de bans'], c: '[player] banmenu' },
+                { m: 'ENDER_PEARL', n: '&bVanish', l: ['&7Ocultarte del mundo'], c: '[player] vanish' },
+                { m: 'COMMAND_BLOCK', n: '&eConsola Local', l: ['&7Ejecutar comandos'], c: '' },
+                { m: 'CLOCK', n: '&eHacer de Día', l: ['&7Cambiar el tiempo'], c: '[console] time set day' }
+            ]},
+            mascotas: { title: '&8Tus Mascotas', id: 'menu_mascotas', items: [
+                { m: 'BONE', n: '&eLobo', l: ['&7Invocar'], c: '[player] pet call wolf' },
+                { m: 'FEATHER', n: '&fLoro', l: ['&7Invocar'], c: '[player] pet call parrot' },
+                { m: 'SLIME_BALL', n: '&aSlime', l: ['&7Invocar'], c: '[player] pet call slime' }
+            ]}
+        };
 
-        function renderCatalogGrid(filterText) {
-            const container = document.getElementById('catalog-container');
-            container.innerHTML = '<div class="catalog-grid" id="c-grid"></div>';
-            const grid = document.getElementById('c-grid');
-            
-            const isNormal = STATE.activeType === 'normal';
-            const term = filterText.toLowerCase();
-            
-            if (isNormal) {
-                MC_MATERIALS.forEach(mat => {
-                    if(mat.toLowerCase().includes(term)) {
-                        const item = document.createElement('div');
-                        item.className = 'catalog-item';
-                        
-                        let cleanMat = getSafeMaterialName(mat);
-                        let urlItem = `${ASSET_BASE}/item/${cleanMat}.png`;
-                        let urlBlock = `${ASSET_BASE}/block/${cleanMat}.png`;
-                        let urlBarrier = `${ASSET_BASE}/item/barrier.png`;
-                        
-                        item.innerHTML = `
-                            <img src="${urlItem}" onerror="if(this.src !== '${urlBlock}') { this.src='${urlBlock}'; } else { this.src='${urlBarrier}'; }" alt="">
-                            <span class="text-[10px] text-gray-300 font-mono break-all leading-tight">${mat}</span>
-                        `;
-                        item.onclick = () => {
-                            document.getElementById('item-material').value = mat;
-                            closeModal('catalog-modal', 'catalog-modal-content');
-                            saveItem();
-                        };
-                        grid.appendChild(item);
-                    }
-                });
-            } else {
-                MC_HEADS.forEach(head => {
-                    if(head.id.toLowerCase().includes(term) || head.label.toLowerCase().includes(term)) {
-                        const item = document.createElement('div');
-                        item.className = 'catalog-item';
-                        item.innerHTML = `
-                            <img src="https://mc-heads.net/avatar/${head.id}/64" alt="">
-                            <span class="text-[11px] font-bold text-gray-200 mb-1">${head.label}</span>
-                            <span class="text-[9px] text-blue-400 font-mono break-all">${head.id}</span>
-                        `;
-                        item.onclick = () => {
-                            document.getElementById('item-material').value = head.id;
-                            if(!document.getElementById('item-name').value) {
-                                document.getElementById('item-name').value = `&e${head.label}`;
-                            }
-                            closeModal('catalog-modal', 'catalog-modal-content');
-                            saveItem();
-                        };
-                        grid.appendChild(item);
-                    }
-                });
-            }
-        }
-
-        function filterCatalog() {
-            renderCatalogGrid(document.getElementById('catalog-search').value);
-        }
-
-        // --- IA PROCEDURAL (GENERADOR INFINITO DE MENÚS) ---
-        function generateMenuAI() {
+        async function startAIReasoning() {
             const input = document.getElementById('ai-prompt');
             const prompt = input.value.toLowerCase();
             if(!prompt) return;
 
-            const status = document.getElementById('ai-status');
-            status.style.opacity = '1';
-            status.innerText = 'Calculando algoritmos y creando estructura... ✨';
+            // Mostrar y limpiar consola
+            const rBox = document.getElementById('ai-reasoning');
+            const rText = document.getElementById('ai-text');
+            rBox.style.display = 'block';
+            rText.innerHTML = '';
+            STATE.items = {}; // Limpiamos canvas
 
-            setTimeout(() => {
-                STATE.items = {};
+            // Función para escribir en la consola como un hacker/IA
+            async function typeLog(text, color = '#60a5fa') {
+                rText.innerHTML += `<span style="color:${color}">> ${text}</span><br>`;
+                rBox.scrollTop = rBox.scrollHeight;
+                await new Promise(r => setTimeout(r, 400 + Math.random() * 500));
+            }
+
+            try {
+                await typeLog('Iniciando procesamiento de lenguaje natural (NLP)...', '#a8c7fa');
                 
-                // 1. Detectar Filas Dinámicas (1 a 6)
+                // 1. Extraer Nodos (Conceptos semánticos)
+                await typeLog('Extrayendo entidades semánticas del prompt...');
+                let foundModules = [];
+                for(const key in AI_KNOWLEDGE_BASE) {
+                    if(prompt.includes(key) || (key==='warps' && prompt.includes('viaje')) || (key==='tienda' && prompt.includes('shop')) || (key==='economia' && prompt.includes('dinero'))) {
+                        foundModules.push(key);
+                    }
+                }
+                
+                if(foundModules.length === 0) {
+                    await typeLog('No se detectaron módulos específicos. Generando menú multipropósito genérico.', '#fbbf24');
+                    foundModules = ['warps', 'tienda', 'perfil']; // Default mix
+                } else {
+                    await typeLog(`Conceptos identificados: [${foundModules.join(', ').toUpperCase()}]`, '#34d399');
+                }
+
+                // 2. Extraer Filas y Layout
                 let filasMatch = prompt.match(/(\d+)\s*fila/);
                 STATE.rows = filasMatch ? Math.min(Math.max(parseInt(filasMatch[1]), 1), 6) : (prompt.includes('pequeño') ? 3 : 6);
-                
-                const total = STATE.rows * 9;
-                
-                // 2. Diccionario de Temáticas (Pool de ítems)
-                const themes = {
-                    tienda: [ {m:'GOLD_INGOT', n:'&eTienda General'}, {m:'DIAMOND_SWORD', n:'&cArmas'}, {m:'IRON_CHESTPLATE', n:'&fArmaduras'}, {m:'APPLE', n:'&aComida'}, {m:'OAK_LOG', n:'&6Bloques'} ],
-                    skyblock: [ {m:'GRASS_BLOCK', n:'&aTu Isla'}, {m:'WATER_BUCKET', n:'&bGenerador'}, {m:'CHEST', n:'&eMisiones'}, {m:'EMERALD', n:'&aTienda'}, {m:'DIAMOND_PICKAXE', n:'&7Mejoras'} ],
-                    factions: [ {m:'TNT', n:'&cRaid'}, {m:'DIAMOND_SWORD', n:'&4PvP'}, {m:'OBSIDIAN', n:'&5Base'}, {m:'GOLDEN_APPLE', n:'&6Kits'}, {m:'BOW', n:'&eShop'} ],
-                    perfil: [ {m:'%player_name%', type:'custom_head', n:'&eTus Stats'}, {m:'DIAMOND', n:'&bLogros'}, {m:'GOLD_NUGGET', n:'&6Economía'}, {m:'BOOK', n:'&fMisiones'} ],
-                    admin: [ {m:'BARRIER', n:'&cBanear'}, {m:'IRON_AXE', n:'&cKickear'}, {m:'ENDER_PEARL', n:'&bVanish'}, {m:'COMPASS', n:'&eTeleport'}, {m:'COMMAND_BLOCK', n:'&5Consola'} ],
-                    default: [ {m:'COMPASS', n:'&bMenú'}, {m:'NETHER_STAR', n:'&eOpciones'}, {m:'CHEST', n:'&6Cofres'}, {m:'ENDER_EYE', n:'&dViajes'} ]
-                };
+                await typeLog(`Estructura espacial calculada: Matriz de ${STATE.rows}x9 (${STATE.rows * 9} slots)`);
 
-                // 3. Detectar Temática
-                let activeTheme = themes.default;
-                STATE.menuTitle = '&8Menú Custom';
-                STATE.menuId = 'menu_generado';
-
-                if(prompt.includes('tienda') || prompt.includes('shop')) { activeTheme = themes.tienda; STATE.menuTitle = '&8Tienda Principal'; STATE.menuId = 'tienda'; }
-                else if(prompt.includes('skyblock')) { activeTheme = themes.skyblock; STATE.menuTitle = '&8Menú Skyblock'; STATE.menuId = 'skyblock'; }
-                else if(prompt.includes('faction')) { activeTheme = themes.factions; STATE.menuTitle = '&8Menú Factions'; STATE.menuId = 'factions'; }
-                else if(prompt.includes('perfil') || prompt.includes('stats')) { activeTheme = themes.perfil; STATE.menuTitle = '&8Tu Perfil'; STATE.menuId = 'perfil'; }
-                else if(prompt.includes('admin') || prompt.includes('staff')) { activeTheme = themes.admin; STATE.menuTitle = '&4Panel Admin'; STATE.menuId = 'admin'; }
-
-                // 4. Elegir Color del Cristal Decorativo
+                // 3. Estética de los Cristales
                 let glassType = 'BLACK_STAINED_GLASS_PANE';
                 if(prompt.includes('rojo')) glassType = 'RED_STAINED_GLASS_PANE';
                 else if(prompt.includes('azul')) glassType = 'BLUE_STAINED_GLASS_PANE';
                 else if(prompt.includes('verde')) glassType = 'GREEN_STAINED_GLASS_PANE';
                 else if(prompt.includes('blanco')) glassType = 'WHITE_STAINED_GLASS_PANE';
-
-                // 5. Algoritmos de Layout Geométrico
+                else if(prompt.includes('amarillo')) glassType = 'YELLOW_STAINED_GLASS_PANE';
+                else if(prompt.includes('morado')) glassType = 'PURPLE_STAINED_GLASS_PANE';
+                
                 let layoutType = prompt.includes('esquinas') ? 'corners' : 
                                  prompt.includes('cuadricula') ? 'checkered' : 
                                  prompt.includes('sin borde') ? 'none' : 'border';
 
+                await typeLog(`Aplicando algoritmo geométrico: Estilo '${layoutType}' con '${glassType}'...`);
+
+                const total = STATE.rows * 9;
                 for(let i=0; i<total; i++) {
                     const isTop = i < 9;
                     const isBottom = i >= (total - 9);
@@ -822,51 +824,132 @@
                     }
                 }
 
-                // 6. Colocar los Ítems Temáticos Dinámicamente en el centro
+                // 4. Inyección Matemática de Ítems (Mezclador)
+                await typeLog('Sintetizando nodos y volcando ítems al canvas...');
+                let allItemsToInject = [];
+                foundModules.forEach(mod => {
+                    allItemsToInject = allItemsToInject.concat(AI_KNOWLEDGE_BASE[mod].items);
+                });
+
+                // Seleccionar slots vacíos en el centro
                 let validSlots = [];
                 for(let i=0; i<total; i++) {
                     if(!STATE.items[i] && i > 8 && i < total-9) validSlots.push(i);
                 }
 
                 if(validSlots.length > 0) {
-                    let step = Math.max(Math.floor(validSlots.length / activeTheme.length), 1);
-                    for(let j=0; j<activeTheme.length; j++) {
-                        let targetSlot = validSlots[Math.min(j * step + Math.floor(step/2), validSlots.length - 1)];
-                        let itemDef = activeTheme[j];
+                    let step = Math.max(Math.floor(validSlots.length / allItemsToInject.length), 1);
+                    for(let j=0; j<allItemsToInject.length; j++) {
+                        if(j * step >= validSlots.length) break;
+                        let targetSlot = validSlots[j * step + Math.floor(step/2)];
+                        if(targetSlot === undefined) targetSlot = validSlots[j]; // Fallback
+                        
+                        let itemDef = allItemsToInject[j];
                         STATE.items[targetSlot] = { 
                             type: itemDef.type || 'normal', 
                             material: itemDef.m, 
                             name: itemDef.n, 
                             amount: 1, 
-                            lore: ['&7Autogenerado por IA'], 
-                            commands: [] 
+                            lore: itemDef.l || ['&7Generado por IA Semántica'], 
+                            commands: itemDef.c ? [itemDef.c] : [] 
                         };
                     }
                 }
 
-                // Botón de salir siempre al final
+                // Títulos y botón salir
+                STATE.menuTitle = foundModules.length === 1 ? AI_KNOWLEDGE_BASE[foundModules[0]].title : '&8Menú Multipropósito';
+                STATE.menuId = foundModules.length === 1 ? AI_KNOWLEDGE_BASE[foundModules[0]].id : 'menu_hibrido';
+                
                 const centerBottom = total - 5;
-                if(STATE.rows >= 3) {
-                    STATE.items[centerBottom] = { type: 'normal', material: 'BARRIER', name: '&c&lCerrar Menú', amount: 1, lore: [], commands: ['[close]'] };
+                if(STATE.rows >= 3 && !STATE.items[centerBottom]) {
+                    STATE.items[centerBottom] = { type: 'normal', material: 'BARRIER', name: '&c&lCerrar', amount: 1, lore: ['&7Volver al juego'], commands: ['[close]'] };
                 }
 
-                // Actualizar UI
+                // Finalizar
                 document.getElementById('menu-rows').value = STATE.rows;
                 document.getElementById('menu-title').value = STATE.menuTitle;
                 document.getElementById('menu-id').value = STATE.menuId;
                 document.getElementById('live-title').innerHTML = parseMCColor(STATE.menuTitle);
                 document.getElementById('size-indicator').innerText = (STATE.rows * 9) + ' Slots';
 
-                input.value = '';
-                status.innerText = '¡Menú estructurado con éxito! 🎉';
-                
                 deselectSlot();
                 updateYAML();
-                renderCanvas(); // Renderizamos solo una vez al terminar de generar todo
+                renderCanvas();
+                
+                await typeLog('SUCCESS: ¡Arquitectura de menú completada y renderizada!', '#34d399');
+                input.value = '';
 
-                setTimeout(() => { status.style.opacity = '0'; }, 3000);
-            }, 1000);
+                setTimeout(() => { rBox.style.display = 'none'; }, 4000);
+
+            } catch(e) {
+                await typeLog(`ERROR: ${e.message}`, '#f87171');
+            }
         }
+
+        // --- CATÁLOGO ---
+        function openCatalog() {
+            const modal = document.getElementById('catalog-modal');
+            const content = document.getElementById('catalog-modal-content');
+            const title = document.getElementById('catalog-title');
+            const search = document.getElementById('catalog-search');
+            search.value = '';
+            
+            if(STATE.activeType === 'normal') {
+                title.innerHTML = `<i data-lucide="blocks" class="w-5 h-5 text-blue-400"></i> Materiales Vanilla`;
+            } else {
+                title.innerHTML = `<i data-lucide="smile" class="w-5 h-5 text-blue-400"></i> Cabezas Custom`;
+            }
+            lucide.createIcons();
+            renderCatalogGrid('');
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-95'); search.focus(); }, 10);
+        }
+
+        function renderCatalogGrid(filterText) {
+            const container = document.getElementById('catalog-container');
+            container.innerHTML = '<div class="catalog-grid" id="c-grid"></div>';
+            const grid = document.getElementById('c-grid');
+            
+            const isNormal = STATE.activeType === 'normal';
+            const term = filterText.toLowerCase();
+            
+            if (isNormal) {
+                MC_MATERIALS.forEach(mat => {
+                    if(mat.toLowerCase().includes(term)) {
+                        const item = document.createElement('div');
+                        item.className = 'catalog-item';
+                        let cleanMat = getSafeMaterialName(mat);
+                        let urlItem = `${ASSET_BASE}/item/${cleanMat}.png`;
+                        let urlBlock = `${ASSET_BASE}/block/${cleanMat}.png`;
+                        let urlBarrier = `${ASSET_BASE}/item/barrier.png`;
+                        
+                        item.innerHTML = `
+                            <img src="${urlItem}" onerror="if(this.src !== '${urlBlock}') { this.src='${urlBlock}'; } else { this.src='${urlBarrier}'; }" alt="">
+                            <span class="text-[10px] text-gray-300 font-mono break-all leading-tight">${mat}</span>
+                        `;
+                        item.onclick = () => { document.getElementById('item-material').value = mat; closeModal('catalog-modal', 'catalog-modal-content'); saveItem(); };
+                        grid.appendChild(item);
+                    }
+                });
+            } else {
+                MC_HEADS.forEach(head => {
+                    if(head.id.toLowerCase().includes(term) || head.label.toLowerCase().includes(term)) {
+                        const item = document.createElement('div');
+                        item.className = 'catalog-item';
+                        item.innerHTML = `
+                            <img src="https://mc-heads.net/avatar/${head.id}/64" alt="">
+                            <span class="text-[11px] font-bold text-gray-200 mb-1">${head.label}</span>
+                            <span class="text-[9px] text-blue-400 font-mono break-all">${head.id}</span>
+                        `;
+                        item.onclick = () => { document.getElementById('item-material').value = head.id; if(!document.getElementById('item-name').value) { document.getElementById('item-name').value = `&e${head.label}`; } closeModal('catalog-modal', 'catalog-modal-content'); saveItem(); };
+                        grid.appendChild(item);
+                    }
+                });
+            }
+        }
+
+        function filterCatalog() { renderCatalogGrid(document.getElementById('catalog-search').value); }
 
         // --- UTILIDADES GLOBALES ---
         function fillEmptyWithGlass() {
@@ -880,9 +963,7 @@
         function clearAllData() {
             if(confirm('¿Seguro que deseas limpiar todo el canvas? Esta acción es irreversible.')){
                 STATE.items = {};
-                deselectSlot();
-                renderCanvas(); 
-                updateYAML();
+                deselectSlot(); renderCanvas(); updateYAML();
             }
         }
 
@@ -893,18 +974,8 @@
         }
 
         function setupListeners() {
-            document.getElementById('menu-title').addEventListener('input', e => {
-                STATE.menuTitle = e.target.value;
-                document.getElementById('live-title').innerHTML = parseMCColor(e.target.value) || 'GUI';
-                updateYAML();
-            });
-            document.getElementById('menu-rows').addEventListener('change', e => {
-                STATE.rows = parseInt(e.target.value);
-                document.getElementById('size-indicator').innerText = (STATE.rows * 9) + ' Slots';
-                deselectSlot();
-                renderCanvas();
-                updateYAML();
-            });
+            document.getElementById('menu-title').addEventListener('input', e => { STATE.menuTitle = e.target.value; document.getElementById('live-title').innerHTML = parseMCColor(e.target.value) || 'GUI'; updateYAML(); });
+            document.getElementById('menu-rows').addEventListener('change', e => { STATE.rows = parseInt(e.target.value); document.getElementById('size-indicator').innerText = (STATE.rows * 9) + ' Slots'; deselectSlot(); renderCanvas(); updateYAML(); });
             document.getElementById('menu-id').addEventListener('input', e => { STATE.menuId = e.target.value; updateYAML(); });
         }
 
@@ -941,10 +1012,7 @@
             const modal = document.getElementById('yaml-modal');
             const content = document.getElementById('yaml-modal-content');
             modal.classList.remove('hidden');
-            setTimeout(() => {
-                modal.classList.remove('opacity-0');
-                content.classList.remove('scale-95');
-            }, 10);
+            setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-95'); }, 10);
         }
 
         function closeModal(modalId, contentId) {
