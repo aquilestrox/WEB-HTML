@@ -3,75 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeluxeMenus Web Creator</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>DeluxeMenus Studio Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Estilos personalizados para la cuadrícula de Minecraft */
-        .mc-grid {
-            display: grid;
-            grid-template-columns: repeat(9, minmax(0, 1fr));
-            gap: 4px;
-            background-color: #8b8b8b;
-            padding: 8px;
-            border-top: 3px solid #dbdbdb;
-            border-left: 3px solid #dbdbdb;
-            border-bottom: 3px solid #555555;
-            border-right: 3px solid #555555;
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        
+        /* Contenedor del inventario estilo Minecraft Premium */
+        .mc-container {
+            background: #212121;
+            border: 4px solid #151515;
+            border-radius: 8px;
+            box-shadow: inset 0 4px 0 rgba(255,255,255,0.1), 0 20px 25px -5px rgba(0,0,0,0.5);
         }
         .mc-slot {
             aspect-ratio: 1;
-            background-color: #8b8b8b;
+            background: #8b8b8b;
             border-top: 3px solid #373737;
             border-left: 3px solid #373737;
-            border-bottom: 3px solid #ffffff;
-            border-right: 3px solid #ffffff;
-            image-rendering: pixelated;
-            cursor: pointer;
-            transition: all 0.15s ease;
-            position: relative;
+            border-bottom: 3px solid #fff;
+            border-right: 3px solid #fff;
+            transition: all 0.1s ease;
         }
         .mc-slot:hover {
-            background-color: #c6c6c6;
+            background: #b0b0b0;
+            filter: brightness(1.1);
         }
         .mc-slot.active {
-            border: 3px solid #55ff55 !important;
-            background-color: #a8a8a8;
-        }
-        .mc-slot .item-name {
-            font-size: 9px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            border: 3px solid #10b981 !important;
+            background: #4b5563;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
         }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-emerald-500/30">
 
-    <header class="bg-slate-800 border-b border-slate-700 p-4 shadow-md">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold text-emerald-400 font-mono">⚔️ DeluxeMenus Maker Live</h1>
-            <span class="text-xs bg-slate-700 px-3 py-1 rounded-full text-slate-300">v1.0 - HTML Local</span>
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-gradient-to-tr from-emerald-500 to-teal-400 p-2 rounded-xl shadow-lg shadow-emerald-500/20">
+                    <i data-lucide="layout-grid" class="w-6 h-6 text-slate-950"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">DeluxeMenus Studio <span class="text-xs font-semibold px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20 ml-2">v2.0 PRO</span></h1>
+                    <p class="text-xs text-slate-400">Diseñador visual con soporte HDB y Cabezas</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="resetMenu()" class="text-xs font-medium text-slate-400 hover:text-rose-400 bg-slate-800/60 hover:bg-rose-500/10 border border-slate-700/60 px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Limpiar Todo
+                </button>
+            </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <main class="max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
         
         <div class="lg:col-span-7 space-y-6">
             
-            <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-sm">
-                <h2 class="text-lg font-semibold mb-4 text-slate-200">⚙️ Configuración General</h2>
+            <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 backdrop-blur-sm shadow-xl">
+                <h2 class="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <i data-lucide="sliders" class="w-4 h-4 text-emerald-400"></i> Configuración del Menú
+                </h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-1">ID del Menú (File name)</label>
-                        <input type="text" id="menu-id" value="mi_menu_personalizado" class="w-full bg-slate-900 border border-slate-600 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-emerald-500">
+                        <label class="block text-xs font-medium text-slate-400 mb-1.5">ID / Archivo del Menú</label>
+                        <input type="text" id="menu-id" value="menu_principal" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 rounded-xl px-3 py-2 text-sm transition-all outline-none mono text-emerald-400">
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-1">Título del Menú</label>
-                        <input type="text" id="menu-title" value="&8Mi Menú Custom" class="w-full bg-slate-900 border border-slate-600 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-emerald-500">
+                        <label class="block text-xs font-medium text-slate-400 mb-1.5">Título (Soporta colores)</label>
+                        <input type="text" id="menu-title" value="&8&lMí Menú Custom" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 rounded-xl px-3 py-2 text-sm transition-all outline-none">
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-1">Filas (Tamaño)</label>
-                        <select id="menu-rows" class="w-full bg-slate-900 border border-slate-600 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-emerald-500">
+                        <label class="block text-xs font-medium text-slate-400 mb-1.5">Filas del Inventario</label>
+                        <select id="menu-rows" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 rounded-xl px-3 py-2 text-sm transition-all outline-none cursor-pointer">
                             <option value="1">1 Fila (9 slots)</option>
                             <option value="2">2 Filas (18 slots)</option>
                             <option value="3">3 Filas (27 slots)</option>
@@ -83,264 +90,303 @@
                 </div>
             </div>
 
-            <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-sm">
-                <div class="flex justify-between items-center mb-3">
-                    <h2 class="text-lg font-semibold text-slate-200">🖥️ Vista Previa del Inventario</h2>
-                    <span id="preview-title" class="text-sm font-mono bg-slate-900 px-3 py-1 rounded border border-slate-700 text-yellow-400">&8Mi Menú Custom</span>
+            <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 backdrop-blur-sm shadow-xl flex flex-col">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-sm font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                        <i data-lucide="eye" class="w-4 h-4 text-emerald-400"></i> Vista Previa del Inventario
+                    </h2>
+                    <div id="live-title-preview" class="text-xs bg-slate-950 px-3 py-1 rounded-lg border border-slate-800 text-yellow-400 font-medium">
+                        &8&lMí Menú Custom
+                    </div>
                 </div>
                 
-                <p class="text-xs text-slate-400 mb-4">Haz clic en cualquier slot para editar su contenido en el panel derecho.</p>
-                
-                <div id="inventory-grid" class="mc-grid rounded-sm shadow-2xl max-w-lg mx-auto">
+                <div class="p-4 bg-slate-950/40 rounded-xl border border-slate-800/50 flex justify-center items-center">
+                    <div class="mc-container w-full max-w-md p-2">
+                        <div id="inventory-grid" class="grid grid-cols-9 gap-1">
+                            </div>
                     </div>
+                </div>
+                <div class="mt-3 flex gap-4 text-xs text-slate-400 justify-center">
+                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-slate-500"></span> Vacío</span>
+                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500"></span> Con Ítem</span>
+                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-purple-500"></span> Cabeza/HDB</span>
+                </div>
             </div>
         </div>
 
         <div class="lg:col-span-5 space-y-6">
             
-            <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-sm">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-lg font-semibold text-slate-200">✏️ Editor de Slot</h2>
-                    <span id="selected-slot-badge" class="text-xs font-bold bg-emerald-500/20 text-emerald-400 px-2.5 py-1 rounded-md border border-emerald-500/30">Slot Seleccionado: 0</span>
+            <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 backdrop-blur-sm shadow-xl">
+                <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-3">
+                    <h2 class="text-sm font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                        <i data-lucide="edit-3" class="w-4 h-4 text-emerald-400"></i> Configurar Slot
+                    </h2>
+                    <span id="slot-badge" class="text-xs font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded">SLOT: 0</span>
                 </div>
 
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-1">Material de Minecraft (ID en MAYÚSCULAS)</label>
-                        <input type="text" id="item-material" placeholder="DIAMOND_SWORD, CHEST, BARRIER..." class="w-full bg-slate-900 border border-slate-600 rounded px-3 py-2 text-sm uppercase focus:outline-none focus:border-emerald-500">
+                        <label class="block text-xs font-medium text-slate-400 mb-1.5">Tipo de Material</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button type="button" onclick="setItemType('normal')" id="type-normal" class="type-btn text-xs font-medium py-2 rounded-xl border bg-emerald-500/10 border-emerald-500/30 text-emerald-400 transition-all cursor-pointer">
+                                Bloque/Ítem
+                            </button>
+                            <button type="button" onclick="setItemType('hdb')" id="type-hdb" class="type-btn text-xs font-medium py-2 rounded-xl border bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200 transition-all cursor-pointer">
+                                HeadsDB (HDB)
+                            </button>
+                            <button type="button" onclick="setItemType('player')" id="type-player" class="type-btn text-xs font-medium py-2 rounded-xl border bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200 transition-all cursor-pointer">
+                                Cabeza Jugador
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-medium text-slate-400 mb-1">Nombre del Ítem</label>
-                            <input type="text" id="item-name" placeholder="&a¡Espada Épica!" class="w-full bg-slate-900 border border-slate-600 rounded px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
+                    <div id="material-input-container">
+                        <label class="block text-xs font-medium text-slate-400 mb-1.5">ID del Material (Minecraft Vanilla)</label>
+                        <input type="text" id="item-material" placeholder="DIAMOND_SWORD" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 rounded-xl px-3 py-2 text-sm transition-all outline-none uppercase font-mono">
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="col-span-2">
+                            <label class="block text-xs font-medium text-slate-400 mb-1.5">Nombre en Pantalla</label>
+                            <input type="text" id="item-name" placeholder="&a¡Item Épico!" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 rounded-xl px-3 py-2 text-sm transition-all outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-slate-400 mb-1">Cantidad (Amount)</label>
-                            <input type="number" id="item-amount" value="1" min="1" max="64" class="w-full bg-slate-900 border border-slate-600 rounded px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
+                            <label class="block text-xs font-medium text-slate-400 mb-1.5">Cantidad</label>
+                            <input type="number" id="item-amount" value="1" min="1" max="64" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 rounded-xl px-3 py-2 text-sm transition-all outline-none font-mono">
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-1">Lore / Descripción (Una línea por fila)</label>
-                        <textarea id="item-lore" rows="3" placeholder="&7Línea 1&#10;&eLínea 2" class="w-full bg-slate-900 border border-slate-600 rounded px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 font-mono"></textarea>
+                        <label class="block text-xs font-medium text-slate-400 mb-1.5">Lore / Descripción (Línea por línea)</label>
+                        <textarea id="item-lore" rows="3" placeholder="&7Línea uno de descripción&#10;&eHaz clic para comprar" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 rounded-xl px-3 py-2 text-xs transition-all outline-none font-mono resize-none"></textarea>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-1">Comandos al hacer Clic (Ej: [console] give %player_name% diamond)</label>
-                        <textarea id="item-commands" rows="2" placeholder="[player] spawn&#10;[console] eco take %player_name% 100" class="w-full bg-slate-900 border border-slate-600 rounded px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 font-mono"></textarea>
+                        <label class="block text-xs font-medium text-slate-400 mb-1.5">Comandos al hacer Clic</label>
+                        <textarea id="item-commands" rows="2" placeholder="[player] spawn&#10;[console] give %player_name% diamond 1" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 rounded-xl px-3 py-2 text-xs transition-all outline-none font-mono resize-none"></textarea>
                     </div>
 
-                    <div class="pt-2 flex gap-2">
-                        <button id="btn-save-slot" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2 rounded text-sm transition shadow-sm cursor-pointer">Guardar Slot</button>
-                        <button id="btn-clear-slot" class="bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white font-medium px-4 rounded text-sm transition border border-rose-500/30 cursor-pointer">Vaciar</button>
+                    <div class="flex gap-2 pt-2">
+                        <button type="button" onclick="saveActiveSlot()" class="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-slate-950 font-bold py-2 px-4 rounded-xl text-xs transition-all shadow-lg shadow-emerald-600/10 cursor-pointer flex items-center justify-center gap-1">
+                            <i data-lucide="check" class="w-4 h-4"></i> Guardar Slot
+                        </button>
+                        <button type="button" onclick="clearActiveSlot()" class="bg-rose-500/10 hover:bg-rose-500 border border-rose-500/20 text-rose-400 hover:text-white px-4 rounded-xl text-xs transition-all cursor-pointer flex items-center gap-1">
+                            <i data-lucide="x" class="w-4 h-4"></i> Vaciar
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 shadow-sm flex flex-col h-[350px]">
-                <div class="flex justify-between items-center mb-2">
-                    <h2 class="text-lg font-semibold text-slate-200">📄 Código YAML Generado</h2>
-                    <button id="btn-copy" class="text-xs bg-slate-700 hover:bg-slate-600 text-emerald-400 font-mono px-3 py-1.5 rounded transition cursor-pointer">Copiar Código</button>
+            <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 backdrop-blur-sm shadow-xl flex flex-col h-[320px]">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-sm font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                        <i data-lucide="code" class="w-4 h-4 text-emerald-400"></i> Código YAML Generado
+                    </h2>
+                    <button type="button" onclick="copyYamlCode()" id="btn-copy" class="text-xs font-medium bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700/80 px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 cursor-pointer">
+                        <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copiar
+                    </button>
                 </div>
-                <textarea id="yaml-output" readonly class="w-full flex-1 bg-slate-950 border border-slate-800 rounded p-3 text-xs font-mono text-emerald-300 resize-none focus:outline-none overflow-y-auto"></textarea>
+                <textarea id="yaml-output" readonly class="w-full flex-1 bg-slate-950/80 border border-slate-800 rounded-xl p-3 text-xs font-mono text-emerald-400/90 resize-none focus:outline-none overflow-y-auto border-dashed"></textarea>
             </div>
 
         </div>
     </main>
 
     <script>
-        // Estado de la aplicación
+        // Estado global
         let currentRows = 6;
         let selectedSlot = 0;
-        let menuItems = {}; // Almacena los datos de los slots configurados
-
-        // Selectores DOM
-        const gridContainer = document.getElementById('inventory-grid');
-        const menuTitleInput = document.getElementById('menu-title');
-        const menuIdInput = document.getElementById('menu-id');
-        const menuRowsSelect = document.getElementById('menu-rows');
-        const previewTitle = document.getElementById('preview-title');
-        
-        // Formulario de edición
-        const itemMaterial = document.getElementById('item-material');
-        const itemName = document.getElementById('item-name');
-        const itemAmount = document.getElementById('item-amount');
-        const itemLore = document.getElementById('item-lore');
-        const itemCommands = document.getElementById('item-commands');
-        const selectedSlotBadge = document.getElementById('selected-slot-badge');
-        
-        const btnSaveSlot = document.getElementById('btn-save-slot');
-        const btnClearSlot = document.getElementById('btn-clear-slot');
-        const btnCopy = document.getElementById('btn-copy');
-        const yamlOutput = document.getElementById('yaml-output');
+        let itemType = 'normal'; // 'normal', 'hdb', 'player'
+        let menuItems = {}; 
 
         // Inicialización
-        function init() {
+        window.onload = function() {
+            lucide.createIcons();
             renderGrid();
-            setupEventListeners();
+            setupConfigListeners();
             updateYAML();
-        }
+        };
 
-        // Renderiza la cuadrícula de slots de Minecraft
+        // Renderizar cuadrícula adaptativa
         function renderGrid() {
-            gridContainer.innerHTML = '';
+            const grid = document.getElementById('inventory-grid');
+            grid.innerHTML = '';
             const totalSlots = currentRows * 9;
 
             for (let i = 0; i < totalSlots; i++) {
-                const slotDiv = document.createElement('div');
-                slotDiv.className = `mc-slot flex flex-col items-center justify-center p-1 text-center text-[10px] text-slate-800 font-bold ${i === selectedSlot ? 'active' : ''}`;
-                slotDiv.dataset.slotId = i;
+                const slot = document.createElement('div');
+                slot.className = `mc-slot rounded cursor-pointer flex flex-col items-center justify-center p-1 text-[10px] relative font-semibold select-none ${i === selectedSlot ? 'active' : ''}`;
+                slot.dataset.slotId = i;
 
-                // Si el slot tiene información guardada, mostrar un preview de texto plano
                 if (menuItems[i]) {
-                    const nameSpan = document.createElement('span');
-                    nameSpan.className = 'item-name font-mono text-slate-900 block w-full text-center';
-                    // Reemplazo básico de códigos de color para la vista previa visual rápida
-                    let cleanName = menuItems[i].name || menuItems[i].material;
-                    nameSpan.innerText = cleanName.replace(/&[0-9a-fk-or]/g, '');
-                    
-                    const matSpan = document.createElement('span');
-                    matSpan.className = 'text-[8px] opacity-60 text-slate-900 block font-normal';
-                    matSpan.innerText = `x${menuItems[i].amount || 1}`;
-
-                    slotDiv.appendChild(nameSpan);
-                    slotDiv.appendChild(matSpan);
+                    const item = menuItems[i];
+                    // Colores temáticos de ayuda visual rápida
+                    if (item.type === 'hdb' || item.type === 'player') {
+                        slot.classList.add('bg-purple-950/60', 'border-purple-500/40');
+                        slot.innerHTML = `<span class="text-purple-400 font-bold block truncate w-full text-center">💀 Head</span>`;
+                    } else {
+                        slot.classList.add('bg-amber-950/40', 'border-amber-500/30');
+                        let cleanName = item.name || item.material;
+                        cleanName = cleanName.replace(/&[0-9a-fk-or]/gi, ''); // Limpiar códigos color para visualización
+                        slot.innerHTML = `<span class="text-amber-400 truncate w-full text-center block">${cleanName}</span><span class="text-[8px] text-slate-400">x${item.amount}</span>`;
+                    }
                 } else {
-                    slotDiv.innerHTML = `<span class="opacity-20 font-mono text-xs text-slate-900">${i}</span>`;
+                    slot.innerHTML = `<span class="text-slate-600/70 font-mono text-[9px]">${i}</span>`;
                 }
 
-                gridContainer.appendChild(slotDiv);
+                slot.onclick = () => selectSlot(i);
+                grid.appendChild(slot);
             }
         }
 
-        // Configura los capturadores de eventos
-        function setupEventListeners() {
-            // Cambiar título del menú en vivo
-            menuTitleInput.addEventListener('input', (e) => {
-                previewTitle.innerText = e.target.value;
-                updateYAML();
+        // Cambiar dinámicamente los inputs según el tipo de item (Normal, HDB o Cabeza)
+        function setItemType(type) {
+            itemType = type;
+            document.querySelectorAll('.type-btn').forEach(btn => {
+                btn.classList.remove('bg-emerald-500/10', 'border-emerald-500/30', 'text-emerald-400');
+                btn.classList.add('bg-slate-950', 'border-slate-800', 'text-slate-400');
             });
 
-            menuIdInput.addEventListener('input', updateYAML);
+            const activeBtn = document.getElementById(`type-${type}`);
+            activeBtn.classList.remove('bg-slate-950', 'border-slate-800', 'text-slate-400');
+            activeBtn.classList.add('bg-emerald-500/10', 'border-emerald-500/30', 'text-emerald-400');
 
-            // Cambiar tamaño del inventario
-            menuRowsSelect.addEventListener('change', (e) => {
-                currentRows = parseInt(e.target.value);
-                const maxSlots = currentRows * 9;
-                if (selectedSlot >= maxSlots) {
-                    selectedSlot = 0;
-                    loadSlotData(0);
-                }
-                renderGrid();
-                updateYAML();
-            });
-
-            // Hacer clic en un slot para seleccionarlo
-            gridContainer.addEventListener('click', (e) => {
-                const slotTarget = e.target.closest('.mc-slot');
-                if (!slotTarget) return;
-
-                // Quitar clase activa previa
-                document.querySelectorAll('.mc-slot').forEach(s => s.classList.remove('active'));
-                
-                selectedSlot = parseInt(slotTarget.dataset.slotId);
-                slotTarget.classList.add('active');
-                
-                loadSlotData(selectedSlot);
-            });
-
-            // Guardar datos del slot editado
-            btnSaveSlot.addEventListener('click', () => {
-                const material = itemMaterial.value.trim().toUpperCase();
-                if (!material) {
-                    alert('Por favor introduce un material válido de Minecraft (Ej: STONE)');
-                    return;
-                }
-
-                menuItems[selectedSlot] = {
-                    material: material,
-                    name: itemName.value.trim(),
-                    amount: parseInt(itemAmount.value) || 1,
-                    lore: itemLore.value.split('\n').filter(line => line.trim() !== ''),
-                    commands: itemCommands.value.split('\n').filter(line => line.trim() !== '')
-                };
-
-                renderGrid();
-                updateYAML();
-            });
-
-            // Vaciar un slot
-            btnClearSlot.addEventListener('click', () => {
-                delete menuItems[selectedSlot];
-                clearEditorForm();
-                renderGrid();
-                updateYAML();
-            });
-
-            // Copiar al portapapeles
-            btnCopy.addEventListener('click', () => {
-                yamlOutput.select();
-                document.execCommand('copy');
-                const originalText = btnCopy.innerText;
-                btnCopy.innerText = '¡Copiado!';
-                btnCopy.classList.remove('text-emerald-400');
-                btnCopy.classList.add('text-white', 'bg-emerald-600');
-                setTimeout(() => {
-                    btnCopy.innerText = originalText;
-                    btnCopy.classList.add('text-emerald-400');
-                    btnCopy.classList.remove('text-white', 'bg-emerald-600');
-                }, 2000);
-            });
+            const container = document.getElementById('material-input-container');
+            if (type === 'normal') {
+                container.innerHTML = `
+                    <label class="block text-xs font-medium text-slate-400 mb-1.5">ID del Material (Minecraft Vanilla)</label>
+                    <input type="text" id="item-material" placeholder="DIAMOND_SWORD" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 rounded-xl px-3 py-2 text-sm transition-all outline-none uppercase font-mono">
+                `;
+            } else if (type === 'hdb') {
+                container.innerHTML = `
+                    <label class="block text-xs font-medium text-slate-400 mb-1.5">ID de HeadsDatabase (Solo el Número)</label>
+                    <input type="text" id="item-material" placeholder="1243" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 rounded-xl px-3 py-2 text-sm transition-all outline-none font-mono">
+                `;
+            } else if (type === 'player') {
+                container.innerHTML = `
+                    <label class="block text-xs font-medium text-slate-400 mb-1.5">Nombre del Jugador o Placeholder</label>
+                    <input type="text" id="item-material" placeholder="%player_name% o Notch" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 rounded-xl px-3 py-2 text-sm transition-all outline-none font-mono">
+                `;
+            }
         }
 
-        // Carga los datos de un slot guardado en el formulario
-        function loadSlotData(slotId) {
-            selectedSlotBadge.innerText = `Slot Seleccionado: ${slotId}`;
-            const item = menuItems[slotId];
+        function selectSlot(id) {
+            selectedSlot = id;
+            document.querySelectorAll('.mc-slot').forEach(s => s.classList.remove('active'));
+            const activeSlotEl = document.querySelector(`[data-slot-id="${id}"]`);
+            if (activeSlotEl) activeSlotEl.classList.add('active');
             
-            if (item) {
-                itemMaterial.value = item.material;
-                itemName.value = item.name;
-                itemAmount.value = item.amount;
-                itemLore.value = item.lore.join('\n');
-                itemCommands.value = item.commands.join('\n');
+            document.getElementById('slot-badge').innerText = `SLOT: ${id}`;
+            
+            // Cargar datos si existen
+            if (menuItems[id]) {
+                const item = menuItems[id];
+                setItemType(item.type);
+                document.getElementById('item-material').value = item.material;
+                document.getElementById('item-name').value = item.name;
+                document.getElementById('item-amount').value = item.amount;
+                document.getElementById('item-lore').value = item.lore.join('\n');
+                document.getElementById('item-commands').value = item.commands.join('\n');
             } else {
-                clearEditorForm();
+                // Resetear formulario manteniendo tipo actual
+                document.getElementById('item-material').value = '';
+                document.getElementById('item-name').value = '';
+                document.getElementById('item-amount').value = '1';
+                document.getElementById('item-lore').value = '';
+                document.getElementById('item-commands').value = '';
             }
         }
 
-        // Limpia los campos del panel de edición
-        function clearEditorForm() {
-            itemMaterial.value = '';
-            itemName.value = '';
-            itemAmount.value = '1';
-            itemLore.value = '';
-            itemCommands.value = '';
+        function saveActiveSlot() {
+            const rawMat = document.getElementById('item-material').value.trim();
+            if (!rawMat) {
+                alert('Introduce un identificador o material válido.');
+                return;
+            }
+
+            menuItems[selectedSlot] = {
+                type: itemType,
+                material: rawMat,
+                name: document.getElementById('item-name').value.trim(),
+                amount: parseInt(document.getElementById('item-amount').value) || 1,
+                lore: document.getElementById('item-lore').value.split('\n').filter(l => l.trim() !== ''),
+                commands: document.getElementById('item-commands').value.split('\n').filter(l => l.trim() !== '')
+            };
+
+            renderGrid();
+            updateYAML();
         }
 
-        // Genera el árbol de DeluxeMenus en formato YAML strings exactos
-        function updateYAML() {
-            const id = menuIdInput.value.trim() || 'mi_menu';
-            const title = menuTitleInput.value.trim();
-            const slotsCount = currentRows * 9;
+        function clearActiveSlot() {
+            delete menuItems[selectedSlot];
+            document.getElementById('item-material').value = '';
+            document.getElementById('item-name').value = '';
+            document.getElementById('item-amount').value = '1';
+            document.getElementById('item-lore').value = '';
+            document.getElementById('item-commands').value = '';
+            renderGrid();
+            updateYAML();
+        }
 
-            let yaml = `# Generado con DeluxeMenus Web Creator\n`;
+        function resetMenu() {
+            if (confirm('¿Seguro que quieres borrar todo el diseño actual?')) {
+                menuItems = {};
+                selectedSlot = 0;
+                renderGrid();
+                updateYAML();
+            }
+        }
+
+        function setupConfigListeners() {
+            document.getElementById('menu-title').oninput = function(e) {
+                document.getElementById('live-title-preview').innerText = e.target.value || 'Menú sin título';
+                updateYAML();
+            };
+            document.getElementById('menu-id').oninput = updateYAML;
+            document.getElementById('menu-rows').onchange = function(e) {
+                currentRows = parseInt(e.target.value);
+                const max = currentRows * 9;
+                if (selectedSlot >= max) selectedSlot = 0;
+                renderGrid();
+                updateYAML();
+            };
+        }
+
+        // Generador inteligente de YAML formateado bajo estándares limpios de DeluxeMenus
+        function updateYAML() {
+            const menuId = document.getElementById('menu-id').value.trim() || 'menu';
+            const title = document.getElementById('menu-title').value.trim() || 'Menú';
+            const size = currentRows * 9;
+
+            let yaml = `# -----------------------------------------------------\n`;
+            yaml += `# Generado dinámicamente con DeluxeMenus Studio Pro\n`;
+            yaml += `# -----------------------------------------------------\n\n`;
             yaml += `menu_title: '${title}'\n`;
-            yaml += `open_command: ${id}\n`;
-            yaml += `size: ${slotsCount}\n`;
+            yaml += `open_command: ${menuId}\n`;
+            yaml += `size: ${size}\n`;
             yaml += `items:\n`;
 
-            let hasItems = false;
-            for (const slotId in menuItems) {
-                // Filtrar si quedan fuera de la vista actual por haber achicado filas
-                if (parseInt(slotId) >= slotsCount) continue;
+            let itemsExist = false;
+
+            for (const slot in menuItems) {
+                if (parseInt(slot) >= size) continue; // Ignorar si se achicaron las filas temporalmente
+                itemsExist = true;
+                const item = menuItems[slot];
                 
-                hasItems = true;
-                const item = menuItems[slotId];
-                yaml += `  'item_${slotId}':\n`;
-                yaml += `    material: ${item.material}\n`;
-                yaml += `    slot: ${slotId}\n`;
+                yaml += `  'item_slot_${slot}':\n`;
+                
+                // Formateo inteligente según el tipo de cabeza / HDB o item normal
+                if (item.type === 'hdb') {
+                    yaml += `    material: 'hdb-${item.material}'\n`;
+                } else if (item.type === 'player') {
+                    // Soporte estándar de cabezas custom / placeholders en DeluxeMenus
+                    yaml += `    material: 'head;${item.material}'\n`;
+                } else {
+                    yaml += `    material: '${item.material.toUpperCase()}'\n`;
+                }
+
+                yaml += `    slot: ${slot}\n`;
+                
                 if (item.amount > 1) {
                     yaml += `    amount: ${item.amount}\n`;
                 }
@@ -365,15 +411,31 @@
                 }
             }
 
-            if (!hasItems) {
-                yaml += `  # No has añadido ítems todavía. Haz clic en un slot.\n`;
+            if (!itemsExist) {
+                yaml += `  # [!] Haz clic en cualquier slot de la vista previa para añadir ítems.\n`;
             }
 
-            yamlOutput.value = yaml;
+            document.getElementById('yaml-output').value = yaml;
         }
 
-        // Iniciar la web al cargar
-        window.onload = init;
+        function copyYamlCode() {
+            const area = document.getElementById('yaml-output');
+            area.select();
+            document.execCommand('copy');
+            
+            const btn = document.getElementById('btn-copy');
+            btn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5"></i> ¡Copiado!`;
+            btn.classList.replace('text-emerald-400', 'text-slate-950');
+            btn.classList.replace('bg-slate-800', 'bg-emerald-400');
+            lucide.createIcons();
+
+            setTimeout(() => {
+                btn.innerHTML = `<i data-lucide="copy" class="w-3.5 h-3.5"></i> Copiar`;
+                btn.classList.replace('text-slate-950', 'text-emerald-400');
+                btn.classList.replace('bg-emerald-400', 'bg-slate-800');
+                lucide.createIcons();
+            }, 2000);
+        }
     </script>
 </body>
 </html>
