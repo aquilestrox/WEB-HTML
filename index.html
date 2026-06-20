@@ -210,7 +210,7 @@
                     <div class="p-3 bg-[#0a0a0b] rounded-xl border border-[var(--border-color)] shadow-inner">
                         <i data-lucide="sparkles" class="w-5 h-5 text-blue-400"></i>
                     </div>
-                    <input type="text" id="ai-prompt" placeholder="Describe tu menú. Ej: Crea un menú de tienda de 4 filas con bordes y espadas..." 
+                    <input type="text" id="ai-prompt" placeholder="Ej: Crea un menú de tienda, un menú de warps de 4 filas, un selector de modalidades, un menú de rangos..." 
                            class="flex-1 bg-transparent border-none outline-none text-[15px] text-gray-200 placeholder-gray-500 font-light"
                            onkeypress="if(event.key === 'Enter') generateMenuAI()">
                     <button onclick="generateMenuAI()" class="px-6 py-3.5 rounded-xl bg-blue-500/10 hover:bg-blue-500 hover:text-white text-blue-400 border border-blue-500/20 font-bold text-sm transition-all flex items-center gap-2">
@@ -399,33 +399,27 @@
 
     <!-- MAIN LOGIC ENGINE -->
     <script>
-        // MASIVA BASE DE DATOS DE MATERIALES PARA PREVIEW ROBUSTO Y CATÁLOGO EXTENSO
+        // MASIVA BASE DE DATOS DE MATERIALES
         const MC_MATERIALS = [
-            // Herramientas y Armas
             "DIAMOND_SWORD", "IRON_SWORD", "GOLDEN_SWORD", "STONE_SWORD", "WOODEN_SWORD", "NETHERITE_SWORD",
             "BOW", "CROSSBOW", "TRIDENT", "SHIELD", "ARROW", "SPECTRAL_ARROW",
             "DIAMOND_PICKAXE", "IRON_PICKAXE", "GOLDEN_PICKAXE", "STONE_PICKAXE", "WOODEN_PICKAXE", "NETHERITE_PICKAXE",
             "DIAMOND_AXE", "IRON_AXE", "GOLDEN_AXE", "STONE_AXE", "WOODEN_AXE", "NETHERITE_AXE",
             "DIAMOND_SHOVEL", "IRON_SHOVEL", "GOLDEN_SHOVEL", "STONE_SHOVEL", "WOODEN_SHOVEL", "NETHERITE_SHOVEL",
             "DIAMOND_HOE", "IRON_HOE", "GOLDEN_HOE", "STONE_HOE", "WOODEN_HOE", "NETHERITE_HOE",
-            // Armaduras
             "DIAMOND_HELMET", "DIAMOND_CHESTPLATE", "DIAMOND_LEGGINGS", "DIAMOND_BOOTS",
             "IRON_HELMET", "IRON_CHESTPLATE", "IRON_LEGGINGS", "IRON_BOOTS",
             "GOLDEN_HELMET", "GOLDEN_CHESTPLATE", "GOLDEN_LEGGINGS", "GOLDEN_BOOTS",
             "LEATHER_HELMET", "LEATHER_CHESTPLATE", "LEATHER_LEGGINGS", "LEATHER_BOOTS",
             "CHAINMAIL_HELMET", "CHAINMAIL_CHESTPLATE", "CHAINMAIL_LEGGINGS", "CHAINMAIL_BOOTS",
             "NETHERITE_HELMET", "NETHERITE_CHESTPLATE", "NETHERITE_LEGGINGS", "NETHERITE_BOOTS", "TURTLE_HELMET",
-            // Minerales y Materiales
             "DIAMOND", "EMERALD", "GOLD_INGOT", "IRON_INGOT", "NETHERITE_INGOT", "NETHERITE_SCRAP", 
             "COAL", "CHARCOAL", "REDSTONE", "LAPIS_LAZULI", "QUARTZ", "COPPER_INGOT", "RAW_GOLD", "RAW_IRON", "RAW_COPPER",
-            "GOLD_NUGGET", "IRON_NUGGET",
-            // Comida
             "APPLE", "GOLDEN_APPLE", "ENCHANTED_GOLDEN_APPLE", "BREAD", "COOKED_BEEF", "BEEF", 
             "COOKED_PORKCHOP", "PORKCHOP", "COOKED_MUTTON", "MUTTON", "COOKED_CHICKEN", "CHICKEN",
             "COOKED_RABBIT", "RABBIT", "COOKED_COD", "COD", "COOKED_SALMON", "SALMON", "TROPICAL_FISH", "PUFFERFISH",
             "MELON_SLICE", "GLISTERING_MELON_SLICE", "CARROT", "GOLDEN_CARROT", "POTATO", "BAKED_POTATO", "POISONOUS_POTATO",
             "BEETROOT", "MUSHROOM_STEW", "RABBIT_STEW", "BEETROOT_SOUP", "PUMPKIN_PIE", "CAKE", "COOKIE", "SWEET_BERRIES", "GLOW_BERRIES",
-            // Utilidades
             "ENDER_PEARL", "ENDER_EYE", "SLIME_BALL", "MAGMA_CREAM", "BLAZE_ROD", "BLAZE_POWDER", "GHAST_TEAR",
             "GUNPOWDER", "BONE", "STRING", "SPIDER_EYE", "FERMENTED_SPIDER_EYE", "ROTTEN_FLESH", "FEATHER",
             "FLINT", "FLINT_AND_STEEL", "CAMPFIRE", "TORCH", "SOUL_TORCH", "LANTERN", "SOUL_LANTERN",
@@ -433,21 +427,18 @@
             "NAME_TAG", "LEAD", "SADDLE", "COMPASS", "RECOVERY_COMPASS", "CLOCK", "SPYGLASS",
             "PAPER", "BOOK", "ENCHANTED_BOOK", "WRITABLE_BOOK", "WRITTEN_BOOK", "MAP", "FILLED_MAP",
             "EXPERIENCE_BOTTLE", "GLASS_BOTTLE", "POTION", "SPLASH_POTION", "LINGERING_POTION",
-            // Bloques Principales
             "STONE", "COBBLESTONE", "DIRT", "GRASS_BLOCK", "PODZOL", "MYCELIUM", "SAND", "RED_SAND", "GRAVEL",
             "OAK_LOG", "SPRUCE_LOG", "BIRCH_LOG", "JUNGLE_LOG", "ACACIA_LOG", "DARK_OAK_LOG", "CHERRY_LOG",
             "OAK_PLANKS", "SPRUCE_PLANKS", "BIRCH_PLANKS", "JUNGLE_PLANKS", "ACACIA_PLANKS", "DARK_OAK_PLANKS", "CHERRY_PLANKS",
             "GLASS", "WHITE_STAINED_GLASS", "ORANGE_STAINED_GLASS", "MAGENTA_STAINED_GLASS", "LIGHT_BLUE_STAINED_GLASS", "YELLOW_STAINED_GLASS", "LIME_STAINED_GLASS", "PINK_STAINED_GLASS", "GRAY_STAINED_GLASS", "LIGHT_GRAY_STAINED_GLASS", "CYAN_STAINED_GLASS", "PURPLE_STAINED_GLASS", "BLUE_STAINED_GLASS", "BROWN_STAINED_GLASS", "GREEN_STAINED_GLASS", "RED_STAINED_GLASS", "BLACK_STAINED_GLASS",
-            // Paneles de Cristal (Muy usados en Menús)
             "GLASS_PANE", "WHITE_STAINED_GLASS_PANE", "ORANGE_STAINED_GLASS_PANE", "MAGENTA_STAINED_GLASS_PANE", "LIGHT_BLUE_STAINED_GLASS_PANE", "YELLOW_STAINED_GLASS_PANE", "LIME_STAINED_GLASS_PANE", "PINK_STAINED_GLASS_PANE", "GRAY_STAINED_GLASS_PANE", "LIGHT_GRAY_STAINED_GLASS_PANE", "CYAN_STAINED_GLASS_PANE", "PURPLE_STAINED_GLASS_PANE", "BLUE_STAINED_GLASS_PANE", "BROWN_STAINED_GLASS_PANE", "GREEN_STAINED_GLASS_PANE", "RED_STAINED_GLASS_PANE", "BLACK_STAINED_GLASS_PANE",
-            // Interactuables y Especiales
             "CHEST", "TRAPPED_CHEST", "ENDER_CHEST", "BARREL", "SHULKER_BOX", "CRAFTING_TABLE", "FURNACE", "BLAST_FURNACE", "SMOKER",
             "ANVIL", "ENCHANTING_TABLE", "BREWING_STAND", "CAULDRON", "HOPPER", "DROPPER", "DISPENSER", "OBSERVER",
             "BEACON", "CONDUIT", "SPAWNER", "NOTE_BLOCK", "JUKEBOX", "TNT", "BEDROCK", "OBSIDIAN", "CRYING_OBSIDIAN",
             "BARRIER", "COMMAND_BLOCK", "STRUCTURE_BLOCK", "LIGHT", "NETHER_STAR", "TOTEM_OF_UNDYING", "DRAGON_EGG", "DRAGON_HEAD"
         ];
 
-        // BASE DE DATOS DE CABEZAS CUSTOM COMUNES (Formato MHF_)
+        // BASE DE DATOS DE CABEZAS CUSTOM COMUNES
         const MC_HEADS = [
             { id: "MHF_ArrowRight", label: "Flecha Derecha" },
             { id: "MHF_ArrowLeft", label: "Flecha Izquierda" },
@@ -473,7 +464,7 @@
             { id: "MHF_Enderman", label: "Enderman" },
             { id: "MHF_Ghast", label: "Ghast" },
             { id: "MHF_Blaze", label: "Blaze" },
-            { id: "MHF_Golem", label: "Golem de Hierro" },
+            { id: "MHF_Golem", label: "Golem Hierro" },
             { id: "MHF_Villager", label: "Aldeano" },
             { id: "MHF_Black", label: "Bloque Negro" },
             { id: "MHF_Red", label: "Bloque Rojo" },
@@ -512,18 +503,23 @@
             return html;
         }
 
-        // FUNCIÓN SUPER ROBUSTA PARA OBTENER LA IMAGEN
-        function getImageUrl(type, material) {
-            let mat = material ? material.toUpperCase().trim() : '';
-            
-            if (type === 'custom_head' || mat.startsWith('HEAD;')) {
-                let headName = mat.replace('HEAD;', '');
-                if (headName.includes('%')) return 'https://mc-heads.net/avatar/Steve/64'; // Placeholders PAPI
-                return `https://mc-heads.net/avatar/${headName}/64`;
+        // SISTEMA 100% FIABLE DE IMÁGENES MEDIANTE CDN OFICIAL DE JSDELIVR
+        const ASSET_BASE = "https://cdn.jsdelivr.net/gh/InventivetalentDev/minecraft-assets@1.20.1/assets/minecraft/textures";
+
+        function getSafeMaterialName(mat) {
+            let clean = mat.toLowerCase().replace(/ /g, "_");
+            // Truco: Para los paneles de cristal usados de borde, usaremos la textura del bloque completo, así se ve perfectamente coloreado.
+            if (clean.includes("stained_glass_pane")) {
+                return clean.replace("_pane", "");
             }
-            
-            let cleanMat = mat.toLowerCase();
-            return `https://assets.mcfallout.net/items/${cleanMat}.png`;
+            if (clean === "wood" || clean === "log") return "oak_log";
+            return clean;
+        }
+
+        function getHeadUrl(mat) {
+            let headName = mat.replace(/HEAD;/i, '').trim();
+            if (headName.includes('%')) return 'https://mc-heads.net/avatar/Steve/64'; 
+            return `https://mc-heads.net/avatar/${headName}/64`;
         }
 
         window.onload = () => {
@@ -546,21 +542,37 @@
                     const node = STATE.items[i];
                     let pName = parseMCColor(node.name || node.material);
                     
-                    let mainUrl = getImageUrl(node.type, node.material);
-                    let fallbackUrl = `https://assets.mcfallout.net/blocks/${node.material.toLowerCase()}.png`;
-                    let finalFallbackUrl = `https://assets.mcfallout.net/items/barrier.png`;
+                    let isHead = node.type === 'custom_head' || node.material.toUpperCase().startsWith('HEAD;');
+                    
+                    if (isHead) {
+                        let headUrl = getHeadUrl(node.material);
+                        slot.innerHTML = `
+                            <img src="${headUrl}" class="slot-img mb-0.5 z-10 rounded-sm border border-black/30" alt="head">
+                            ${node.amount > 1 ? `<span class="absolute bottom-1 right-1 text-white font-mono text-[13px] font-bold drop-shadow-[2px_2px_0_#000] z-20">${node.amount}</span>` : ''}
+                            <div class="mc-tooltip text-left min-w-[150px]">
+                                <p class="font-bold text-white text-sm">${(node.name || node.material).replace(/&[0-9a-fk-or]/gi, '')}</p>
+                                ${node.lore && node.lore.length > 0 ? `<div class="mt-2 pt-2 border-t border-gray-600/50 text-xs text-gray-300 space-y-1">${node.lore.map(l => `<p>${parseMCColor(l)}</p>`).join('')}</div>` : ''}
+                            </div>
+                        `;
+                    } else {
+                        let cleanMat = getSafeMaterialName(node.material);
+                        let urlItem = `${ASSET_BASE}/item/${cleanMat}.png`;
+                        let urlBlock = `${ASSET_BASE}/block/${cleanMat}.png`;
+                        let urlBarrier = `${ASSET_BASE}/item/barrier.png`;
 
-                    // Lógica HTML robusta para fallbacks visuales de imágenes usando el evento onerror.
-                    slot.innerHTML = `
-                        <img src="${mainUrl}" 
-                             onerror="this.onerror=null; this.src='${fallbackUrl}'; setTimeout(() => { if(this.naturalWidth === 0) this.src='${finalFallbackUrl}'; }, 50);" 
-                             class="slot-img mb-0.5 z-10" alt="item">
-                        ${node.amount > 1 ? `<span class="absolute bottom-1 right-1 text-white font-mono text-[13px] font-bold drop-shadow-[2px_2px_0_#000] z-20">${node.amount}</span>` : ''}
-                        <div class="mc-tooltip text-left min-w-[150px]">
-                            <p class="font-bold text-white text-sm">${(node.name || node.material).replace(/&[0-9a-fk-or]/gi, '')}</p>
-                            ${node.lore && node.lore.length > 0 ? `<div class="mt-2 pt-2 border-t border-gray-600/50 text-xs text-gray-300 space-y-1">${node.lore.map(l => `<p>${parseMCColor(l)}</p>`).join('')}</div>` : ''}
-                        </div>
-                    `;
+                        // Lógica de fallback súper robusta:
+                        // Intenta cargar como ITEM -> Si falla, intenta como BLOCK -> Si falla, pone una BARRERA.
+                        slot.innerHTML = `
+                            <img src="${urlItem}" 
+                                 onerror="this.onerror=null; this.src='${urlBlock}'; setTimeout(() => { if(this.naturalWidth === 0) this.src='${urlBarrier}'; }, 50);" 
+                                 class="slot-img mb-0.5 z-10" alt="${cleanMat}">
+                            ${node.amount > 1 ? `<span class="absolute bottom-1 right-1 text-white font-mono text-[13px] font-bold drop-shadow-[2px_2px_0_#000] z-20">${node.amount}</span>` : ''}
+                            <div class="mc-tooltip text-left min-w-[150px]">
+                                <p class="font-bold text-white text-sm">${(node.name || node.material).replace(/&[0-9a-fk-or]/gi, '')}</p>
+                                ${node.lore && node.lore.length > 0 ? `<div class="mt-2 pt-2 border-t border-gray-600/50 text-xs text-gray-300 space-y-1">${node.lore.map(l => `<p>${parseMCColor(l)}</p>`).join('')}</div>` : ''}
+                            </div>
+                        `;
+                    }
                 }
 
                 slot.onclick = () => selectSlot(i);
@@ -612,7 +624,6 @@
             document.getElementById('ctx-normal').className = type === 'normal' ? "flex-1 text-xs font-bold py-2.5 rounded-lg bg-[#2a2b2f] text-white shadow-sm transition-all" : "flex-1 text-xs font-bold py-2.5 rounded-lg text-gray-500 hover:text-white transition-all";
             document.getElementById('ctx-custom_head').className = type === 'custom_head' ? "flex-1 text-xs font-bold py-2.5 rounded-lg bg-[#2a2b2f] text-white shadow-sm transition-all" : "flex-1 text-xs font-bold py-2.5 rounded-lg text-gray-500 hover:text-white transition-all";
             
-            // Cambiar icono del buscador
             const btn = document.getElementById('btn-open-catalog');
             if(type === 'normal') {
                 btn.innerHTML = `<i data-lucide="blocks" class="w-4 h-4"></i>`;
@@ -648,7 +659,7 @@
             }
         }
 
-        // --- SISTEMA DE CATÁLOGO ---
+        // --- SISTEMA DE CATÁLOGO CORREGIDO ---
         function openCatalog() {
             const modal = document.getElementById('catalog-modal');
             const content = document.getElementById('catalog-modal-content');
@@ -663,7 +674,6 @@
                 title.innerHTML = `<i data-lucide="smile" class="w-5 h-5 text-blue-400"></i> Cabezas Custom`;
             }
             lucide.createIcons();
-            
             renderCatalogGrid('');
             
             modal.classList.remove('hidden');
@@ -687,12 +697,14 @@
                     if(mat.toLowerCase().includes(term)) {
                         const item = document.createElement('div');
                         item.className = 'catalog-item';
-                        let cleanMat = mat.toLowerCase();
-                        let mainUrl = `https://assets.mcfallout.net/items/${cleanMat}.png`;
-                        let fallbackUrl = `https://assets.mcfallout.net/blocks/${cleanMat}.png`;
+                        
+                        let cleanMat = getSafeMaterialName(mat);
+                        let urlItem = `${ASSET_BASE}/item/${cleanMat}.png`;
+                        let urlBlock = `${ASSET_BASE}/block/${cleanMat}.png`;
+                        let urlBarrier = `${ASSET_BASE}/item/barrier.png`;
                         
                         item.innerHTML = `
-                            <img src="${mainUrl}" onerror="this.onerror=null; this.src='${fallbackUrl}'; setTimeout(() => { if(this.naturalWidth === 0) this.src='https://assets.mcfallout.net/items/barrier.png'; }, 50);" alt="${mat}">
+                            <img src="${urlItem}" onerror="this.onerror=null; this.src='${urlBlock}'; setTimeout(() => { if(this.naturalWidth === 0) this.src='${urlBarrier}'; }, 50);" alt="${mat}">
                             <span class="text-[10px] text-gray-300 font-mono break-all leading-tight">${mat}</span>
                         `;
                         item.onclick = () => {
@@ -731,7 +743,7 @@
             renderCatalogGrid(document.getElementById('catalog-search').value);
         }
 
-        // --- SISTEMA DE INTELIGENCIA ARTIFICIAL SIMULADA ---
+        // --- SISTEMA DE INTELIGENCIA ARTIFICIAL AMPLIADO (10+ PLANTILLAS) ---
         function generateMenuAI() {
             const input = document.getElementById('ai-prompt');
             const prompt = input.value.toLowerCase();
@@ -739,52 +751,123 @@
 
             const status = document.getElementById('ai-status');
             status.style.opacity = '1';
-            status.innerText = 'Analizando tu petición... ✨';
+            status.innerText = 'Pensando y estructurando tu interfaz... ✨';
 
             setTimeout(() => {
                 STATE.items = {};
                 
-                // Analizar filas
+                // Analizar filas solicitadas por el usuario
                 let filasMatch = prompt.match(/(\d+)\s*fila/);
                 if(filasMatch) {
                     STATE.rows = parseInt(filasMatch[1]);
                     if(STATE.rows > 6) STATE.rows = 6;
+                } else {
+                    STATE.rows = 6; // Por defecto lo hacemos grande y vistoso
                 }
 
-                // Temáticas Complejas
-                if (prompt.includes('tienda')) {
-                    STATE.menuTitle = '&8Tienda Principal';
+                const total = STATE.rows * 9;
+                const mid = Math.floor(STATE.rows / 2) * 9;
+
+                // 1. TIENDA
+                if (prompt.includes('tienda') || prompt.includes('shop')) {
+                    STATE.menuTitle = '&8Tienda Global';
                     STATE.menuId = 'tienda_main';
-                    let mid = Math.floor(STATE.rows / 2) * 9;
-                    STATE.items[4] = { type: 'normal', material: 'GOLD_INGOT', name: '&e&lTu Balance', amount: 1, lore: ['&7Saldo disponible: &a$5,000'], commands: [] };
-                    STATE.items[mid + 2] = { type: 'normal', material: 'DIAMOND_SWORD', name: '&bEspadas y Armas', amount: 1, lore: ['&7Clic para ver espadas'], commands: ['[opengui] tienda_armas'] };
-                    STATE.items[mid + 4] = { type: 'normal', material: 'IRON_CHESTPLATE', name: '&fArmaduras', amount: 1, lore: ['&7Equipamiento de combate'], commands: ['[opengui] tienda_armaduras'] };
-                    STATE.items[mid + 6] = { type: 'normal', material: 'GOLDEN_APPLE', name: '&cConsumibles', amount: 1, lore: ['&7Comida y pociones'], commands: ['[opengui] tienda_consumibles'] };
+                    STATE.items[4] = { type: 'normal', material: 'EMERALD', name: '&a&lTu Dinero', amount: 1, lore: ['&7Saldo: &2$5,000'], commands: [] };
+                    STATE.items[mid + 1] = { type: 'normal', material: 'DIAMOND_SWORD', name: '&bArmas', amount: 1, lore: ['&7Compra espadas y arcos'], commands: ['[opengui] tienda_armas'] };
+                    STATE.items[mid + 3] = { type: 'normal', material: 'IRON_CHESTPLATE', name: '&fArmaduras', amount: 1, lore: ['&7Equipamiento'], commands: ['[opengui] tienda_armaduras'] };
+                    STATE.items[mid + 5] = { type: 'normal', material: 'GRASS_BLOCK', name: '&eBloques', amount: 1, lore: ['&7Materiales de construcción'], commands: ['[opengui] tienda_bloques'] };
+                    STATE.items[mid + 7] = { type: 'normal', material: 'GOLDEN_APPLE', name: '&cComida', amount: 1, lore: ['&7Alimentos y pociones'], commands: ['[opengui] tienda_comida'] };
                 } 
+                // 2. SELECTOR DE MODALIDADES / LOBBY
                 else if (prompt.includes('lobby') || prompt.includes('modalidades') || prompt.includes('selector')) {
-                    STATE.menuTitle = '&8Selector de Servidor';
+                    STATE.rows = 3; // Forzamos 3 filas que es lo estético para lobbies
+                    STATE.menuTitle = '&8Selecciona una Modalidad';
                     STATE.menuId = 'selector';
-                    STATE.items[11] = { type: 'normal', material: 'GRASS_BLOCK', name: '&a&lSurvival', amount: 1, lore: ['&7Unirse al mundo abierto'], commands: ['[connect] survival'] };
-                    STATE.items[13] = { type: 'normal', material: 'BOW', name: '&c&lSkyWars', amount: 1, lore: ['&7Lucha en las alturas'], commands: ['[connect] skywars'] };
-                    STATE.items[15] = { type: 'normal', material: 'BEDROCK', name: '&e&lFactions', amount: 1, lore: ['&7Guerra de clanes'], commands: ['[connect] factions'] };
+                    STATE.items[11] = { type: 'normal', material: 'GRASS_BLOCK', name: '&a&lSurvival', amount: 1, lore: ['&7Construye y sobrevive', '', '&e▶ Clic para unirte'], commands: ['[connect] survival'] };
+                    STATE.items[13] = { type: 'normal', material: 'DIAMOND_SWORD', name: '&c&lSkyWars', amount: 1, lore: ['&7Lucha en islas flotantes', '', '&e▶ Clic para unirte'], commands: ['[connect] skywars'] };
+                    STATE.items[15] = { type: 'normal', material: 'TNT', name: '&e&lFactions', amount: 1, lore: ['&7Crea tu clan y domina', '', '&e▶ Clic para unirte'], commands: ['[connect] factions'] };
                 }
-                else if (prompt.includes('perfil') || prompt.includes('stats')) {
-                    STATE.menuTitle = '&8Tu Perfil';
-                    STATE.menuId = 'perfil_usuario';
-                    STATE.items[13] = { type: 'custom_head', material: '%player_name%', name: '&ePerfil de %player_name%', amount: 1, lore: ['&7Rango: &bVIP', '&7Asesinatos: &f120', '&7Muertes: &f45'], commands: [] };
-                    STATE.items[20] = { type: 'normal', material: 'CHEST', name: '&aRecompensas', amount: 1, lore: ['&7Reclama tus kits'], commands: ['[player] kits'] };
-                    STATE.items[22] = { type: 'normal', material: 'BARRIER', name: '&cCerrar', amount: 1, lore: [], commands: ['[close]'] };
-                    STATE.items[24] = { type: 'normal', material: 'COMPARATOR', name: '&6Opciones', amount: 1, lore: ['&7Ajustes personales'], commands: ['[opengui] settings'] };
+                // 3. PERFIL / STATS
+                else if (prompt.includes('perfil') || prompt.includes('stats') || prompt.includes('estadisticas')) {
+                    STATE.menuTitle = '&8Perfil de Usuario';
+                    STATE.menuId = 'perfil';
+                    STATE.items[4] = { type: 'custom_head', material: '%player_name%', name: '&e&lEstadísticas de %player_name%', amount: 1, lore: ['&7Rango: &bVIP', '&7Asesinatos: &f120', '&7Muertes: &f45', '&7K/D Ratio: &e2.66'], commands: [] };
+                    STATE.items[19] = { type: 'normal', material: 'DIAMOND', name: '&bLogros', amount: 1, lore: ['&7Revisa tus metas cumplidas'], commands: [] };
+                    STATE.items[22] = { type: 'normal', material: 'CHEST', name: '&aRecompensas Diarias', amount: 1, lore: ['&7¡Reclama tus premios!'], commands: ['[player] rewards'] };
+                    STATE.items[25] = { type: 'normal', material: 'COMPARATOR', name: '&6Opciones', amount: 1, lore: ['&7Ajustes personales'], commands: ['[opengui] settings'] };
+                }
+                // 4. WARPS / TELETRANSPORTES
+                else if (prompt.includes('warp') || prompt.includes('viaje') || prompt.includes('teleport')) {
+                    STATE.menuTitle = '&8Viaje Rápido (Warps)';
+                    STATE.menuId = 'warps';
+                    STATE.items[mid + 1] = { type: 'normal', material: 'BEACON', name: '&eSpawn Principal', amount: 1, lore: ['&7Ir al centro del servidor'], commands: ['[player] warp spawn'] };
+                    STATE.items[mid + 3] = { type: 'normal', material: 'IRON_SWORD', name: '&cPvP Arena', amount: 1, lore: ['&7Lucha contra otros'], commands: ['[player] warp pvp'] };
+                    STATE.items[mid + 5] = { type: 'normal', material: 'ENDER_CHEST', name: '&dCajas Misteriosas', amount: 1, lore: ['&7Abre tus llaves'], commands: ['[player] warp crates'] };
+                    STATE.items[mid + 7] = { type: 'normal', material: 'OAK_LOG', name: '&aMundo Libre', amount: 1, lore: ['&7Zona de construcción'], commands: ['[player] warp survival'] };
+                }
+                // 5. KITS
+                else if (prompt.includes('kit')) {
+                    STATE.menuTitle = '&8Selector de Kits';
+                    STATE.menuId = 'kits';
+                    STATE.items[mid + 2] = { type: 'normal', material: 'STONE_SWORD', name: '&7Kit Inicial', amount: 1, lore: ['&7Equipamiento básico', '&7Cooldown: &e1 hora'], commands: ['[player] kit inicial'] };
+                    STATE.items[mid + 4] = { type: 'normal', material: 'GOLDEN_SWORD', name: '&eKit VIP', amount: 1, lore: ['&7Equipamiento avanzado', '&7Cooldown: &e12 horas'], commands: ['[player] kit vip'] };
+                    STATE.items[mid + 6] = { type: 'normal', material: 'DIAMOND_SWORD', name: '&bKit MVP', amount: 1, lore: ['&7Equipamiento épico', '&7Cooldown: &e24 horas'], commands: ['[player] kit mvp'] };
+                }
+                // 6. RANGOS
+                else if (prompt.includes('rango') || prompt.includes('rank')) {
+                    STATE.menuTitle = '&8Información de Rangos';
+                    STATE.menuId = 'rangos';
+                    STATE.items[mid + 1] = { type: 'normal', material: 'COAL', name: '&8Rango Usuario', amount: 1, lore: ['&7El rango por defecto'], commands: [] };
+                    STATE.items[mid + 3] = { type: 'normal', material: 'IRON_INGOT', name: '&fRango VIP', amount: 1, lore: ['&7Ventajas especiales'], commands: ['[player] buy vip'] };
+                    STATE.items[mid + 5] = { type: 'normal', material: 'GOLD_INGOT', name: '&eRango PRO', amount: 1, lore: ['&7Más comandos y kits'], commands: ['[player] buy pro'] };
+                    STATE.items[mid + 7] = { type: 'normal', material: 'DIAMOND', name: '&bRango ÉLITE', amount: 1, lore: ['&7¡El mejor rango de todos!'], commands: ['[player] buy elite'] };
+                }
+                // 7. TRABAJOS (JOBS)
+                else if (prompt.includes('trabajo') || prompt.includes('job')) {
+                    STATE.menuTitle = '&8Agencia de Empleo';
+                    STATE.menuId = 'jobs';
+                    STATE.items[mid + 1] = { type: 'normal', material: 'DIAMOND_PICKAXE', name: '&7Minero', amount: 1, lore: ['&7Gana dinero picando'], commands: ['[player] jobs join minero'] };
+                    STATE.items[mid + 3] = { type: 'normal', material: 'DIAMOND_AXE', name: '&2Leñador', amount: 1, lore: ['&7Gana dinero talando'], commands: ['[player] jobs join lenador'] };
+                    STATE.items[mid + 5] = { type: 'normal', material: 'DIAMOND_HOE', name: '&eGranjero', amount: 1, lore: ['&7Gana dinero cultivando'], commands: ['[player] jobs join granjero'] };
+                    STATE.items[mid + 7] = { type: 'normal', material: 'DIAMOND_SWORD', name: '&cCazador', amount: 1, lore: ['&7Gana dinero matando mobs'], commands: ['[player] jobs join cazador'] };
+                }
+                // 8. MASCOTAS
+                else if (prompt.includes('mascota') || prompt.includes('pet')) {
+                    STATE.menuTitle = '&8Tus Mascotas';
+                    STATE.menuId = 'mascotas';
+                    STATE.items[mid + 2] = { type: 'custom_head', material: 'MHF_Pig', name: '&dCerdito', amount: 1, lore: ['&7Invocar mascota'], commands: ['[player] pet call pig'] };
+                    STATE.items[mid + 4] = { type: 'custom_head', material: 'MHF_Cow', name: '&fVaca', amount: 1, lore: ['&7Invocar mascota'], commands: ['[player] pet call cow'] };
+                    STATE.items[mid + 6] = { type: 'custom_head', material: 'MHF_Chicken', name: '&ePollo', amount: 1, lore: ['&7Invocar mascota'], commands: ['[player] pet call chicken'] };
+                }
+                // 9. PANEL DE ADMIN
+                else if (prompt.includes('admin') || prompt.includes('staff')) {
+                    STATE.menuTitle = '&4&lPanel de Administración';
+                    STATE.menuId = 'admin_panel';
+                    STATE.items[10] = { type: 'normal', material: 'DIAMOND_SWORD', name: '&cModo Supervivencia', amount: 1, lore: ['&7Cambiar a gamemode 0'], commands: ['[player] gm 0'] };
+                    STATE.items[12] = { type: 'normal', material: 'GRASS_BLOCK', name: '&aModo Creativo', amount: 1, lore: ['&7Cambiar a gamemode 1'], commands: ['[player] gm 1'] };
+                    STATE.items[14] = { type: 'normal', material: 'ENDER_PEARL', name: '&bVanish', amount: 1, lore: ['&7Ocultarse de jugadores'], commands: ['[player] vanish'] };
+                    STATE.items[16] = { type: 'normal', material: 'CLOCK', name: '&eTiempo: Día', amount: 1, lore: ['&7Hacer de día'], commands: ['[console] time set day'] };
+                }
+                // 10. DEFAULT (GENÉRICO)
+                else {
+                    STATE.menuTitle = '&8Menú Personalizado';
+                    STATE.menuId = 'menu_custom';
+                    STATE.items[mid + 4] = { type: 'normal', material: 'COMPASS', name: '&bMenú Principal', amount: 1, lore: ['&7Usa comandos para configurar'], commands: [] };
                 }
 
                 // Generar Bordes Inteligentes
-                if(prompt.includes('borde') || prompt.includes('decorado')) {
-                    const total = STATE.rows * 9;
+                if(prompt.includes('borde') || prompt.includes('decorado') || prompt.includes('cristales')) {
                     for(let i=0; i<total; i++) {
                         if (i < 9 || i >= (total - 9) || i % 9 === 0 || i % 9 === 8) {
                             if (!STATE.items[i]) STATE.items[i] = { type: 'normal', material: 'BLACK_STAINED_GLASS_PANE', name: ' ', amount: 1, lore: [], commands: [] };
                         }
                     }
+                }
+
+                // Generar botón de cerrar automático en la parte inferior central
+                const centerBottom = total - 5;
+                if (!STATE.items[centerBottom] && STATE.rows >= 3) {
+                    STATE.items[centerBottom] = { type: 'normal', material: 'BARRIER', name: '&c&lCerrar Menú', amount: 1, lore: ['&7Cierra esta ventana'], commands: ['[close]'] };
                 }
 
                 // Actualizar UI
