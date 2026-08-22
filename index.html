@@ -3,21 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto Minecraft: TODOS los Ítems en 7 Días</title>
+    <title>ALL ITEMS CHALLENGE - 1 de Cada Ítem de Minecraft en 7 Días</title>
     <style>
         :root {
-            --bg-dark: #121212;
-            --card-bg: #1e1e1e;
-            --card-hover: #262626;
-            --accent-green: #4caf50;
+            --bg-dark: #0f111a;
+            --card-bg: #1a1d2d;
+            --accent-green: #00e676;
             --accent-gold: #ffb300;
-            --text-main: #f5f5f5;
-            --text-muted: #aaa;
-            --border-color: #333;
+            --text-main: #ffffff;
+            --text-muted: #8c9baf;
+            --border-color: #2a2e45;
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-dark);
             color: var(--text-main);
             margin: 0;
@@ -31,187 +30,188 @@
 
         header {
             text-align: center;
-            margin-bottom: 25px;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         h1 {
             color: var(--accent-green);
-            margin: 0 0 10px 0;
-            font-size: 2rem;
+            margin: 0 0 5px 0;
+            font-size: 2.2rem;
+            text-shadow: 0 2px 10px rgba(0, 230, 118, 0.2);
         }
 
-        /* Panel de Control y Progreso */
+        .subtitle {
+            color: var(--text-muted);
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        /* Panel de Control */
         .dashboard {
             background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 20px;
-            border: 1px solid var(--border-color);
             margin-bottom: 25px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            position: sticky;
+            top: 10px;
+            z-index: 100;
         }
 
-        .stats-row {
+        .stats-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
-        .progress-bar-bg {
-            background: #2a2a2a;
-            height: 22px;
-            border-radius: 11px;
+        .progress-bg {
+            background: #090a10;
+            height: 24px;
+            border-radius: 12px;
             overflow: hidden;
             border: 1px solid var(--border-color);
         }
 
-        .progress-bar-fill {
-            background: linear-gradient(90deg, #2e7d32, var(--accent-green));
+        .progress-fill {
+            background: linear-gradient(90deg, #00b0ff, var(--accent-green));
             height: 100%;
             width: 0%;
             transition: width 0.3s ease;
         }
 
-        .controls {
+        .tools-row {
             display: flex;
             gap: 15px;
             margin-top: 15px;
             flex-wrap: wrap;
         }
 
-        input[type="text"] {
+        .search-box {
             flex: 1;
             min-width: 250px;
-            padding: 10px 15px;
-            border-radius: 6px;
+            padding: 12px 16px;
+            border-radius: 8px;
             border: 1px solid var(--border-color);
-            background: #111;
-            color: var(--text-main);
-            font-size: 0.95rem;
+            background: #090a10;
+            color: #fff;
+            font-size: 1rem;
         }
 
-        .filter-btn {
-            background: #2a2a2a;
-            color: var(--text-main);
+        .btn {
+            background: #2a2e45;
+            color: #fff;
             border: 1px solid var(--border-color);
-            padding: 8px 16px;
-            border-radius: 6px;
+            padding: 10px 18px;
+            border-radius: 8px;
             cursor: pointer;
+            font-weight: bold;
             transition: all 0.2s;
         }
 
-        .filter-btn.active, .filter-btn:hover {
+        .btn:hover {
             background: var(--accent-green);
             color: #000;
-            font-weight: bold;
         }
 
         /* Grid de Días */
         .days-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
             gap: 20px;
         }
 
         .day-card {
             background: var(--card-bg);
-            border-radius: 10px;
             border: 1px solid var(--border-color);
-            padding: 18px;
-            display: flex;
-            flex-direction: column;
+            border-radius: 12px;
+            padding: 20px;
         }
 
-        .day-title {
-            font-size: 1.2rem;
+        .day-header {
             color: var(--accent-gold);
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 8px;
-            margin-bottom: 12px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
             display: flex;
             justify-content: space-between;
         }
 
-        .category-group {
-            margin-bottom: 15px;
-        }
-
-        .category-name {
-            font-size: 0.85rem;
+        .category-title {
+            color: var(--accent-green);
+            font-size: 0.9rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: var(--accent-green);
-            margin-bottom: 6px;
+            margin: 15px 0 8px 0;
             font-weight: bold;
-        }
-
-        .item-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
         }
 
         .item-row {
             display: flex;
             align-items: center;
-            padding: 6px 8px;
-            background: #181818;
+            padding: 6px 10px;
+            background: #111322;
             margin-bottom: 4px;
-            border-radius: 4px;
-            font-size: 0.9rem;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            border: 1px solid transparent;
         }
 
         .item-row:hover {
-            background: var(--card-hover);
+            border-color: var(--border-color);
         }
 
         .item-row input[type="checkbox"] {
-            margin-right: 10px;
-            width: 16px;
-            height: 16px;
+            margin-right: 12px;
+            width: 18px;
+            height: 18px;
             cursor: pointer;
             accent-color: var(--accent-green);
         }
 
-        .item-row.completed span {
+        .item-row.checked {
+            background: #0a1f18;
+        }
+
+        .item-row.checked span {
             text-decoration: line-through;
             color: var(--text-muted);
         }
 
-        .notes-area {
-            margin-top: 30px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            padding: 15px;
-            border-radius: 10px;
+        .add-custom-box {
+            margin-top: 15px;
+            display: flex;
+            gap: 8px;
         }
 
-        textarea {
-            width: 100%;
-            height: 90px;
-            background: #111;
-            color: #fff;
-            border: 1px solid var(--border-color);
+        .add-custom-box input {
+            flex: 1;
+            padding: 8px;
             border-radius: 6px;
-            padding: 10px;
-            box-sizing: border-box;
-            resize: vertical;
+            border: 1px solid var(--border-color);
+            background: #090a10;
+            color: white;
         }
 
         .reset-btn {
-            background: #c62828;
+            background: #ff5252;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
+            padding: 12px 24px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
-            margin: 20px auto;
+            margin: 40px auto;
             display: block;
+        }
+
+        .reset-btn:hover {
+            background: #d50000;
         }
     </style>
 </head>
@@ -219,139 +219,136 @@
 
 <div class="container">
     <header>
-        <h1>📦 Reto Minecraft: Todos los Ítems en 7 Días</h1>
-        <p style="color: var(--text-muted); margin: 0;">Planificador diario por categorías de obtención para vídeo de YouTube/Twitch</p>
+        <h1>🏆 ALL ITEMS CHALLENGE (1 de CADA Ítem)</h1>
+        <p class="subtitle">Consigue exactamente 1 unidad de cada objeto del juego en 7 Días</p>
     </header>
 
     <div class="dashboard">
-        <div class="stats-row">
-            <span>Ítems Obtenidos: <span id="counter">0 / 0</span></span>
-            <span id="percentage">0%</span>
+        <div class="stats-bar">
+            <span>Objetos Conseguidos: <span id="collected-count" style="color: var(--accent-green);">0</span> / <span id="total-count">0</span></span>
+            <span id="percent-text" style="color: var(--accent-gold);">0%</span>
         </div>
-        <div class="progress-bar-bg">
-            <div class="progress-bar-fill" id="progress-fill"></div>
+        <div class="progress-bg">
+            <div class="progress-fill" id="progress-bar"></div>
         </div>
-
-        <div class="controls">
-            <input type="text" id="search-input" placeholder="Buscar ítem o bloque (ej: Adoquín, Escudo, Disco)..." oninput="filterItems()">
+        <div class="tools-row">
+            <input type="text" id="search-input" class="search-box" placeholder="🔎 Buscar ítem o bloque exacto (ej: Manzana Dorada, Adoquín, Disco)..." oninput="filterItems()">
+            <button class="btn" onclick="toggleCompletedVisibility()" id="hide-btn">Ocultar Ya Conseguidos</button>
         </div>
     </div>
 
     <div class="days-grid" id="days-container"></div>
 
-    <div class="notes-area">
-        <h3 style="margin-top:0; color: var(--accent-gold);">📝 Anotaciones de Grabación / Timestamps</h3>
-        <textarea id="video-notes" placeholder="Escribe aquí momentos épicos, coordenadas de granjas o tomas pendientes..." oninput="saveNotes()"></textarea>
-    </div>
-
-    <button class="reset-btn" onclick="resetAll()">Reiniciar Todo el Progreso</button>
+    <button class="reset-btn" onclick="resetChallenge()">⚠️ Reiniciar Todo el Contador</button>
 </div>
 
 <script>
-// Estructura completa organizada por días y categorías
-const challengeData = [
+// Lista de planificación de 1 de CADA ítem dividida por los 7 Días de grabación
+const daysData = [
     {
         day: "Día 1",
-        title: "Madera, Piedra, Tierra y Vegetación Básica",
+        title: "Bloques de la Naturaleza (1 de cada tipo)",
         categories: [
-            { name: "Maderas y Troncos (Todos los tipos + Variantes)", items: ["Roble (Tronco, Madera, Despojado, Tablas, Losas, Escaleras, Vallas, Puertas, Botones)", "Abeto (Todas las variantes)", "Abedul (Todas las variantes)", "Jungla (Todas las variantes)", "Acacia (Todas las variantes)", "Roble Oscuro (Todas las variantes)", "Mangle (Todas las variantes)", "Cerezo (Todas las variantes)", "Bambú (Bloque, Mosaico y variantes)"] },
-            { name: "Tierras y Rocas Superficiales", items: ["Tierra", "Tierra con Césped", "Tierra Estéril", "Podsol", "Micelio", "Barro", "Raíces Embarradas", "Piedra", "Adoquín", "Andesita (Normal/Pulida)", "Diorita (Normal/Pulida)", "Granito (Normal/Pulida)", "Calcita", "Toba (y sus variantes talladas)", "Arenisca (Normal, Cincelada, Suave, Roja)"] },
-            { name: "Vegetación y Cultivos Básicos", items: ["Brote de Roble/Abeto/Abedul/Jungla/Acacia/Roble Oscuro/Cerezo", "Hojas de todos los árboles", "Semillas de Trigo", "Trigo", "Zanahoria", "Patata", "Semillas de Calabaza/Sandía", "Bloque de Calabaza", "Rodaja de Sandía", "Semillas de Remolacha", "Caña de Azúcar", "Cactus", "Flor de Cerezo", "Musgo"] }
+            { name: "Maderas y Árboles (1 de cada variante)", items: ["Tronco de Roble", "Madera de Roble", "Tronco Despojado de Roble", "Tablas de Roble", "Losa de Roble", "Escaleras de Roble", "Valla de Roble", "Puerta de Roble", "Trapdoor de Roble", "Brote de Roble", "Hojas de Roble", "Tronco de Abeto", "Tablas de Abeto", "Brote de Abeto", "Hojas de Abeto", "Tronco de Abedul", "Tablas de Abedul", "Brote de Abedul", "Hojas de Abedul", "Tronco de Jungla", "Tablas de Jungla", "Brote de Jungla", "Hojas de Jungla", "Tronco de Acacia", "Tablas de Acacia", "Brote de Acacia", "Hojas de Acacia", "Tronco de Roble Oscuro", "Tablas de Roble Oscuro", "Brote de Roble Oscuro", "Hojas de Roble Oscuro", "Tronco de Mangle", "Tablas de Mangle", "Brote de Mangle", "Hojas de Mangle", "Tronco de Cerezo", "Tablas de Cerezo", "Brote de Cerezo", "Hojas de Cerezo", "Bloque de Bambú", "Mosaico de Bambú"] },
+            { name: "Tierras, Rocas y Flores Básicas", items: ["Tierra", "Bloque de Césped", "Tierra Estéril", "Podsol", "Micelio", "Barro", "Raíces Embarradas", "Piedra", "Adoquín", "Andesita", "Andesita Pulida", "Diorita", "Diorita Pulida", "Granito", "Granito Pulido", "Calcita", "Toba", "Ladrillos de Toba", "Arenisca", "Arenisca Roja", "Musgo", "Alfombra de Musgo", "Diente de León", "Amapola", "Orquídea Azul", "Allium", "Bluet de los Llanos", "Tulipán Rojo", "Tulipán Naranja", "Tulipán Blanco", "Tulipán Rosa", "Margarita", "Girasol", "Peonía", "Rosa del Wither"] }
         ]
     },
     {
         day: "Día 2",
-        title: "Minerales, Construcción, Tintes y Cristales",
+        title: "Minerales, Tintes y Construcción",
         categories: [
-            { name: "Minerales y Lingotes (Muestras y Bloques)", items: ["Carbón / Bloque de Carbón", "Hierro bruto / Lingote / Bloque de Hierro", "Cobre bruto / Lingote / Bloque (Normal, Expuesto, Degradado, Oxidado)", "Oro bruto / Lingote / Bloque de Oro", "Lapis Lázuli / Bloque", "Redstone / Bloque de Redstone", "Diamante / Bloque de Diamante", "Esmeralda / Bloque de Esmeralda", "Amatista (Fragmento, Bloque, Cúmulos)"] },
-            { name: "Tintes y Colección de Colores", items: ["Tintes (Blanco, Negro, Rojo, Amarillo, Azul, Verde, Marrón, Rosa, Naranja, Púrpura, Cian, Gris, etc.)", "Lanas (Los 16 colores)", "Camas (Los 16 colores)", "Terracotas (Sin teñir y los 16 colores)", "Hormigones y Polvos de Hormigón (Los 16 colores)", "Cristales y Paneles (Normal + 16 colores)"] }
+            { name: "Minerales y Lingotes (1 de cada uno)", items: ["Carbón", "Bloque de Carbón", "Hierro Bruto", "Lingote de Hierro", "Bloque de Hierro", "Cobre Bruto", "Lingote de Cobre", "Bloque de Cobre", "Cobre Expuesto", "Cobre Degradado", "Cobre Oxidado", "Oro Bruto", "Lingote de Oro", "Bloque de Oro", "Lapis Lázuli", "Bloque de Lapis Lázuli", "Polvo de Redstone", "Bloque de Redstone", "Diamante", "Bloque de Diamante", "Esmeralda", "Bloque de Esmeralda", "Fragmento de Amatista", "Bloque de Amatista"] },
+            { name: "Tintes y Bloques de Colores (1 de cada color)", items: ["Tinte Blanco", "Tinte Negro", "Tinte Rojo", "Tinte Amarillo", "Tinte Azul", "Tinte Verde", "Tinte Marrón", "Tinte Rosa", "Tinte Naranja", "Tinte Púrpura", "Tinte Cian", "Tinte Gris", "Tinte Gris Claro", "Tinte Lima", "Tinte Magenta", "Tinte Celeste", "Lana Blanca (y los otros 15 colores)", "Cama Blanca (y los otros 15 colores)", "Terracota (Sin teñir y los 16 colores)", "Hormigón (Los 16 colores)", "Polvo de Hormigón (Los 16 colores)", "Cristal (Normal y los 16 colores)"] }
         ]
     },
     {
         day: "Día 3",
-        title: "Overworld Profundo, Océanos y Mobs",
+        title: "Sobremundo Profundo, Mobs y Océanos",
         categories: [
-            { name: "Deepslate y Cuevas Profundas", items: ["Pizarra Profunda (Rocosa, Cincelada, Ladrillos, Pulida)", "Espeleotema / Estalagmita", "Líquen Luminoso", "Bayas Resplandecientes", "Esculpido (Sculk, Sensor, Catalizador, Chillón)"] },
-            { name: "Océanos y Ríos", items: ["Arena / Arena Roja", "Grava", "Arcilla", "Kelp / Kelp Seco", "Pepinillo de Mar", "Corales (Bloques, Abanicos y Tubos de los 5 colores)", "Prismarina (Normal, Oscura, Ladrillos)", "Linterna Marina", "Esponja (Mojada / Seca)", "Pez Mantarraya / Bacalao / Salmón / Pez Globo"] },
-            { name: "Drops de Mobs del Sobremundo", items: ["Cuero", "Pluma", "Hilo", "Ojo de Araña", "Pólvora", "Hueso", "Carne Podrida", "Slime Ball", "Membrana de Phantom", "Concha de Nautilus", "Caparazón de Tortuga / Escama", "Asta de Cabra"] }
+            { name: "Deepslate y Bloques Subterráneos", items: ["Pizarra Profunda", "Adoquín de Pizarra Profunda", "Pizarra Profunda Pulida", "Ladrillos de Pizarra Profunda", "Espeleotema", "Estalagmita", "Líquen Luminoso", "Bayas Resplandecientes", "Bloque Sculk", "Sensor Sculk", "Catalizador Sculk", "Chillón Sculk"] },
+            { name: "Océanos y Drops de Mobs", items: ["Arena", "Arena Roja", "Grava", "Arcilla", "Bloque de Arcilla", "Kelp", "Kelp Seco", "Pepinillo de Mar", "Coral de Tubo", "Coral de Cerebro", "Coral de Burbuja", "Coral de Cuerno", "Coral de Fuego", "Prismarina", "Ladrillos de Prismarina", "Prismarina Oscura", "Linterna Marina", "Esponja", "Esponja Mojada", "Cuero", "Pluma", "Hilo", "Ojo de Araña", "Pólvora", "Hueso", "Carne Podrida", "Bola de Slime", "Membrana de Phantom", "Concha de Nautilus", "Escama de Tortuga", "Caparazón de Tortuga", "Asta de Cabra"] }
         ]
     },
     {
         day: "Día 4",
-        title: "Dimension del Nether",
+        title: "Dimensión del Nether (1 de cada ítem del Nether)",
         categories: [
-            { name: "Bloques del Nether", items: ["Piedra del Nether (Netherrack)", "Piedra Negra (Blackstone y variantes)", "Basalto (Normal, Pulido)", "Arena de Almas / Tierra de Almas", "Bloque de Verrugas del Nether / Deformado", "Cuarzo del Nether / Bloques de Cuarzo", "Ladrillos del Nether (Rojo, Normal, Pulido)", "Anclaje de Resurgimiento", "Luz de Hongo (Shroomlight)"] },
-            { name: "Vegetación Carmesí y Distorsionada", items: ["Tallo Carmesí / Distorsionado (y variantes)", "Nylium Carmesí / Distorsionado", "Hongos Carmesí y Deformados", "Lianas Lloronas / Retorcidas"] },
-            { name: "Recursos y Drops del Nether", items: ["Escombros Ancestrales (Ancient Debris)", "Fragmento de Netherita / Lingote / Bloque", "Varilla de Blaze", "Polvo de Blaze", "Lágrima de Ghast", "Pepita de Oro", "Lingote de Oro del Nether", "Crema de Magma", "Verruga del Nether", "Cabeza de Wither Skeleton"] }
+            { name: "Bloques del Nether", items: ["Netherrack", "Blackstone", "Blackstone Pulida", "Basalto", "Basalto Pulido", "Arena de Almas", "Tierra de Almas", "Bloque de Verrugas del Nether", "Bloque de Verrugas Deformadas", "Cuarzo del Nether", "Bloque de Cuarzo", "Ladrillos del Nether", "Ladrillos del Nether Rojos", "Anclaje de Resurgimiento", "Luz de Hongo"] },
+            { name: "Botín y Vegetación Nether", items: ["Tallo Carmesí", "Tallo Deformado", "Nylium Carmesí", "Nylium Deformado", "Hongos Carmesí", "Hongos Deformados", "Escombros Ancestrales", "Fragmento de Netherita", "Lingote de Netherita", "Bloque de Netherita", "Varilla de Blaze", "Polvo de Blaze", "Lágrima de Ghast", "Pepita de Oro", "Crema de Magma", "Verruga del Nether", "Cabeza de Wither Skeleton"] }
         ]
     },
     {
         day: "Día 5",
-        title: "Dimensión del End y Gran Almacenamiento",
+        title: "Dimensión del End y Gran Botín",
         categories: [
-            { name: "Bloques del End", items: ["Piedra del End", "Ladrillos de Piedra del End", "Purpur (Bloque, Pilar, Losas, Escaleras)", "Vara del End (End Rod)", "Flor de Chorus / Fruta de Chorus (Normal y Horneada)"] },
-            { name: "Botín del End", items: ["Caja de Shulker (Sin teñir + 16 colores)", "Elytras (Élitros)", "Cabeza de Dragón", "Aliento de Dragón", "Huevo de Dragón", "Perla de Ender", "Ojo de Ender"] }
+            { name: "End y Ciudades del End", items: ["Piedra del End", "Ladrillos de Piedra del End", "Bloque Purpur", "Pilar de Purpur", "Vara del End", "Flor de Chorus", "Fruta de Chorus", "Fruta de Chorus Horneada", "Caja de Shulker", "Elytras", "Cabeza de Dragón", "Aliento de Dragón", "Huevo de Dragón", "Perla de Ender", "Ojo de Ender"] }
         ]
     },
     {
         day: "Día 6",
-        title: "Crafteos Complejos, Redstone, Armas y Herramientas",
+        title: "Redstone, Herramientas, Armas y Alquimia",
         categories: [
-            { name: "Componentes de Redstone", items: ["Polvo de Redstone", "Antorcha de Redstone", "Repetidor", "Comparador", "Observador", "Pistón / Pistón Pegajoso", "Soltador / Dispensador", "Tolva (Hopper)", "Goteador", "Lámpara de Redstone", "Gancho de Hilo", "Raíles (Normal, Propulsor, Detector, Activador)", "Vagoneta (Sola, con Cofre, con Tolva, con TNT)"] },
-            { name: "Equipo de Herramientas y Armaduras", items: ["Herramientas de Madera / Piedra / Hierro / Oro / Diamante / Netherita", "Armaduras de Cuero / Cota de Malla / Hierro / Oro / Diamante / Netherita", "Arco", "Ballesta", "Tridente", "Escudo", "Caña de Pescar (Normal y con Hongo)", "Tijeras", "Catalejo", "Reloj", "Brújula / Brújula Magnética"] },
-            { name: "Estructuras y Moldes Raros", items: ["Moldes de Herrería (Armor Trims - Todos los tipos)", "Fragmentos de Vasija (Pottery Sherds)", "Discos de Música (Todos los discos del juego)", "Estandartes y Diseños de Estandarte"] }
+            { name: "Componentes de Redstone", items: ["Antorcha de Redstone", "Repetidor de Redstone", "Comparador de Redstone", "Observador", "Pistón", "Pistón Pegajoso", "Soltador", "Dispensador", "Tolva", "Goteador", "Lámpara de Redstone", "Gancho de Hilo", "Raíl Normal", "Raíl Propulsor", "Raíl Detector", "Raíl Activador", "Vagoneta", "Vagoneta con Cofre", "Vagoneta con Tolva", "Vagoneta con TNT"] },
+            { name: "Equipamiento e Ítems Raros", items: ["Espada de Madera", "Espada de Piedra", "Espada de Hierro", "Espada de Oro", "Espada de Diamante", "Espada de Netherita", "Pico de Madera/Piedra/Hierro/Oro/Diamante/Netherita", "Hacha de Madera/Piedra/Hierro/Oro/Diamante/Netherita", "Pala de Madera/Piedra/Hierro/Oro/Diamante/Netherita", "Azada de Madera/Piedra/Hierro/Oro/Diamante/Netherita", "Casco, Pechera, Pantalones y Botas (Cuero, Hierro, Oro, Diamante, Netherita)", "Arco", "Ballesta", "Tridente", "Escudo", "Caña de Pescar", "Tijeras", "Catalejo", "Reloj", "Brújula", "Disco 13", "Disco Cat", "Disco Blocks", "Disco Chirp", "Disco Far", "Disco Mall", "Disco Mellohi", "Disco Stal", "Disco Strad", "Disco Ward", "Disco 11", "Disco Wait", "Disco Pigstep", "Disco Otherside", "Disco 5", "Disco Relic"] }
         ]
     },
     {
         day: "Día 7",
-        title: "Pociones, Comidas Elaboradas, Faros y Lista Final",
+        title: "Pociones, Comidas y Objetos Legendarios",
         categories: [
-            { name: "Pociones y Alquimia", items: ["Frasco de Agua", "Pociones Básicas (Rara, Espesa, Mundana)", "Todas las Pociones de Efectos (Fuerza, Velocidad, Vida, Invisibilidad, Caída Lenta, etc.)", "Pociones Arrojadizas y Persistentes", "Flechas con Efectos (Todas las variantes)"] },
-            { name: "Comidas Elaboradas y Estofados", items: ["Pan", "Tarta", "Galleta", "Manzana Dorada", "Manzana Dorada Encantada", "Estofado de Champiñones / Conejo / Remolacha", "Estofado Sospechoso (Todas las variantes)", "Tarta de Calabaza"] },
-            { name: "Ítems Épicos y Cierre", items: ["Faro (Beacon)", "Estrella del Nether", "Conducto (Conduit)", "Corazón del Mar", "Tótem de la Inmortalidad", "Yunque (Normal, Dañado, Muy Dañado)", "Mesa de Encantamientos", "Libros Encantados"] }
+            { name: "Pociones y Alquimia (1 de cada tipo)", items: ["Frasco de Agua", "Poción Rara", "Poción de Fuerza", "Poción de Velocidad", "Poción de Vida Instantánea", "Poción de Regeneración", "Poción de Invisibilidad", "Poción de Caída Lenta", "Poción de Apnea", "Poción de Visión Nocturna", "Poción de Salto", "Poción de Lentitud", "Poción de Veneno", "Poción de Debilidad", "Poción de Daño Instantáneo", "Poción de Resistencia al Fuego"] },
+            { name: "Comidas Elaboradas y Muros Legendarios", items: ["Pan", "Tarta", "Galleta", "Manzana Dorada", "Manzana Dorada Encantada", "Estofado de Champiñones", "Estofado de Conejo", "Estofado de Remolacha", "Estofado Sospechoso", "Tarta de Calabaza", "Faro (Beacon)", "Estrella del Nether", "Conducto (Conduit)", "Corazón del Mar", "Tótem de la Inmortalidad", "Yunque", "Mesa de Encantamientos", "Libro Encantado"] }
         ]
     }
 ];
 
-let totalItemsCount = 0;
+let totalItems = 0;
+let hideCompleted = false;
 
-function renderBoard() {
+function renderApp() {
     const container = document.getElementById('days-container');
     container.innerHTML = '';
-    totalItemsCount = 0;
+    totalItems = 0;
 
-    challengeData.forEach((dayData, dIndex) => {
+    daysData.forEach((d, dayIndex) => {
         const dayCard = document.createElement('div');
         dayCard.className = 'day-card';
-        
-        let html = `<div class="day-title">
-            <span>${dayData.day}: ${dayData.title}</span>
-        </div>`;
 
-        dayData.categories.forEach((cat, cIndex) => {
-            html += `<div class="category-group">
-                <div class="category-name">${cat.name}</div>
-                <div class="item-list">`;
-            
-            cat.items.forEach((item, iIndex) => {
-                totalItemsCount++;
-                const itemId = `item_${dIndex}_${cIndex}_${iIndex}`;
+        let html = `
+            <div class="day-header">
+                <span>${d.day}</span>
+                <span style="font-size:0.9rem; color:var(--text-muted);">${d.title}</span>
+            </div>
+        `;
+
+        d.categories.forEach((cat, catIndex) => {
+            html += `<div class="category-title">${cat.name}</div>`;
+            cat.items.forEach((item, itemIndex) => {
+                totalItems++;
+                const itemId = `item_${dayIndex}_${catIndex}_${itemIndex}`;
                 html += `
-                    <div class="item-row" data-name="${item.toLowerCase()}">
+                    <div class="item-row" id="row_${itemId}" data-name="${item.toLowerCase()}">
                         <input type="checkbox" id="${itemId}" onchange="updateProgress()">
                         <label for="${itemId}"><span>${item}</span></label>
                     </div>
                 `;
             });
-
-            html += `</div></div>`;
         });
+
+        // Formulario para añadir ítems extra que se te ocurran durante la grabación
+        html += `
+            <div class="add-custom-box">
+                <input type="text" id="custom_input_${dayIndex}" placeholder="Añadir ítem extra al ${d.day}...">
+                <button class="btn" onclick="addCustomItem(${dayIndex})">+</button>
+            </div>
+        `;
 
         dayCard.innerHTML = html;
         container.appendChild(dayCard);
     });
 
-    loadSavedState();
+    document.getElementById('total-count').innerText = totalItems;
+    loadProgress();
 }
 
 function updateProgress() {
@@ -359,20 +356,26 @@ function updateProgress() {
     let checkedCount = 0;
 
     checkboxes.forEach(cb => {
-        const parent = cb.closest('.item-row');
+        const row = document.getElementById(`row_${cb.id}`);
         if (cb.checked) {
             checkedCount++;
-            parent.classList.add('completed');
+            if (row) {
+                row.classList.add('checked');
+                if (hideCompleted) row.style.display = 'none';
+            }
         } else {
-            parent.classList.remove('completed');
+            if (row) {
+                row.classList.remove('checked');
+                if (hideCompleted) row.style.display = 'flex';
+            }
         }
         localStorage.setItem(cb.id, cb.checked);
     });
 
-    const percent = Math.round((checkedCount / totalItemsCount) * 100) || 0;
-    document.getElementById('counter').innerText = `${checkedCount} / ${totalItemsCount}`;
-    document.getElementById('percentage').innerText = `${percent}%`;
-    document.getElementById('progress-fill').style.width = `${percent}%`;
+    const percent = Math.round((checkedCount / totalItems) * 100) || 0;
+    document.getElementById('collected-count').innerText = checkedCount;
+    document.getElementById('percent-text').innerText = percent + '%';
+    document.getElementById('progress-bar').style.width = percent + '%';
 }
 
 function filterItems() {
@@ -389,34 +392,48 @@ function filterItems() {
     });
 }
 
-function saveNotes() {
-    localStorage.setItem('video_all_items_notes', document.getElementById('video-notes').value);
+function toggleCompletedVisibility() {
+    hideCompleted = !hideCompleted;
+    const btn = document.getElementById('hide-btn');
+    btn.innerText = hideCompleted ? "Mostrar Ya Conseguidos" : "Ocultar Ya Conseguidos";
+
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(cb => {
+        const row = document.getElementById(`row_${cb.id}`);
+        if (row && cb.checked) {
+            row.style.display = hideCompleted ? 'none' : 'flex';
+        }
+    });
 }
 
-function loadSavedState() {
+function addCustomItem(dayIndex) {
+    const input = document.getElementById(`custom_input_${dayIndex}`);
+    const val = input.value.trim();
+    if (!val) return;
+
+    daysData[dayIndex].categories[0].items.push(val);
+    input.value = '';
+    renderApp();
+}
+
+function loadProgress() {
     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
     checkboxes.forEach(cb => {
         if (localStorage.getItem(cb.id) === 'true') {
             cb.checked = true;
         }
     });
-
-    const savedNotes = localStorage.getItem('video_all_items_notes');
-    if (savedNotes) {
-        document.getElementById('video-notes').value = savedNotes;
-    }
-
     updateProgress();
 }
 
-function resetAll() {
-    if (confirm('¿Quieres reiniciar todas las casillas marcadas para empezar de cero?')) {
+function resetChallenge() {
+    if (confirm('¿Seguro que quieres borrar todas las casillas marcadas para empezar el reto de cero?')) {
         localStorage.clear();
         location.reload();
     }
 }
 
-window.onload = renderBoard;
+window.onload = renderApp;
 </script>
 </body>
 </html>
