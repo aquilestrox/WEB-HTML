@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALL ITEMS CHALLENGE - 1 de Cada Ítem de Minecraft en 7 Días</title>
+    <title>ALL ITEMS MINECRAFT - Base de Datos Completa 100%</title>
     <style>
         :root {
-            --bg-dark: #0f111a;
-            --card-bg: #1a1d2d;
+            --bg-dark: #0a0c14;
+            --card-bg: #141824;
             --accent-green: #00e676;
-            --accent-gold: #ffb300;
-            --text-main: #ffffff;
-            --text-muted: #8c9baf;
-            --border-color: #2a2e45;
+            --accent-gold: #ffc107;
+            --text-main: #f0f4f8;
+            --text-muted: #78889b;
+            --border-color: #232a3d;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background-color: var(--bg-dark);
             color: var(--text-main);
             margin: 0;
@@ -24,7 +24,7 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1500px;
             margin: 0 auto;
         }
 
@@ -37,26 +37,19 @@
             color: var(--accent-green);
             margin: 0 0 5px 0;
             font-size: 2.2rem;
-            text-shadow: 0 2px 10px rgba(0, 230, 118, 0.2);
+            text-shadow: 0 0 15px rgba(0, 230, 118, 0.3);
         }
 
-        .subtitle {
-            color: var(--text-muted);
-            margin: 0;
-            font-size: 1rem;
-        }
-
-        /* Panel de Control */
         .dashboard {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 25px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
             position: sticky;
             top: 10px;
             z-index: 100;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
         }
 
         .stats-bar {
@@ -69,7 +62,7 @@
         }
 
         .progress-bg {
-            background: #090a10;
+            background: #08090f;
             height: 24px;
             border-radius: 12px;
             overflow: hidden;
@@ -85,7 +78,7 @@
 
         .tools-row {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             margin-top: 15px;
             flex-wrap: wrap;
         }
@@ -96,13 +89,13 @@
             padding: 12px 16px;
             border-radius: 8px;
             border: 1px solid var(--border-color);
-            background: #090a10;
+            background: #08090f;
             color: #fff;
             font-size: 1rem;
         }
 
         .btn {
-            background: #2a2e45;
+            background: #232a3d;
             color: #fff;
             border: 1px solid var(--border-color);
             padding: 10px 18px;
@@ -117,10 +110,9 @@
             color: #000;
         }
 
-        /* Grid de Días */
         .days-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
             gap: 20px;
         }
 
@@ -144,38 +136,37 @@
 
         .category-title {
             color: var(--accent-green);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin: 15px 0 8px 0;
+            margin: 18px 0 8px 0;
             font-weight: bold;
         }
 
         .item-row {
             display: flex;
             align-items: center;
-            padding: 6px 10px;
-            background: #111322;
-            margin-bottom: 4px;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            border: 1px solid transparent;
+            padding: 5px 8px;
+            background: #0d101a;
+            margin-bottom: 3px;
+            border-radius: 4px;
+            font-size: 0.9rem;
         }
 
         .item-row:hover {
-            border-color: var(--border-color);
+            background: #1a2030;
         }
 
         .item-row input[type="checkbox"] {
-            margin-right: 12px;
-            width: 18px;
-            height: 18px;
+            margin-right: 10px;
+            width: 16px;
+            height: 16px;
             cursor: pointer;
             accent-color: var(--accent-green);
         }
 
         .item-row.checked {
-            background: #0a1f18;
+            background: #092015;
         }
 
         .item-row.checked span {
@@ -183,23 +174,8 @@
             color: var(--text-muted);
         }
 
-        .add-custom-box {
-            margin-top: 15px;
-            display: flex;
-            gap: 8px;
-        }
-
-        .add-custom-box input {
-            flex: 1;
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
-            background: #090a10;
-            color: white;
-        }
-
         .reset-btn {
-            background: #ff5252;
+            background: #d32f2f;
             color: white;
             border: none;
             padding: 12px 24px;
@@ -209,18 +185,14 @@
             margin: 40px auto;
             display: block;
         }
-
-        .reset-btn:hover {
-            background: #d50000;
-        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <h1>🏆 ALL ITEMS CHALLENGE (1 de CADA Ítem)</h1>
-        <p class="subtitle">Consigue exactamente 1 unidad de cada objeto del juego en 7 Días</p>
+        <h1>💎 ALL ITEMS MINECRAFT (1 de CADA Ítem)</h1>
+        <p style="color: var(--text-muted); margin:0;">Tracker individual ítem por ítem para el reto de 7 días</p>
     </header>
 
     <div class="dashboard">
@@ -232,8 +204,8 @@
             <div class="progress-fill" id="progress-bar"></div>
         </div>
         <div class="tools-row">
-            <input type="text" id="search-input" class="search-box" placeholder="🔎 Buscar ítem o bloque exacto (ej: Manzana Dorada, Adoquín, Disco)..." oninput="filterItems()">
-            <button class="btn" onclick="toggleCompletedVisibility()" id="hide-btn">Ocultar Ya Conseguidos</button>
+            <input type="text" id="search-input" class="search-box" placeholder="🔎 Escribe cualquier ítem (ej: Losa de Toba, Disco Pigstep, Tinte Cian)..." oninput="filterItems()">
+            <button class="btn" onclick="toggleCompletedVisibility()" id="hide-btn">Ocultar Conseguidos</button>
         </div>
     </div>
 
@@ -243,61 +215,86 @@
 </div>
 
 <script>
-// Lista de planificación de 1 de CADA ítem dividida por los 7 Días de grabación
-const daysData = [
+// Base de datos exhaustiva desglosada ítem por ítem
+const db = [
     {
         day: "Día 1",
-        title: "Bloques de la Naturaleza (1 de cada tipo)",
+        title: "Naturaleza, Maderas y Tierras",
         categories: [
-            { name: "Maderas y Árboles (1 de cada variante)", items: ["Tronco de Roble", "Madera de Roble", "Tronco Despojado de Roble", "Tablas de Roble", "Losa de Roble", "Escaleras de Roble", "Valla de Roble", "Puerta de Roble", "Trapdoor de Roble", "Brote de Roble", "Hojas de Roble", "Tronco de Abeto", "Tablas de Abeto", "Brote de Abeto", "Hojas de Abeto", "Tronco de Abedul", "Tablas de Abedul", "Brote de Abedul", "Hojas de Abedul", "Tronco de Jungla", "Tablas de Jungla", "Brote de Jungla", "Hojas de Jungla", "Tronco de Acacia", "Tablas de Acacia", "Brote de Acacia", "Hojas de Acacia", "Tronco de Roble Oscuro", "Tablas de Roble Oscuro", "Brote de Roble Oscuro", "Hojas de Roble Oscuro", "Tronco de Mangle", "Tablas de Mangle", "Brote de Mangle", "Hojas de Mangle", "Tronco de Cerezo", "Tablas de Cerezo", "Brote de Cerezo", "Hojas de Cerezo", "Bloque de Bambú", "Mosaico de Bambú"] },
-            { name: "Tierras, Rocas y Flores Básicas", items: ["Tierra", "Bloque de Césped", "Tierra Estéril", "Podsol", "Micelio", "Barro", "Raíces Embarradas", "Piedra", "Adoquín", "Andesita", "Andesita Pulida", "Diorita", "Diorita Pulida", "Granito", "Granito Pulido", "Calcita", "Toba", "Ladrillos de Toba", "Arenisca", "Arenisca Roja", "Musgo", "Alfombra de Musgo", "Diente de León", "Amapola", "Orquídea Azul", "Allium", "Bluet de los Llanos", "Tulipán Rojo", "Tulipán Naranja", "Tulipán Blanco", "Tulipán Rosa", "Margarita", "Girasol", "Peonía", "Rosa del Wither"] }
+            { name: "Roble", items: ["Tronco de Roble", "Madera de Roble", "Tronco de Roble Despojado", "Madera de Roble Despojada", "Tablas de Roble", "Losa de Roble", "Escaleras de Roble", "Valla de Roble", "Puerta de Valla de Roble", "Puerta de Roble", "Trampilla de Roble", "Placa de Presión de Roble", "Botón de Roble", "Cartel de Roble", "Cartel Colgante de Roble", "Brote de Roble", "Hojas de Roble", "Barca de Roble", "Barca de Roble con Cofre"] },
+            { name: "Abeto", items: ["Tronco de Abeto", "Madera de Abeto", "Tronco de Abeto Despojado", "Madera de Abeto Despojada", "Tablas de Abeto", "Losa de Abeto", "Escaleras de Abeto", "Valla de Abeto", "Puerta de Valla de Abeto", "Puerta de Abeto", "Trampilla de Abeto", "Placa de Presión de Abeto", "Botón de Abeto", "Cartel de Abeto", "Cartel Colgante de Abeto", "Brote de Abeto", "Hojas de Abeto", "Barca de Abeto", "Barca de Abeto con Cofre"] },
+            { name: "Abedul", items: ["Tronco de Abedul", "Madera de Abedul", "Tronco de Abedul Despojado", "Madera de Abedul Despojada", "Tablas de Abedul", "Losa de Abedul", "Escaleras de Abedul", "Valla de Abedul", "Puerta de Valla de Abedul", "Puerta de Abedul", "Trampilla de Abedul", "Placa de Presión de Abedul", "Botón de Abedul", "Cartel de Abedul", "Cartel Colgante de Abedul", "Brote de Abedul", "Hojas de Abedul", "Barca de Abedul", "Barca de Abedul con Cofre"] },
+            { name: "Jungla", items: ["Tronco de Jungla", "Madera de Jungla", "Tronco de Jungla Despojado", "Madera de Jungla Despojada", "Tablas de Jungla", "Losa de Jungla", "Escaleras de Jungla", "Valla de Jungla", "Puerta de Valla de Jungla", "Puerta de Jungla", "Trampilla de Jungla", "Placa de Presión de Jungla", "Botón de Jungla", "Cartel de Jungla", "Cartel Colgante de Jungla", "Brote de Jungla", "Hojas de Jungla", "Barca de Jungla", "Barca de Jungla con Cofre"] },
+            { name: "Acacia", items: ["Tronco de Acacia", "Madera de Acacia", "Tronco de Acacia Despojado", "Madera de Acacia Despojada", "Tablas de Acacia", "Losa de Acacia", "Escaleras de Acacia", "Valla de Acacia", "Puerta de Valla de Acacia", "Puerta de Acacia", "Trampilla de Acacia", "Placa de Presión de Acacia", "Botón de Acacia", "Cartel de Acacia", "Cartel Colgante de Acacia", "Brote de Acacia", "Hojas de Acacia", "Barca de Acacia", "Barca de Acacia con Cofre"] },
+            { name: "Roble Oscuro", items: ["Tronco de Roble Oscuro", "Madera de Roble Oscuro", "Tronco de Roble Oscuro Despojado", "Madera de Roble Oscuro Despojada", "Tablas de Roble Oscuro", "Losa de Roble Oscuro", "Escaleras de Roble Oscuro", "Valla de Roble Oscuro", "Puerta de Valla de Roble Oscuro", "Puerta de Roble Oscuro", "Trampilla de Roble Oscuro", "Placa de Presión de Roble Oscuro", "Botón de Roble Oscuro", "Cartel de Roble Oscuro", "Cartel Colgante de Roble Oscuro", "Brote de Roble Oscuro", "Hojas de Roble Oscuro", "Barca de Roble Oscuro", "Barca de Roble Oscuro con Cofre"] },
+            { name: "Mangle", items: ["Tronco de Mangle", "Madera de Mangle", "Tronco de Mangle Despojado", "Madera de Mangle Despojada", "Tablas de Mangle", "Losa de Mangle", "Escaleras de Mangle", "Valla de Mangle", "Puerta de Valla de Mangle", "Puerta de Mangle", "Trampilla de Mangle", "Placa de Presión de Mangle", "Botón de Mangle", "Cartel de Mangle", "Cartel Colgante de Mangle", "Propágulo de Mangle", "Hojas de Mangle", "Raíces de Mangle", "Raíces de Mangle Embarradas", "Barca de Mangle", "Barca de Mangle con Cofre"] },
+            { name: "Cerezo", items: ["Tronco de Cerezo", "Madera de Cerezo", "Tronco de Cerezo Despojado", "Madera de Cerezo Despojada", "Tablas de Cerezo", "Losa de Cerezo", "Escaleras de Cerezo", "Valla de Cerezo", "Puerta de Valla de Cerezo", "Puerta de Cerezo", "Trampilla de Cerezo", "Placa de Presión de Cerezo", "Botón de Cerezo", "Cartel de Cerezo", "Cartel Colgante de Cerezo", "Brote de Cerezo", "Hojas de Cerezo", "Barca de Cerezo", "Barca de Cerezo con Cofre"] },
+            { name: "Bambú", items: ["Bambú", "Bloque de Bambú", "Bloque de Bambú Despojado", "Tablas de Bambú", "Mosaico de Bambú", "Losa de Bambú", "Losa de Mosaico de Bambú", "Escaleras de Bambú", "Escaleras de Mosaico de Bambú", "Valla de Bambú", "Puerta de Valla de Bambú", "Puerta de Bambú", "Trampilla de Bambú", "Placa de Presión de Bambú", "Botón de Bambú", "Cartel de Bambú", "Cartel Colgante de Bambú", "Balsa de Bambú", "Balsa de Bambú con Cofre"] },
+            { name: "Tierras y Piedras Superficiales", items: ["Tierra", "Bloque de Césped", "Tierra Estéril", "Podsol", "Micelio", "Barro", "Tierra con Raíces", "Piedra", "Adoquín", "Piedra Pulida", "Andesita", "Andesita Pulida", "Diorita", "Diorita Pulida", "Granito", "Granito Pulido", "Calcita", "Toba", "Toba Pulida", "Ladrillos de Toba", "Toba Cincelada", "Arenisca", "Arenisca Cincelada", "Arenisca Suave", "Arenisca Roja", "Arenisca Roja Cincelada", "Arenisca Roja Suave", "Grava", "Arena", "Arena Roja"] },
+            { name: "Flores y Plantas", items: ["Diente de León", "Amapola", "Orquídea Azul", "Allium", "Bluet de los Llanos", "Tulipán Rojo", "Tulipán Naranja", "Tulipán Blanco", "Tulipán Rosa", "Margarita", "Aciano", "Lirio del Valle", "Rosa del Wither", "Girasol", "Lila", "Rosal", "Peonía", "Flor de Antorcha", "Jarra de Planta", "Musgo", "Alfombra de Musgo", "Cactus", "Caña de Azúcar", "Enredaderas", "Lágrimas de Espora", "Flor de Espora"] }
         ]
     },
     {
         day: "Día 2",
-        title: "Minerales, Tintes y Construcción",
+        title: "Minerales, Tintes y Sets de Colores",
         categories: [
-            { name: "Minerales y Lingotes (1 de cada uno)", items: ["Carbón", "Bloque de Carbón", "Hierro Bruto", "Lingote de Hierro", "Bloque de Hierro", "Cobre Bruto", "Lingote de Cobre", "Bloque de Cobre", "Cobre Expuesto", "Cobre Degradado", "Cobre Oxidado", "Oro Bruto", "Lingote de Oro", "Bloque de Oro", "Lapis Lázuli", "Bloque de Lapis Lázuli", "Polvo de Redstone", "Bloque de Redstone", "Diamante", "Bloque de Diamante", "Esmeralda", "Bloque de Esmeralda", "Fragmento de Amatista", "Bloque de Amatista"] },
-            { name: "Tintes y Bloques de Colores (1 de cada color)", items: ["Tinte Blanco", "Tinte Negro", "Tinte Rojo", "Tinte Amarillo", "Tinte Azul", "Tinte Verde", "Tinte Marrón", "Tinte Rosa", "Tinte Naranja", "Tinte Púrpura", "Tinte Cian", "Tinte Gris", "Tinte Gris Claro", "Tinte Lima", "Tinte Magenta", "Tinte Celeste", "Lana Blanca (y los otros 15 colores)", "Cama Blanca (y los otros 15 colores)", "Terracota (Sin teñir y los 16 colores)", "Hormigón (Los 16 colores)", "Polvo de Hormigón (Los 16 colores)", "Cristal (Normal y los 16 colores)"] }
+            { name: "Minerales", items: ["Carbón", "Bloque de Carbón", "Hierro Bruto", "Bloque de Hierro Bruto", "Lingote de Hierro", "Bloque de Hierro", "Cobre Bruto", "Bloque de Cobre Bruto", "Lingote de Cobre", "Bloque de Cobre", "Cobre Cortado", "Cobre Expuesto", "Cobre Degradado", "Cobre Oxidado", "Oro Bruto", "Bloque de Oro Bruto", "Lingote de Oro", "Bloque de Oro", "Lapis Lázuli", "Bloque de Lapis Lázuli", "Polvo de Redstone", "Bloque de Redstone", "Diamante", "Bloque de Diamante", "Esmeralda", "Bloque de Esmeralda", "Fragmento de Amatista", "Bloque de Amatista", "Cúmulo de Amatista"] },
+            { name: "Tintes", items: ["Tinte Blanco", "Tinte Gris Claro", "Tinte Gris", "Tinte Negro", "Tinte Marrón", "Tinte Rojo", "Tinte Naranja", "Tinte Amarillo", "Tinte Lima", "Tinte Verde", "Tinte Cian", "Tinte Celeste", "Tinte Azul", "Tinte Púrpura", "Tinte Magenta", "Tinte Rosa"] },
+            { name: "Lanas (16)", items: ["Lana Blanca", "Lana Gris Claro", "Lana Gris", "Lana Negra", "Lana Marrón", "Lana Roja", "Lana Naranja", "Lana Amarilla", "Lana Lima", "Lana Verde", "Lana Cian", "Lana Celeste", "Lana Azul", "Lana Púrpura", "Lana Magenta", "Lana Rosa"] },
+            { name: "Camas (16)", items: ["Cama Blanca", "Cama Gris Claro", "Cama Gris", "Cama Negra", "Cama Marrón", "Cama Roja", "Cama Naranja", "Cama Amarilla", "Cama Lima", "Cama Verde", "Cama Cian", "Cama Celeste", "Cama Azul", "Cama Púrpura", "Cama Magenta", "Cama Rosa"] },
+            { name: "Terracotas (17)", items: ["Terracota", "Terracota Blanca", "Terracota Gris Claro", "Terracota Gris", "Terracota Negra", "Terracota Marrón", "Terracota Roja", "Terracota Naranja", "Terracota Amarilla", "Terracota Lima", "Terracota Verde", "Terracota Cian", "Terracota Celeste", "Terracota Azul", "Terracota Púrpura", "Terracota Magenta", "Terracota Rosa"] },
+            { name: "Terracotas Vidriadas (16)", items: ["Terracota Vidriada Blanca", "Terracota Vidriada Gris Claro", "Terracota Vidriada Gris", "Terracota Vidriada Negra", "Terracota Vidriada Marrón", "Terracota Vidriada Roja", "Terracota Vidriada Naranja", "Terracota Vidriada Amarilla", "Terracota Vidriada Lima", "Terracota Vidriada Verde", "Terracota Vidriada Cian", "Terracota Vidriada Celeste", "Terracota Vidriada Azul", "Terracota Vidriada Púrpura", "Terracota Vidriada Magenta", "Terracota Vidriada Rosa"] },
+            { name: "Hormigones (16)", items: ["Hormigón Blanco", "Hormigón Gris Claro", "Hormigón Gris", "Hormigón Negro", "Hormigón Marrón", "Hormigón Rojo", "Hormigón Naranja", "Hormigón Amarillo", "Hormigón Lima", "Hormigón Verde", "Hormigón Cian", "Hormigón Celeste", "Hormigón Azul", "Hormigón Púrpura", "Hormigón Magenta", "Hormigón Rosa"] },
+            { name: "Polvos de Hormigón (16)", items: ["Polvo de Hormigón Blanco", "Polvo de Hormigón Gris Claro", "Polvo de Hormigón Gris", "Polvo de Hormigón Negro", "Polvo de Hormigón Marrón", "Polvo de Hormigón Rojo", "Polvo de Hormigón Naranja", "Polvo de Hormigón Amarillo", "Polvo de Hormigón Lima", "Polvo de Hormigón Verde", "Polvo de Hormigón Cian", "Polvo de Hormigón Celeste", "Polvo de Hormigón Azul", "Polvo de Hormigón Púrpura", "Polvo de Hormigón Magenta", "Polvo de Hormigón Rosa"] },
+            { name: "Cristales Teñidos (16)", items: ["Cristal Blanco", "Cristal Gris Claro", "Cristal Gris", "Cristal Negro", "Cristal Marrón", "Cristal Rojo", "Cristal Naranja", "Cristal Amarillo", "Cristal Lima", "Cristal Verde", "Cristal Cian", "Cristal Celeste", "Cristal Azul", "Cristal Púrpura", "Cristal Magenta", "Cristal Rosa"] }
         ]
     },
     {
         day: "Día 3",
-        title: "Sobremundo Profundo, Mobs y Océanos",
+        title: "Deepslate, Océano, Mobs y Arqueología",
         categories: [
-            { name: "Deepslate y Bloques Subterráneos", items: ["Pizarra Profunda", "Adoquín de Pizarra Profunda", "Pizarra Profunda Pulida", "Ladrillos de Pizarra Profunda", "Espeleotema", "Estalagmita", "Líquen Luminoso", "Bayas Resplandecientes", "Bloque Sculk", "Sensor Sculk", "Catalizador Sculk", "Chillón Sculk"] },
-            { name: "Océanos y Drops de Mobs", items: ["Arena", "Arena Roja", "Grava", "Arcilla", "Bloque de Arcilla", "Kelp", "Kelp Seco", "Pepinillo de Mar", "Coral de Tubo", "Coral de Cerebro", "Coral de Burbuja", "Coral de Cuerno", "Coral de Fuego", "Prismarina", "Ladrillos de Prismarina", "Prismarina Oscura", "Linterna Marina", "Esponja", "Esponja Mojada", "Cuero", "Pluma", "Hilo", "Ojo de Araña", "Pólvora", "Hueso", "Carne Podrida", "Bola de Slime", "Membrana de Phantom", "Concha de Nautilus", "Escama de Tortuga", "Caparazón de Tortuga", "Asta de Cabra"] }
+            { name: "Pizarra Profunda (Deepslate)", items: ["Pizarra Profunda", "Adoquín de Pizarra Profunda", "Pizarra Profunda Pulida", "Ladrillos de Pizarra Profunda", "Azulejos de Pizarra Profunda", "Pizarra Profunda Cincelada", "Espeleotema", "Estalagmita", "Líquen Luminoso", "Bayas Resplandecientes", "Sculk", "Catalizador de Sculk", "Sensor de Sculk", "Chillón de Sculk", "Vena de Sculk"] },
+            { name: "Océanos", items: ["Arcilla", "Bloque de Arcilla", "Kelp", "Kelp Seco", "Bloque de Kelp Seco", "Pepinillo de Mar", "Prismarina", "Ladrillos de Prismarina", "Prismarina Oscura", "Linterna Marina", "Esponja", "Esponja Mojada", "Bloque de Coral de Tubo", "Bloque de Coral de Cerebro", "Bloque de Coral de Burbuja", "Bloque de Coral de Fuego", "Bloque de Coral de Cuerno", "Huevo de Tortuga", "Huevo de Sniffer", "Concha de Nautilus", "Corazón del Mar", "Escama de Tortuga", "Escama de Armadillo"] },
+            { name: "Drops de Mobs", items: ["Cuero", "Pluma", "Hilo", "Ojo de Araña", "Ojo de Araña Fermentado", "Pólvora", "Hueso", "Carne Podrida", "Bola de Slime", "Membrana de Phantom", "Asta de Cabra", "Pata de Conejo", "Piel de Conejo", "Saco de Tinta", "Saco de Tinta Luminosa", "Cabeza de Esqueleto", "Cabeza de Zombie", "Cabeza de Creeper", "Cabeza de Piglin"] },
+            { name: "Arqueología", items: ["Pincel", "Arena Sospechosa", "Grava Sospechosa", "Fragmento de Vasija de Arquero", "Fragmento de Vasija de Brazos Levantados", "Fragmento de Vasija de Hoja", "Fragmento de Vasija de Cervedero", "Fragmento de Vasija de Fuego", "Fragmento de Vasija de Peligro", "Fragmento de Vasija de Explorador", "Fragmento de Vasija de Amigo", "Fragmento de Vasija de Corazón", "Fragmento de Vasija de Desamor", "Fragmento de Vasija de Aullido", "Fragmento de Vasija de Minero", "Fragmento de Vasija de Luto", "Fragmento de Vasija de Abundancia", "Fragmento de Vasija de Premio", "Fragmento de Vasija de Gavilla", "Fragmento de Vasija de Refugio", "Fragmento de Vasija de Snort"] }
         ]
     },
     {
         day: "Día 4",
-        title: "Dimensión del Nether (1 de cada ítem del Nether)",
+        title: "Dimensiones: Nether y End",
         categories: [
-            { name: "Bloques del Nether", items: ["Netherrack", "Blackstone", "Blackstone Pulida", "Basalto", "Basalto Pulido", "Arena de Almas", "Tierra de Almas", "Bloque de Verrugas del Nether", "Bloque de Verrugas Deformadas", "Cuarzo del Nether", "Bloque de Cuarzo", "Ladrillos del Nether", "Ladrillos del Nether Rojos", "Anclaje de Resurgimiento", "Luz de Hongo"] },
-            { name: "Botín y Vegetación Nether", items: ["Tallo Carmesí", "Tallo Deformado", "Nylium Carmesí", "Nylium Deformado", "Hongos Carmesí", "Hongos Deformados", "Escombros Ancestrales", "Fragmento de Netherita", "Lingote de Netherita", "Bloque de Netherita", "Varilla de Blaze", "Polvo de Blaze", "Lágrima de Ghast", "Pepita de Oro", "Crema de Magma", "Verruga del Nether", "Cabeza de Wither Skeleton"] }
+            { name: "Bloques del Nether", items: ["Netherrack", "Piedra Negra", "Piedra Negra Pulida", "Ladrillos de Piedra Negra Pulida", "Piedra Negra Pulida Cincelada", "Basalto", "Basalto Pulido", "Basalto Suave", "Arena de Almas", "Tierra de Almas", "Bloque de Verrugas del Nether", "Bloque de Verrugas Deformadas", "Cuarzo del Nether", "Bloque de Cuarzo", "Ladrillos de Cuarzo", "Cuarzo Cincelado", "Cuarzo Pulido", "Ladrillos del Nether", "Ladrillos del Nether Rojos", "Ladrillos del Nether Cincelados", "Glowstone", "Luz de Hongo", "Obsidiana Llorosa", "Anclaje de Resurgimiento"] },
+            { name: "Bosques Carmesí y Deformado", items: ["Tallo Carmesí", "Hifas Carmesí", "Tallo Carmesí Despojado", "Tablas Carmesí", "Nylium Carmesí", "Hongo Carmesí", "Lianas Lloronas", "Tallo Deformado", "Hifas Deformadas", "Tallo Deformado Despojado", "Tablas Deformadas", "Nylium Deformado", "Hongo Deformado", "Lianas Retorcidas"] },
+            { name: "Recursos y Botín del Nether", items: ["Escombros Ancestrales", "Fragmento de Netherita", "Lingote de Netherita", "Bloque de Netherita", "Varilla de Blaze", "Polvo de Blaze", "Lágrima de Ghast", "Pepita de Oro", "Crema de Magma", "Verruga del Nether", "Calavera de Wither Skeleton"] },
+            { name: "Dimensión del End", items: ["Piedra del End", "Ladrillos de Piedra del End", "Bloque Purpur", "Pilar Purpur", "Losa Purpur", "Escaleras Purpur", "Vara del End", "Flor de Chorus", "Fruta de Chorus", "Fruta de Chorus Horneada", "Caja de Shulker", "Élitros", "Cabeza de Dragón", "Aliento de Dragón", "Huevo de Dragón", "Perla de Ender", "Ojo de Ender"] }
         ]
     },
     {
         day: "Día 5",
-        title: "Dimensión del End y Gran Botín",
+        title: "Redstone, Mecanismos y Transporte",
         categories: [
-            { name: "End y Ciudades del End", items: ["Piedra del End", "Ladrillos de Piedra del End", "Bloque Purpur", "Pilar de Purpur", "Vara del End", "Flor de Chorus", "Fruta de Chorus", "Fruta de Chorus Horneada", "Caja de Shulker", "Elytras", "Cabeza de Dragón", "Aliento de Dragón", "Huevo de Dragón", "Perla de Ender", "Ojo de Ender"] }
+            { name: "Mecanismos y Redstone", items: ["Antorcha de Redstone", "Repetidor de Redstone", "Comparador de Redstone", "Observador", "Sensor Sculk Calibrado", "Detector de Luz Solar", "Gancho de Hilo", "Palanca", "Pistón", "Pistón Pegajoso", "Soltador", "Dispensador", "Tolva", "Crafter", "Bloque de Nota", "Tocadiscos", "Campana", "Lámpara de Redstone", "Pararrayos", "TNT", "Cofre Trampa", "Núcleo Pesado"] },
+            { name: "Vías y Transportes", items: ["Raíl", "Raíl Propulsor", "Raíl Detector", "Raíl Activador", "Vagoneta", "Vagoneta con Cofre", "Vagoneta con Tolva", "Vagoneta con TNT", "Vagoneta con Horno", "Montura", "Zanahoria en un Palo", "Hongo Deformado en un Palo"] }
         ]
     },
     {
         day: "Día 6",
-        title: "Redstone, Herramientas, Armas y Alquimia",
+        title: "Equipamiento, Discos y Moldes de Herrería",
         categories: [
-            { name: "Componentes de Redstone", items: ["Antorcha de Redstone", "Repetidor de Redstone", "Comparador de Redstone", "Observador", "Pistón", "Pistón Pegajoso", "Soltador", "Dispensador", "Tolva", "Goteador", "Lámpara de Redstone", "Gancho de Hilo", "Raíl Normal", "Raíl Propulsor", "Raíl Detector", "Raíl Activador", "Vagoneta", "Vagoneta con Cofre", "Vagoneta con Tolva", "Vagoneta con TNT"] },
-            { name: "Equipamiento e Ítems Raros", items: ["Espada de Madera", "Espada de Piedra", "Espada de Hierro", "Espada de Oro", "Espada de Diamante", "Espada de Netherita", "Pico de Madera/Piedra/Hierro/Oro/Diamante/Netherita", "Hacha de Madera/Piedra/Hierro/Oro/Diamante/Netherita", "Pala de Madera/Piedra/Hierro/Oro/Diamante/Netherita", "Azada de Madera/Piedra/Hierro/Oro/Diamante/Netherita", "Casco, Pechera, Pantalones y Botas (Cuero, Hierro, Oro, Diamante, Netherita)", "Arco", "Ballesta", "Tridente", "Escudo", "Caña de Pescar", "Tijeras", "Catalejo", "Reloj", "Brújula", "Disco 13", "Disco Cat", "Disco Blocks", "Disco Chirp", "Disco Far", "Disco Mall", "Disco Mellohi", "Disco Stal", "Disco Strad", "Disco Ward", "Disco 11", "Disco Wait", "Disco Pigstep", "Disco Otherside", "Disco 5", "Disco Relic"] }
+            { name: "Herramientas de Madera / Piedra / Hierro / Oro / Diamante / Netherita", items: ["Espada de Madera", "Pico de Madera", "Hacha de Madera", "Pala de Madera", "Azada de Madera", "Espada de Piedra", "Pico de Piedra", "Hacha de Piedra", "Pala de Piedra", "Azada de Piedra", "Espada de Hierro", "Pico de Hierro", "Hacha de Hierro", "Pala de Hierro", "Azada de Hierro", "Espada de Oro", "Pico de Oro", "Hacha de Oro", "Pala de Oro", "Azada de Oro", "Espada de Diamante", "Pico de Diamante", "Hacha de Diamante", "Pala de Diamante", "Azada de Diamante", "Espada de Netherita", "Pico de Netherita", "Hacha de Netherita", "Pala de Netherita", "Azada de Netherita"] },
+            { name: "Armaduras", items: ["Casco de Cuero", "Túnica de Cuero", "Pantalones de Cuero", "Botas de Cuero", "Casco de Cota de Malla", "Pechera de Cota de Malla", "Grebas de Cota de Malla", "Botas de Cota de Malla", "Casco de Hierro", "Pechera de Hierro", "Grebas de Hierro", "Botas de Hierro", "Casco de Oro", "Pechera de Oro", "Grebas de Oro", "Botas de Oro", "Casco de Diamante", "Pechera de Diamante", "Grebas de Diamante", "Botas de Diamante", "Casco de Netherita", "Pechera de Netherita", "Grebas de Netherita", "Botas de Netherita", "Armadura para Lobo"] },
+            { name: "Armas Especiales y Útiles", items: ["Arco", "Ballesta", "Tridente", "Maza", "Escudo", "Caña de Pescar", "Tijeras", "Catalejo", "Reloj", "Brújula", "Brújula de Recuperación", "Rienda", "Etiqueta"] },
+            { name: "Discos de Música", items: ["Disco 13", "Disco Cat", "Disco Blocks", "Disco Chirp", "Disco Far", "Disco Mall", "Disco Mellohi", "Disco Stal", "Disco Strad", "Disco Ward", "Disco 11", "Disco Wait", "Disco Pigstep", "Disco Otherside", "Disco 5", "Disco Relic", "Disco Creator", "Disco Creator (Caja de Música)", "Disco Precipice"] },
+            { name: "Moldes de Herrería (Armor Trims)", items: ["Mejora de Netherita", "Molde de Costa", "Molde de Duna", "Molde de Ojo", "Molde de Anfitrión", "Molde de Elevador", "Molde de Costilla", "Molde de Centinela", "Molde de Moldeador", "Molde de Silencio", "Molde de Hocico", "Molde de Aguja", "Molde de Marea", "Molde de Vex", "Molde de Tutela", "Molde de Rastreador", "Molde Salvaje"] }
         ]
     },
     {
         day: "Día 7",
-        title: "Pociones, Comidas y Objetos Legendarios",
+        title: "Alquimia, Comida Elaborada y Épicos",
         categories: [
-            { name: "Pociones y Alquimia (1 de cada tipo)", items: ["Frasco de Agua", "Poción Rara", "Poción de Fuerza", "Poción de Velocidad", "Poción de Vida Instantánea", "Poción de Regeneración", "Poción de Invisibilidad", "Poción de Caída Lenta", "Poción de Apnea", "Poción de Visión Nocturna", "Poción de Salto", "Poción de Lentitud", "Poción de Veneno", "Poción de Debilidad", "Poción de Daño Instantáneo", "Poción de Resistencia al Fuego"] },
-            { name: "Comidas Elaboradas y Muros Legendarios", items: ["Pan", "Tarta", "Galleta", "Manzana Dorada", "Manzana Dorada Encantada", "Estofado de Champiñones", "Estofado de Conejo", "Estofado de Remolacha", "Estofado Sospechoso", "Tarta de Calabaza", "Faro (Beacon)", "Estrella del Nether", "Conducto (Conduit)", "Corazón del Mar", "Tótem de la Inmortalidad", "Yunque", "Mesa de Encantamientos", "Libro Encantado"] }
+            { name: "Pociones", items: ["Frasco de Agua", "Poción Rara", "Poción de Fuerza", "Poción de Velocidad", "Poción de Vida Instantánea", "Poción de Regeneración", "Poción de Invisibilidad", "Poción de Caída Lenta", "Poción de Apnea", "Poción de Visión Nocturna", "Poción de Salto", "Poción de Lentitud", "Poción de Veneno", "Poción de Debilidad", "Poción de Daño Instantáneo", "Poción de Resistencia al Fuego", "Poción de Maestro Tortuga", "Poción de Caída Lenta"] },
+            { name: "Comidas", items: ["Pan", "Tarta", "Galleta", "Manzana Dorada", "Manzana Dorada Encantada", "Zanahoria Dorada", "Estofado de Champiñones", "Estofado de Conejo", "Estofado de Remolacha", "Estofado Sospechoso", "Tarta de Calabaza", "Bote de Miel", "Panal", "Bloque de Panal", "Bloque de Miel"] },
+            { name: "Bloques de Trabajo y Leyendas", items: ["Faro", "Estrella del Nether", "Conducto", "Tótem de la Inmortalidad", "Yunque", "Yunque Dañado", "Yunque Muy Dañado", "Mesa de Encantamientos", "Librería", "Librería Cincelada", "Telar", "Mesa de Cartografía", "Mesa de Flecheria", "Mesa de Herrería", "Afiladora", "Cortapiedras", "Ahumador", "Alto Horno", "Hoguera", "Hoguera de Almas", "Cristal del End"] }
         ]
     }
 ];
@@ -310,19 +307,19 @@ function renderApp() {
     container.innerHTML = '';
     totalItems = 0;
 
-    daysData.forEach((d, dayIndex) => {
+    db.forEach((d, dayIndex) => {
         const dayCard = document.createElement('div');
         dayCard.className = 'day-card';
 
         let html = `
             <div class="day-header">
                 <span>${d.day}</span>
-                <span style="font-size:0.9rem; color:var(--text-muted);">${d.title}</span>
+                <span style="font-size:0.85rem; color:var(--text-muted);">${d.title}</span>
             </div>
         `;
 
         d.categories.forEach((cat, catIndex) => {
-            html += `<div class="category-title">${cat.name}</div>`;
+            html += `<div class="category-title">${cat.name} (${cat.items.length})</div>`;
             cat.items.forEach((item, itemIndex) => {
                 totalItems++;
                 const itemId = `item_${dayIndex}_${catIndex}_${itemIndex}`;
@@ -334,14 +331,6 @@ function renderApp() {
                 `;
             });
         });
-
-        // Formulario para añadir ítems extra que se te ocurran durante la grabación
-        html += `
-            <div class="add-custom-box">
-                <input type="text" id="custom_input_${dayIndex}" placeholder="Añadir ítem extra al ${d.day}...">
-                <button class="btn" onclick="addCustomItem(${dayIndex})">+</button>
-            </div>
-        `;
 
         dayCard.innerHTML = html;
         container.appendChild(dayCard);
@@ -395,7 +384,7 @@ function filterItems() {
 function toggleCompletedVisibility() {
     hideCompleted = !hideCompleted;
     const btn = document.getElementById('hide-btn');
-    btn.innerText = hideCompleted ? "Mostrar Ya Conseguidos" : "Ocultar Ya Conseguidos";
+    btn.innerText = hideCompleted ? "Mostrar Conseguidos" : "Ocultar Conseguidos";
 
     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
     checkboxes.forEach(cb => {
@@ -404,16 +393,6 @@ function toggleCompletedVisibility() {
             row.style.display = hideCompleted ? 'none' : 'flex';
         }
     });
-}
-
-function addCustomItem(dayIndex) {
-    const input = document.getElementById(`custom_input_${dayIndex}`);
-    const val = input.value.trim();
-    if (!val) return;
-
-    daysData[dayIndex].categories[0].items.push(val);
-    input.value = '';
-    renderApp();
 }
 
 function loadProgress() {
