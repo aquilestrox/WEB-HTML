@@ -3,152 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto Minecraft 26.2 - Todos los Ítems en 7 Días</title>
+    <title>Reto Minecraft: TODOS los Ítems en 7 Días</title>
     <style>
         :root {
-            --bg-color: #1a1a1a;
-            --card-bg: #2d2d2d;
-            --accent-green: #55ff55;
-            --accent-gold: #ffaa00;
-            --text-color: #f0f0f0;
-            --border-color: #444;
+            --bg-dark: #121212;
+            --card-bg: #1e1e1e;
+            --card-hover: #262626;
+            --accent-green: #4caf50;
+            --accent-gold: #ffb300;
+            --text-main: #f5f5f5;
+            --text-muted: #aaa;
+            --border-color: #333;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
             margin: 0;
             padding: 20px;
         }
 
-        .header {
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
             text-align: center;
-            padding: 20px 0;
-            border-bottom: 3px solid var(--accent-green);
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
         }
 
         h1 {
             color: var(--accent-green);
             margin: 0 0 10px 0;
-            text-shadow: 2px 2px #000;
+            font-size: 2rem;
         }
 
-        .progress-container {
-            max-width: 800px;
-            margin: 20px auto;
-            background: #111;
-            border-radius: 10px;
-            padding: 15px;
+        /* Panel de Control y Progreso */
+        .dashboard {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
             border: 1px solid var(--border-color);
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
 
         .progress-bar-bg {
-            background: #333;
-            height: 25px;
-            border-radius: 12px;
+            background: #2a2a2a;
+            height: 22px;
+            border-radius: 11px;
             overflow: hidden;
-            margin-top: 10px;
+            border: 1px solid var(--border-color);
         }
 
         .progress-bar-fill {
-            background: linear-gradient(90deg, #388e3c, var(--accent-green));
+            background: linear-gradient(90deg, #2e7d32, var(--accent-green));
             height: 100%;
             width: 0%;
             transition: width 0.3s ease;
         }
 
-        .calendar-grid {
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            min-width: 250px;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: #111;
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }
+
+        .filter-btn {
+            background: #2a2a2a;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: var(--accent-green);
+            color: #000;
+            font-weight: bold;
+        }
+
+        /* Grid de Días */
+        .days-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
             gap: 20px;
-            max-width: 1400px;
-            margin: 30px auto;
         }
 
         .day-card {
             background: var(--card-bg);
-            border: 2px solid var(--border-color);
             border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-        }
-
-        .day-card.highlight {
-            border-color: var(--accent-gold);
-        }
-
-        .day-header {
+            border: 1px solid var(--border-color);
+            padding: 18px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-            margin-bottom: 15px;
+            flex-direction: column;
         }
 
         .day-title {
-            font-size: 1.25rem;
-            font-weight: bold;
+            font-size: 1.2rem;
             color: var(--accent-gold);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
         }
 
-        .task-list {
+        .category-group {
+            margin-bottom: 15px;
+        }
+
+        .category-name {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-green);
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        .item-list {
             list-style: none;
             padding: 0;
             margin: 0;
         }
 
-        .task-item {
+        .item-row {
             display: flex;
-            align-items: flex-start;
-            margin-bottom: 12px;
-            background: #222;
-            padding: 8px 12px;
-            border-radius: 6px;
+            align-items: center;
+            padding: 6px 8px;
+            background: #181818;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            font-size: 0.9rem;
         }
 
-        .task-item input[type="checkbox"] {
-            margin-right: 12px;
-            margin-top: 3px;
-            width: 18px;
-            height: 18px;
+        .item-row:hover {
+            background: var(--card-hover);
+        }
+
+        .item-row input[type="checkbox"] {
+            margin-right: 10px;
+            width: 16px;
+            height: 16px;
             cursor: pointer;
             accent-color: var(--accent-green);
         }
 
-        .task-label {
-            cursor: pointer;
-            line-height: 1.4;
-        }
-
-        .task-item.completed .task-label {
+        .item-row.completed span {
             text-decoration: line-through;
-            color: #888;
+            color: var(--text-muted);
         }
 
-        .tag-262 {
-            background: #d32f2f;
-            color: white;
-            font-size: 0.75rem;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-left: 5px;
-            font-weight: bold;
-        }
-
-        .notes-section {
-            max-width: 1400px;
-            margin: 30px auto;
+        .notes-area {
+            margin-top: 30px;
             background: var(--card-bg);
-            padding: 20px;
-            border-radius: 10px;
             border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 10px;
         }
 
         textarea {
             width: 100%;
-            height: 100px;
+            height: 90px;
             background: #111;
             color: #fff;
             border: 1px solid var(--border-color);
@@ -159,272 +203,220 @@
         }
 
         .reset-btn {
-            display: block;
-            margin: 20px auto;
-            background: #d32f2f;
+            background: #c62828;
             color: white;
             border: none;
             padding: 10px 20px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-        }
-
-        .reset-btn:hover {
-            background: #b71c1c;
+            margin: 20px auto;
+            display: block;
         }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>🎮 Minecraft 26.2: Reto "Todos los Ítems en 7 Días"</h1>
-        <p>Planificador y seguimiento para la grabación de tu vídeo</p>
-    </div>
+<div class="container">
+    <header>
+        <h1>📦 Reto Minecraft: Todos los Ítems en 7 Días</h1>
+        <p style="color: var(--text-muted); margin: 0;">Planificador diario por categorías de obtención para vídeo de YouTube/Twitch</p>
+    </header>
 
-    <div class="progress-container">
-        <div style="display: flex; justify-content: space-between; font-weight: bold;">
-            <span>Progreso General del Reto:</span>
-            <span id="progress-percent">0%</span>
+    <div class="dashboard">
+        <div class="stats-row">
+            <span>Ítems Obtenidos: <span id="counter">0 / 0</span></span>
+            <span id="percentage">0%</span>
         </div>
         <div class="progress-bar-bg">
-            <div class="progress-bar-fill" id="progress-bar"></div>
+            <div class="progress-bar-fill" id="progress-fill"></div>
+        </div>
+
+        <div class="controls">
+            <input type="text" id="search-input" placeholder="Buscar ítem o bloque (ej: Adoquín, Escudo, Disco)..." oninput="filterItems()">
         </div>
     </div>
 
-    <div class="calendar-grid">
-        <div class="day-card">
-            <div class="day-header">
-                <span class="day-title">Día 1: Infraestructura y Recursos Básicos</span>
-            </div>
-            <ul class="task-list">
-                <li class="task-item">
-                    <input type="checkbox" id="t1_1" onchange="updateProgress()">
-                    <label class="task-label" for="t1_1">Conseguir madera, piedra y primer set de herramientas de hierro</label>
-                </li>
-                <li class="task-item">
-                    <input type="checkbox" id="t1_2" onchange="updateProgress()">
-                    <label class="task-label" for="t1_2">Crear sala de cofres con clasificación inicial (por tipos de bloque)</label>
-                </li>
-                <li class="task-item">
-                    <input type="checkbox" id="t1_3" onchange="updateProgress()">
-                    <label class="task-label" for="t1_3">Minar Diamantes (Herramientas, Mesa de Encantamientos y Mesa de Herrería)</label>
-                </li>
-                <li class="task-item">
-                    <input type="checkbox" id="t1_4" onchange="updateProgress()">
-                    <label class="task-label" for="t1_4">Montar granjas automáticas básicas (Vacas, Cultivos y Caña de azúcar)</label>
-                </li>
-            </ul>
-        </div>
+    <div class="days-grid" id="days-container"></div>
 
-        <div class="day-card">
-            <div class="day-header">
-                <span class="day-title">Día 2: Exploración del Nether y Aldeanos</span>
-            </div>
-            <ul class="task-list">
-                <li class="task-item">
-                    <input type="checkbox" id="t2_1" onchange="updateProgress()">
-                    <label class="task-label" for="t2_1">Construir Trading Hall de Aldeanos (Libreros, Armeros, Flecheros)</label>
-                </li>
-                <li class="task-item">
-                    <input type="checkbox" id="t2_2" onchange="updateProgress()">
-                    <label class="task-label" for="t2_2">Portal al Nether: Conseguir Varillas de Blaze y Perlas de Ender</label>
-                </li>
-                <li class="task-item">
-                    <input type="checkbox" id="t2_3" onchange="updateProgress()">
-                    <label class="task-label" for="t2_3">Recolectar recursos Nether: Verrugas, Cuarzo, Piedra de Nether y Escombros Ancestrales</label>
-                </li>
-                <li class="task-item">
-                    <input type="checkbox" id="t2_4" onchange="updateProgress()">
-                    <label class="task-label" for="t2_4">Conseguir 3 Cabezas de Wither Skeleton para posterior farmeo</label>
-                </li>
-            </ul>
-        </div>
-
-        <div class="day-card">
-            <div class="day-header">
-                <span class="day-title">Día 3: Conquista del End y Almacenamiento Masivo</span>
-            </div>
-            <ul class="task-list">
-                <li class="task-item">
-                    <input type="checkbox" id="t3_1" onchange="updateProgress()">
-                    <label class="task-label" for="t3_1">Localizar Stronghold y derrotar al Ender Dragon (Aliento de Dragón y Huevo)</label>
-                </li>
-                <li class="task-item">
-                    <input type="checkbox" id="t3_2" onchange="updateProgress()">
-                    <label class="task-label" for="t3_2">Explorar End Cities: Conseguir Elytras y Cajas de Shulker masivas</label>
-                </li>
-                <li class="task-item">
-                    <input type="checkbox" id="t3_3" onchange="updateProgress()">
-                    <label class="task-label" for="t3_3">Crear Granja de Endermans para EXP fácil y encantamientos al máximo</label>
-                </li>
-                <li class="task-item">
-                    <input type="checkbox" id="t3_4" onchange="updateProgress()">
-                    <label class="task-label" for="t3_4">Fabricar un sistema principal de cofres organizados por IDs</label>
-                </li>
-            </ul>
-        </div>
-
-        <div class="day-card highlight">
-            <div class="day-header">
-                <span class="day-title">Día 4: Especial Minecraft 26.2 (Sulfur Caves)</span>
-            </div>
-            <ul class="task-list">
-                <li class="task-item">
-                    <input type="checkbox" id="t4_1" onchange="updateProgress()">
-                    <label class="task-label" for="t4_1">Encontrar el bioma subterráneo <strong>Sulfur Caves</strong> <span class="tag-262">26.2</span></label>
-                </li>
-                <li class="task-item">
-                    <input type="checkbox" id="t4_2" onchange="updateProgress()">
-                    <label class="task-label" for="t4_2">Capturar y probar el mob <strong>Sulfur Cube</strong> (probar absorción de bloques y cubo en balde) <span class="tag-262">26.2</span></label>
-                </li>
-                <li class="task-item">
-                    <input type="checkbox" id="t4_3" onchange="updateProgress()">
-                    <label class="task-label" for="t4_3">Recolectar sets completados de <strong>Sulfur</strong> y <strong>Cinnabar</strong> (Bloques, Pulidos, Ladrillos, Escaleras, Losas, Muros) <span class="tag-262">26.2</span></label>
-                </li>
-                <li class="task-item">
-                    <input type="checkbox" id="t4_4" onchange="updateProgress()">
-                    <label class="task-label" for="t4_4">Conseguir <strong>Potent Sulfur</strong>, <strong>Sulfur Spikes</strong> y probar la mecánica del Géiser <span class="tag-262">26.2</span></label>
-                </li>
-                <li class="task-item">
-                    <input type="checkbox" id="t4_5" onchange="updateProgress()">
-                    <label class="task-label" for="t4_5">Saquear Minas de Sulfur Caves para conseguir el nuevo disco <strong>"Bounce" (fingerspit)</strong> <span class="tag-262">26.2</span></label>
-                </li>
-            </ul>
-        </div>
-
-        <div class="day-card">
-            <div class="day-header">
-                <span class="day-title">Día 5: Estructuras Avanzadas y Biomas Raros</span>
-            </div>
-            <ul class="task-list">
-                <li class="task-item">
-                    <input type="checkbox" id="t5_1" onchange="updateProgress()">
-                    <label class="task-label" for="t5_1">Monumentos Oceánicos: Esponjas, Linternas Marinas y Prismarina</label>
-                </li>
-                <li class="task-item">
-                    <input type="checkbox" id="t5_2" onchange="updateProgress()">
-                    <label class="task-label" for="t5_2">Ancient City: Sculk, Catalizadores, Disco 5 y Fragmentos de Eco</label>
-                </li>
-                <li class="task-item">
-                    <input type="checkbox" id="t5_3" onchange="updateProgress()">
-                    <label class="task-label" for="t5_3">Trial Chambers: Varita de Brisa, Núcleo Pesado (Maza) y Omit de Desafío</label>
-                </li>
-                <li class="task-item">
-                    <input type="checkbox" id="t5_4" onchange="updateProgress()">
-                    <label class="task-label" for="t5_4">Exploración de Biomas Raros: Champiñones, Manglares, Cerezos y Terracota de Badlands</label>
-                </li>
-            </ul>
-        </div>
-
-        <div class="day-card">
-            <div class="day-header">
-                <span class="day-title">Día 6: Arqueología, Moldes y Drops Raros</span>
-            </div>
-            <ul class="task-list">
-                <li class="task-item">
-                    <input type="checkbox" id="t6_1" onchange="updateProgress()">
-                    <label class="task-label" for="t6_1">Arqueología: Cepillar Grava/Arena Sospechosa (Vasijas y Huevos de Sniffer)</label>
-                </li>
-                <li class="task-item">
-                    <input type="checkbox" id="t6_2" onchange="updateProgress()">
-                    <label class="task-label" for="t6_2">Colección de Moldes de Herrería (Armor Trims) en estructuras clave</label>
-                </li>
-                <li class="task-item">
-                    <input type="checkbox" id="t6_3" onchange="updateProgress()">
-                    <label class="task-label" for="t6_3">Drops Raros de Mobs: Concha de Nautilus, Tridente de Ahogado, Cabeza de Creeper/Zombie</label>
-                </li>
-                <li class="task-item">
-                    <input type="checkbox" id="t6_4" onchange="updateProgress()">
-                    <label class="task-label" for="t6_4">Pesca y Botines: Todos los Peces, Discos de Música clásicos y Libros Encantados</label>
-                </li>
-            </ul>
-        </div>
-
-        <div class="day-card">
-            <div class="day-header">
-                <span class="day-title">Día 7: Crafteos Finales, Verificación y Cierre</span>
-            </div>
-            <ul class="task-list">
-                <li class="task-item">
-                    <input type="checkbox" id="t7_1" onchange="updateProgress()">
-                    <label class="task-label" for="t7_1">Craftear Faros (Beacons), Estrellas del Nether y Bloques de Minerales valiosos</label>
-                </li>
-                <li class="task-item">
-                    <input type="checkbox" id="t7_2" onchange="updateProgress()">
-                    <label class="task-label" for="t7_2">Fabricar todas las variantes de Tintes, Cristales, Lanas y Hormigones</label>
-                </li>
-                <li class="task-item">
-                    <input type="checkbox" id="t7_3" onchange="updateProgress()">
-                    <label class="task-label" for="t7_3">Poción de cada tipo y Flechas con Efectos</label>
-                </li>
-                <li class="task-item">
-                    <input type="checkbox" id="t7_4" onchange="updateProgress()">
-                    <label class="task-label" for="t7_4">Revisión Final en la Sala de Exposición de Ítems y Toma Final del Vídeo</label>
-                </li>
-            </ul>
-        </div>
+    <div class="notes-area">
+        <h3 style="margin-top:0; color: var(--accent-gold);">📝 Anotaciones de Grabación / Timestamps</h3>
+        <textarea id="video-notes" placeholder="Escribe aquí momentos épicos, coordenadas de granjas o tomas pendientes..." oninput="saveNotes()"></textarea>
     </div>
 
-    <div class="notes-section">
-        <h3>📝 Notas de Grabación & Recordatorios para el Vídeo</h3>
-        <textarea id="video-notes" placeholder="Anota aquí las tomas importantes, momentos graciosos para miniaturas o timestamps..." oninput="saveNotes()"></textarea>
-    </div>
+    <button class="reset-btn" onclick="resetAll()">Reiniciar Todo el Progreso</button>
+</div>
 
-    <button class="reset-btn" onclick="resetProgress()">Reiniciar Progreso del Reto</button>
+<script>
+// Estructura completa organizada por días y categorías
+const challengeData = [
+    {
+        day: "Día 1",
+        title: "Madera, Piedra, Tierra y Vegetación Básica",
+        categories: [
+            { name: "Maderas y Troncos (Todos los tipos + Variantes)", items: ["Roble (Tronco, Madera, Despojado, Tablas, Losas, Escaleras, Vallas, Puertas, Botones)", "Abeto (Todas las variantes)", "Abedul (Todas las variantes)", "Jungla (Todas las variantes)", "Acacia (Todas las variantes)", "Roble Oscuro (Todas las variantes)", "Mangle (Todas las variantes)", "Cerezo (Todas las variantes)", "Bambú (Bloque, Mosaico y variantes)"] },
+            { name: "Tierras y Rocas Superficiales", items: ["Tierra", "Tierra con Césped", "Tierra Estéril", "Podsol", "Micelio", "Barro", "Raíces Embarradas", "Piedra", "Adoquín", "Andesita (Normal/Pulida)", "Diorita (Normal/Pulida)", "Granito (Normal/Pulida)", "Calcita", "Toba (y sus variantes talladas)", "Arenisca (Normal, Cincelada, Suave, Roja)"] },
+            { name: "Vegetación y Cultivos Básicos", items: ["Brote de Roble/Abeto/Abedul/Jungla/Acacia/Roble Oscuro/Cerezo", "Hojas de todos los árboles", "Semillas de Trigo", "Trigo", "Zanahoria", "Patata", "Semillas de Calabaza/Sandía", "Bloque de Calabaza", "Rodaja de Sandía", "Semillas de Remolacha", "Caña de Azúcar", "Cactus", "Flor de Cerezo", "Musgo"] }
+        ]
+    },
+    {
+        day: "Día 2",
+        title: "Minerales, Construcción, Tintes y Cristales",
+        categories: [
+            { name: "Minerales y Lingotes (Muestras y Bloques)", items: ["Carbón / Bloque de Carbón", "Hierro bruto / Lingote / Bloque de Hierro", "Cobre bruto / Lingote / Bloque (Normal, Expuesto, Degradado, Oxidado)", "Oro bruto / Lingote / Bloque de Oro", "Lapis Lázuli / Bloque", "Redstone / Bloque de Redstone", "Diamante / Bloque de Diamante", "Esmeralda / Bloque de Esmeralda", "Amatista (Fragmento, Bloque, Cúmulos)"] },
+            { name: "Tintes y Colección de Colores", items: ["Tintes (Blanco, Negro, Rojo, Amarillo, Azul, Verde, Marrón, Rosa, Naranja, Púrpura, Cian, Gris, etc.)", "Lanas (Los 16 colores)", "Camas (Los 16 colores)", "Terracotas (Sin teñir y los 16 colores)", "Hormigones y Polvos de Hormigón (Los 16 colores)", "Cristales y Paneles (Normal + 16 colores)"] }
+        ]
+    },
+    {
+        day: "Día 3",
+        title: "Overworld Profundo, Océanos y Mobs",
+        categories: [
+            { name: "Deepslate y Cuevas Profundas", items: ["Pizarra Profunda (Rocosa, Cincelada, Ladrillos, Pulida)", "Espeleotema / Estalagmita", "Líquen Luminoso", "Bayas Resplandecientes", "Esculpido (Sculk, Sensor, Catalizador, Chillón)"] },
+            { name: "Océanos y Ríos", items: ["Arena / Arena Roja", "Grava", "Arcilla", "Kelp / Kelp Seco", "Pepinillo de Mar", "Corales (Bloques, Abanicos y Tubos de los 5 colores)", "Prismarina (Normal, Oscura, Ladrillos)", "Linterna Marina", "Esponja (Mojada / Seca)", "Pez Mantarraya / Bacalao / Salmón / Pez Globo"] },
+            { name: "Drops de Mobs del Sobremundo", items: ["Cuero", "Pluma", "Hilo", "Ojo de Araña", "Pólvora", "Hueso", "Carne Podrida", "Slime Ball", "Membrana de Phantom", "Concha de Nautilus", "Caparazón de Tortuga / Escama", "Asta de Cabra"] }
+        ]
+    },
+    {
+        day: "Día 4",
+        title: "Dimension del Nether",
+        categories: [
+            { name: "Bloques del Nether", items: ["Piedra del Nether (Netherrack)", "Piedra Negra (Blackstone y variantes)", "Basalto (Normal, Pulido)", "Arena de Almas / Tierra de Almas", "Bloque de Verrugas del Nether / Deformado", "Cuarzo del Nether / Bloques de Cuarzo", "Ladrillos del Nether (Rojo, Normal, Pulido)", "Anclaje de Resurgimiento", "Luz de Hongo (Shroomlight)"] },
+            { name: "Vegetación Carmesí y Distorsionada", items: ["Tallo Carmesí / Distorsionado (y variantes)", "Nylium Carmesí / Distorsionado", "Hongos Carmesí y Deformados", "Lianas Lloronas / Retorcidas"] },
+            { name: "Recursos y Drops del Nether", items: ["Escombros Ancestrales (Ancient Debris)", "Fragmento de Netherita / Lingote / Bloque", "Varilla de Blaze", "Polvo de Blaze", "Lágrima de Ghast", "Pepita de Oro", "Lingote de Oro del Nether", "Crema de Magma", "Verruga del Nether", "Cabeza de Wither Skeleton"] }
+        ]
+    },
+    {
+        day: "Día 5",
+        title: "Dimensión del End y Gran Almacenamiento",
+        categories: [
+            { name: "Bloques del End", items: ["Piedra del End", "Ladrillos de Piedra del End", "Purpur (Bloque, Pilar, Losas, Escaleras)", "Vara del End (End Rod)", "Flor de Chorus / Fruta de Chorus (Normal y Horneada)"] },
+            { name: "Botín del End", items: ["Caja de Shulker (Sin teñir + 16 colores)", "Elytras (Élitros)", "Cabeza de Dragón", "Aliento de Dragón", "Huevo de Dragón", "Perla de Ender", "Ojo de Ender"] }
+        ]
+    },
+    {
+        day: "Día 6",
+        title: "Crafteos Complejos, Redstone, Armas y Herramientas",
+        categories: [
+            { name: "Componentes de Redstone", items: ["Polvo de Redstone", "Antorcha de Redstone", "Repetidor", "Comparador", "Observador", "Pistón / Pistón Pegajoso", "Soltador / Dispensador", "Tolva (Hopper)", "Goteador", "Lámpara de Redstone", "Gancho de Hilo", "Raíles (Normal, Propulsor, Detector, Activador)", "Vagoneta (Sola, con Cofre, con Tolva, con TNT)"] },
+            { name: "Equipo de Herramientas y Armaduras", items: ["Herramientas de Madera / Piedra / Hierro / Oro / Diamante / Netherita", "Armaduras de Cuero / Cota de Malla / Hierro / Oro / Diamante / Netherita", "Arco", "Ballesta", "Tridente", "Escudo", "Caña de Pescar (Normal y con Hongo)", "Tijeras", "Catalejo", "Reloj", "Brújula / Brújula Magnética"] },
+            { name: "Estructuras y Moldes Raros", items: ["Moldes de Herrería (Armor Trims - Todos los tipos)", "Fragmentos de Vasija (Pottery Sherds)", "Discos de Música (Todos los discos del juego)", "Estandartes y Diseños de Estandarte"] }
+        ]
+    },
+    {
+        day: "Día 7",
+        title: "Pociones, Comidas Elaboradas, Faros y Lista Final",
+        categories: [
+            { name: "Pociones y Alquimia", items: ["Frasco de Agua", "Pociones Básicas (Rara, Espesa, Mundana)", "Todas las Pociones de Efectos (Fuerza, Velocidad, Vida, Invisibilidad, Caída Lenta, etc.)", "Pociones Arrojadizas y Persistentes", "Flechas con Efectos (Todas las variantes)"] },
+            { name: "Comidas Elaboradas y Estofados", items: ["Pan", "Tarta", "Galleta", "Manzana Dorada", "Manzana Dorada Encantada", "Estofado de Champiñones / Conejo / Remolacha", "Estofado Sospechoso (Todas las variantes)", "Tarta de Calabaza"] },
+            { name: "Ítems Épicos y Cierre", items: ["Faro (Beacon)", "Estrella del Nether", "Conducto (Conduit)", "Corazón del Mar", "Tótem de la Inmortalidad", "Yunque (Normal, Dañado, Muy Dañado)", "Mesa de Encantamientos", "Libros Encantados"] }
+        ]
+    }
+];
 
-    <script>
-        function updateProgress() {
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            let checkedCount = 0;
+let totalItemsCount = 0;
 
-            checkboxes.forEach(cb => {
-                const parent = cb.closest('.task-item');
-                if (cb.checked) {
-                    checkedCount++;
-                    parent.classList.add('completed');
-                } else {
-                    parent.classList.remove('completed');
-                }
-                localStorage.setItem(cb.id, cb.checked);
+function renderBoard() {
+    const container = document.getElementById('days-container');
+    container.innerHTML = '';
+    totalItemsCount = 0;
+
+    challengeData.forEach((dayData, dIndex) => {
+        const dayCard = document.createElement('div');
+        dayCard.className = 'day-card';
+        
+        let html = `<div class="day-title">
+            <span>${dayData.day}: ${dayData.title}</span>
+        </div>`;
+
+        dayData.categories.forEach((cat, cIndex) => {
+            html += `<div class="category-group">
+                <div class="category-name">${cat.name}</div>
+                <div class="item-list">`;
+            
+            cat.items.forEach((item, iIndex) => {
+                totalItemsCount++;
+                const itemId = `item_${dIndex}_${cIndex}_${iIndex}`;
+                html += `
+                    <div class="item-row" data-name="${item.toLowerCase()}">
+                        <input type="checkbox" id="${itemId}" onchange="updateProgress()">
+                        <label for="${itemId}"><span>${item}</span></label>
+                    </div>
+                `;
             });
 
-            const percent = Math.round((checkedCount / checkboxes.length) * 100);
-            document.getElementById('progress-bar').style.width = percent + '%';
-            document.getElementById('progress-percent').innerText = percent + '%';
+            html += `</div></div>`;
+        });
+
+        dayCard.innerHTML = html;
+        container.appendChild(dayCard);
+    });
+
+    loadSavedState();
+}
+
+function updateProgress() {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    let checkedCount = 0;
+
+    checkboxes.forEach(cb => {
+        const parent = cb.closest('.item-row');
+        if (cb.checked) {
+            checkedCount++;
+            parent.classList.add('completed');
+        } else {
+            parent.classList.remove('completed');
         }
+        localStorage.setItem(cb.id, cb.checked);
+    });
 
-        function loadSavedState() {
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(cb => {
-                const saved = localStorage.getItem(cb.id);
-                if (saved === 'true') {
-                    cb.checked = true;
-                }
-            });
+    const percent = Math.round((checkedCount / totalItemsCount) * 100) || 0;
+    document.getElementById('counter').innerText = `${checkedCount} / ${totalItemsCount}`;
+    document.getElementById('percentage').innerText = `${percent}%`;
+    document.getElementById('progress-fill').style.width = `${percent}%`;
+}
 
-            const savedNotes = localStorage.getItem('video-notes');
-            if (savedNotes) {
-                document.getElementById('video-notes').value = savedNotes;
-            }
+function filterItems() {
+    const query = document.getElementById('search-input').value.toLowerCase();
+    const rows = document.querySelectorAll('.item-row');
 
-            updateProgress();
+    rows.forEach(row => {
+        const name = row.getAttribute('data-name');
+        if (name.includes(query)) {
+            row.style.display = 'flex';
+        } else {
+            row.style.display = 'none';
         }
+    });
+}
 
-        function saveNotes() {
-            const notes = document.getElementById('video-notes').value;
-            localStorage.setItem('video-notes', notes);
+function saveNotes() {
+    localStorage.setItem('video_all_items_notes', document.getElementById('video-notes').value);
+}
+
+function loadSavedState() {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(cb => {
+        if (localStorage.getItem(cb.id) === 'true') {
+            cb.checked = true;
         }
+    });
 
-        function resetProgress() {
-            if (confirm('¿Seguro que quieres reiniciar todo el progreso del reto?')) {
-                localStorage.clear();
-                location.reload();
-            }
-        }
+    const savedNotes = localStorage.getItem('video_all_items_notes');
+    if (savedNotes) {
+        document.getElementById('video-notes').value = savedNotes;
+    }
 
-        // Cargar estado guardado al iniciar
-        window.onload = loadSavedState;
-    </script>
+    updateProgress();
+}
+
+function resetAll() {
+    if (confirm('¿Quieres reiniciar todas las casillas marcadas para empezar de cero?')) {
+        localStorage.clear();
+        location.reload();
+    }
+}
+
+window.onload = renderBoard;
+</script>
 </body>
 </html>
