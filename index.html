@@ -1,418 +1,829 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALL ITEMS MINECRAFT - Base de Datos Completa 100%</title>
-    <style>
-        :root {
-            --bg-dark: #0a0c14;
-            --card-bg: #141824;
-            --accent-green: #00e676;
-            --accent-gold: #ffc107;
-            --text-main: #f0f4f8;
-            --text-muted: #78889b;
-            --border-color: #232a3d;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FocusFlow - Calendario & Productividad</title>
+  <!-- Fuente moderna Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-main: #0f172a;
+      --bg-card: #1e293b;
+      --bg-input: #334155;
+      --accent: #6366f1;
+      --accent-hover: #4f46e5;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --prio-high: #ef4444;
+      --prio-med: #f59e0b;
+      --prio-low: #10b981;
+    }
 
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            margin: 0;
-            padding: 20px;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
 
-        .container {
-            max-width: 1500px;
-            margin: 0 auto;
-        }
+    body {
+      background-color: var(--bg-main);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem;
+    }
 
-        header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
 
-        h1 {
-            color: var(--accent-green);
-            margin: 0 0 5px 0;
-            font-size: 2.2rem;
-            text-shadow: 0 0 15px rgba(0, 230, 118, 0.3);
-        }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
 
-        .dashboard {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 25px;
-            position: sticky;
-            top: 10px;
-            z-index: 100;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
-        }
+    .stats-header {
+      display: flex;
+      gap: 1.5rem;
+    }
 
-        .stats-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 12px;
-        }
+    .stat-pill {
+      background: var(--bg-card);
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      border: 1px solid var(--border);
+    }
 
-        .progress-bg {
-            background: #08090f;
-            height: 24px;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-        }
+    .stat-pill span {
+      font-weight: 700;
+      color: var(--accent);
+    }
 
-        .progress-fill {
-            background: linear-gradient(90deg, #00b0ff, var(--accent-green));
-            height: 100%;
-            width: 0%;
-            transition: width 0.3s ease;
-        }
+    .main-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr 380px;
+      gap: 1.5rem;
+      flex: 1;
+    }
 
-        .tools-row {
-            display: flex;
-            gap: 12px;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
+    @media (max-width: 1100px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
 
-        .search-box {
-            flex: 1;
-            min-width: 250px;
-            padding: 12px 16px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background: #08090f;
-            color: #fff;
-            font-size: 1rem;
-        }
+    .card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
 
-        .btn {
-            background: #232a3d;
-            color: #fff;
-            border: 1px solid var(--border-color);
-            padding: 10px 18px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.2s;
-        }
+    /* === COLUMNA 1: POMODORO & RESUMEN === */
+    .pomodoro-card {
+      text-align: center;
+    }
 
-        .btn:hover {
-            background: var(--accent-green);
-            color: #000;
-        }
+    .timer-modes {
+      display: flex;
+      background: var(--bg-main);
+      padding: 0.25rem;
+      border-radius: 8px;
+      gap: 0.25rem;
+    }
 
-        .days-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 20px;
-        }
+    .timer-mode-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.4rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
 
-        .day-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-        }
+    .timer-mode-btn.active {
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
 
-        .day-header {
-            color: var(--accent-gold);
-            font-size: 1.3rem;
-            font-weight: bold;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-        }
+    .timer-display {
+      font-size: 3.5rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      margin: 1rem 0;
+      color: #fff;
+    }
 
-        .category-title {
-            color: var(--accent-green);
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 18px 0 8px 0;
-            font-weight: bold;
-        }
+    .timer-controls {
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+    }
 
-        .item-row {
-            display: flex;
-            align-items: center;
-            padding: 5px 8px;
-            background: #0d101a;
-            margin-bottom: 3px;
-            border-radius: 4px;
-            font-size: 0.9rem;
-        }
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
 
-        .item-row:hover {
-            background: #1a2030;
-        }
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      padding: 0.6rem 1.2rem;
+    }
 
-        .item-row input[type="checkbox"] {
-            margin-right: 10px;
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
-            accent-color: var(--accent-green);
-        }
+    .btn-primary:hover {
+      background: var(--accent-hover);
+    }
 
-        .item-row.checked {
-            background: #092015;
-        }
+    .btn-secondary {
+      background: var(--bg-input);
+      color: var(--text);
+      padding: 0.6rem 1.2rem;
+    }
 
-        .item-row.checked span {
-            text-decoration: line-through;
-            color: var(--text-muted);
-        }
+    .btn-secondary:hover {
+      background: #475569;
+    }
 
-        .reset-btn {
-            background: #d32f2f;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            margin: 40px auto;
-            display: block;
-        }
-    </style>
+    .progress-bar-container {
+      background: var(--bg-main);
+      height: 8px;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--success);
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+
+    /* === COLUMNA 2: CALENDARIO === */
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .calendar-header h2 {
+      font-size: 1.2rem;
+      text-transform: capitalize;
+    }
+
+    .nav-btn {
+      background: var(--bg-input);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 0.4rem 0.8rem;
+    }
+
+    .calendar-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .calendar-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      flex: 1;
+    }
+
+    .day-cell {
+      aspect-ratio: 1;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .day-cell:hover {
+      background: var(--bg-input);
+      border-color: var(--accent);
+    }
+
+    .day-cell.other-month {
+      opacity: 0.3;
+    }
+
+    .day-cell.today {
+      border: 2px solid var(--accent);
+      font-weight: 700;
+    }
+
+    .day-cell.selected {
+      background: rgba(99, 102, 241, 0.2);
+      border-color: var(--accent);
+    }
+
+    .day-number {
+      font-size: 0.9rem;
+    }
+
+    .dots-container {
+      display: flex;
+      gap: 3px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 100%;
+    }
+
+    .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background-color: var(--accent);
+    }
+
+    .dot.done {
+      background-color: var(--success);
+    }
+
+    /* === COLUMNA 3: TAREAS DEL DÍA === */
+    .tasks-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .tasks-header h2 {
+      font-size: 1.2rem;
+    }
+
+    .tasks-header p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .task-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      background: var(--bg-main);
+      padding: 0.8rem;
+      border-radius: 10px;
+    }
+
+    input, select {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.5rem 0.8rem;
+      border-radius: 6px;
+      outline: none;
+      font-size: 0.85rem;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent);
+    }
+
+    .form-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .task-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      overflow-y: auto;
+      max-height: 380px;
+      padding-right: 4px;
+    }
+
+    .task-item {
+      background: var(--bg-main);
+      padding: 0.75rem;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      border-left: 4px solid var(--accent);
+      transition: opacity 0.2s;
+    }
+
+    .task-item.prio-Alta { border-left-color: var(--prio-high); }
+    .task-item.prio-Media { border-left-color: var(--prio-med); }
+    .task-item.prio-Baja { border-left-color: var(--prio-low); }
+
+    .task-item.completed {
+      opacity: 0.5;
+    }
+
+    .task-item.completed .task-text {
+      text-decoration: line-through;
+    }
+
+    .task-left {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .task-info {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .task-text {
+      font-size: 0.9rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .task-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    .delete-btn {
+      background: transparent;
+      color: var(--text-muted);
+      padding: 0.2rem 0.4rem;
+      font-size: 1rem;
+    }
+
+    .delete-btn:hover {
+      color: var(--danger);
+    }
+
+    .empty-state {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      padding: 2rem 0;
+    }
+
+    /* Custom Checkbox */
+    input[type="checkbox"] {
+      cursor: pointer;
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+    }
+  </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <h1>💎 ALL ITEMS MINECRAFT (1 de CADA Ítem)</h1>
-        <p style="color: var(--text-muted); margin:0;">Tracker individual ítem por ítem para el reto de 7 días</p>
-    </header>
-
-    <div class="dashboard">
-        <div class="stats-bar">
-            <span>Objetos Conseguidos: <span id="collected-count" style="color: var(--accent-green);">0</span> / <span id="total-count">0</span></span>
-            <span id="percent-text" style="color: var(--accent-gold);">0%</span>
-        </div>
-        <div class="progress-bg">
-            <div class="progress-fill" id="progress-bar"></div>
-        </div>
-        <div class="tools-row">
-            <input type="text" id="search-input" class="search-box" placeholder="🔎 Escribe cualquier ítem (ej: Losa de Toba, Disco Pigstep, Tinte Cian)..." oninput="filterItems()">
-            <button class="btn" onclick="toggleCompletedVisibility()" id="hide-btn">Ocultar Conseguidos</button>
-        </div>
+  <header>
+    <div class="logo">
+      <span>⚡</span> FocusFlow
     </div>
+    <div class="stats-header">
+      <div class="stat-pill">Tareas hoy: <span id="header-today-tasks">0/0</span></div>
+      <div class="stat-pill">Pomodoros: <span id="header-pomo-count">0</span> 🔥</div>
+    </div>
+  </header>
 
-    <div class="days-grid" id="days-container"></div>
+  <main class="main-grid">
+    <!-- COLUMNA 1: POMODORO & PRODUCTIVIDAD -->
+    <section class="card pomodoro-card">
+      <h3>Enfoque & Pomodoro</h3>
+      <div class="timer-modes">
+        <button class="timer-mode-btn active" onclick="setTimerMode('work')">Pomodoro (25m)</button>
+        <button class="timer-mode-btn" onclick="setTimerMode('shortBreak')">Descanso (5m)</button>
+        <button class="timer-mode-btn" onclick="setTimerMode('longBreak')">Largo (15m)</button>
+      </div>
 
-    <button class="reset-btn" onclick="resetChallenge()">⚠️ Reiniciar Todo el Contador</button>
-</div>
+      <div class="timer-display" id="timer-display">25:00</div>
 
-<script>
-// Base de datos exhaustiva desglosada ítem por ítem
-const db = [
-    {
-        day: "Día 1",
-        title: "Naturaleza, Maderas y Tierras",
-        categories: [
-            { name: "Roble", items: ["Tronco de Roble", "Madera de Roble", "Tronco de Roble Despojado", "Madera de Roble Despojada", "Tablas de Roble", "Losa de Roble", "Escaleras de Roble", "Valla de Roble", "Puerta de Valla de Roble", "Puerta de Roble", "Trampilla de Roble", "Placa de Presión de Roble", "Botón de Roble", "Cartel de Roble", "Cartel Colgante de Roble", "Brote de Roble", "Hojas de Roble", "Barca de Roble", "Barca de Roble con Cofre"] },
-            { name: "Abeto", items: ["Tronco de Abeto", "Madera de Abeto", "Tronco de Abeto Despojado", "Madera de Abeto Despojada", "Tablas de Abeto", "Losa de Abeto", "Escaleras de Abeto", "Valla de Abeto", "Puerta de Valla de Abeto", "Puerta de Abeto", "Trampilla de Abeto", "Placa de Presión de Abeto", "Botón de Abeto", "Cartel de Abeto", "Cartel Colgante de Abeto", "Brote de Abeto", "Hojas de Abeto", "Barca de Abeto", "Barca de Abeto con Cofre"] },
-            { name: "Abedul", items: ["Tronco de Abedul", "Madera de Abedul", "Tronco de Abedul Despojado", "Madera de Abedul Despojada", "Tablas de Abedul", "Losa de Abedul", "Escaleras de Abedul", "Valla de Abedul", "Puerta de Valla de Abedul", "Puerta de Abedul", "Trampilla de Abedul", "Placa de Presión de Abedul", "Botón de Abedul", "Cartel de Abedul", "Cartel Colgante de Abedul", "Brote de Abedul", "Hojas de Abedul", "Barca de Abedul", "Barca de Abedul con Cofre"] },
-            { name: "Jungla", items: ["Tronco de Jungla", "Madera de Jungla", "Tronco de Jungla Despojado", "Madera de Jungla Despojada", "Tablas de Jungla", "Losa de Jungla", "Escaleras de Jungla", "Valla de Jungla", "Puerta de Valla de Jungla", "Puerta de Jungla", "Trampilla de Jungla", "Placa de Presión de Jungla", "Botón de Jungla", "Cartel de Jungla", "Cartel Colgante de Jungla", "Brote de Jungla", "Hojas de Jungla", "Barca de Jungla", "Barca de Jungla con Cofre"] },
-            { name: "Acacia", items: ["Tronco de Acacia", "Madera de Acacia", "Tronco de Acacia Despojado", "Madera de Acacia Despojada", "Tablas de Acacia", "Losa de Acacia", "Escaleras de Acacia", "Valla de Acacia", "Puerta de Valla de Acacia", "Puerta de Acacia", "Trampilla de Acacia", "Placa de Presión de Acacia", "Botón de Acacia", "Cartel de Acacia", "Cartel Colgante de Acacia", "Brote de Acacia", "Hojas de Acacia", "Barca de Acacia", "Barca de Acacia con Cofre"] },
-            { name: "Roble Oscuro", items: ["Tronco de Roble Oscuro", "Madera de Roble Oscuro", "Tronco de Roble Oscuro Despojado", "Madera de Roble Oscuro Despojada", "Tablas de Roble Oscuro", "Losa de Roble Oscuro", "Escaleras de Roble Oscuro", "Valla de Roble Oscuro", "Puerta de Valla de Roble Oscuro", "Puerta de Roble Oscuro", "Trampilla de Roble Oscuro", "Placa de Presión de Roble Oscuro", "Botón de Roble Oscuro", "Cartel de Roble Oscuro", "Cartel Colgante de Roble Oscuro", "Brote de Roble Oscuro", "Hojas de Roble Oscuro", "Barca de Roble Oscuro", "Barca de Roble Oscuro con Cofre"] },
-            { name: "Mangle", items: ["Tronco de Mangle", "Madera de Mangle", "Tronco de Mangle Despojado", "Madera de Mangle Despojada", "Tablas de Mangle", "Losa de Mangle", "Escaleras de Mangle", "Valla de Mangle", "Puerta de Valla de Mangle", "Puerta de Mangle", "Trampilla de Mangle", "Placa de Presión de Mangle", "Botón de Mangle", "Cartel de Mangle", "Cartel Colgante de Mangle", "Propágulo de Mangle", "Hojas de Mangle", "Raíces de Mangle", "Raíces de Mangle Embarradas", "Barca de Mangle", "Barca de Mangle con Cofre"] },
-            { name: "Cerezo", items: ["Tronco de Cerezo", "Madera de Cerezo", "Tronco de Cerezo Despojado", "Madera de Cerezo Despojada", "Tablas de Cerezo", "Losa de Cerezo", "Escaleras de Cerezo", "Valla de Cerezo", "Puerta de Valla de Cerezo", "Puerta de Cerezo", "Trampilla de Cerezo", "Placa de Presión de Cerezo", "Botón de Cerezo", "Cartel de Cerezo", "Cartel Colgante de Cerezo", "Brote de Cerezo", "Hojas de Cerezo", "Barca de Cerezo", "Barca de Cerezo con Cofre"] },
-            { name: "Bambú", items: ["Bambú", "Bloque de Bambú", "Bloque de Bambú Despojado", "Tablas de Bambú", "Mosaico de Bambú", "Losa de Bambú", "Losa de Mosaico de Bambú", "Escaleras de Bambú", "Escaleras de Mosaico de Bambú", "Valla de Bambú", "Puerta de Valla de Bambú", "Puerta de Bambú", "Trampilla de Bambú", "Placa de Presión de Bambú", "Botón de Bambú", "Cartel de Bambú", "Cartel Colgante de Bambú", "Balsa de Bambú", "Balsa de Bambú con Cofre"] },
-            { name: "Tierras y Piedras Superficiales", items: ["Tierra", "Bloque de Césped", "Tierra Estéril", "Podsol", "Micelio", "Barro", "Tierra con Raíces", "Piedra", "Adoquín", "Piedra Pulida", "Andesita", "Andesita Pulida", "Diorita", "Diorita Pulida", "Granito", "Granito Pulido", "Calcita", "Toba", "Toba Pulida", "Ladrillos de Toba", "Toba Cincelada", "Arenisca", "Arenisca Cincelada", "Arenisca Suave", "Arenisca Roja", "Arenisca Roja Cincelada", "Arenisca Roja Suave", "Grava", "Arena", "Arena Roja"] },
-            { name: "Flores y Plantas", items: ["Diente de León", "Amapola", "Orquídea Azul", "Allium", "Bluet de los Llanos", "Tulipán Rojo", "Tulipán Naranja", "Tulipán Blanco", "Tulipán Rosa", "Margarita", "Aciano", "Lirio del Valle", "Rosa del Wither", "Girasol", "Lila", "Rosal", "Peonía", "Flor de Antorcha", "Jarra de Planta", "Musgo", "Alfombra de Musgo", "Cactus", "Caña de Azúcar", "Enredaderas", "Lágrimas de Espora", "Flor de Espora"] }
-        ]
-    },
-    {
-        day: "Día 2",
-        title: "Minerales, Tintes y Sets de Colores",
-        categories: [
-            { name: "Minerales", items: ["Carbón", "Bloque de Carbón", "Hierro Bruto", "Bloque de Hierro Bruto", "Lingote de Hierro", "Bloque de Hierro", "Cobre Bruto", "Bloque de Cobre Bruto", "Lingote de Cobre", "Bloque de Cobre", "Cobre Cortado", "Cobre Expuesto", "Cobre Degradado", "Cobre Oxidado", "Oro Bruto", "Bloque de Oro Bruto", "Lingote de Oro", "Bloque de Oro", "Lapis Lázuli", "Bloque de Lapis Lázuli", "Polvo de Redstone", "Bloque de Redstone", "Diamante", "Bloque de Diamante", "Esmeralda", "Bloque de Esmeralda", "Fragmento de Amatista", "Bloque de Amatista", "Cúmulo de Amatista"] },
-            { name: "Tintes", items: ["Tinte Blanco", "Tinte Gris Claro", "Tinte Gris", "Tinte Negro", "Tinte Marrón", "Tinte Rojo", "Tinte Naranja", "Tinte Amarillo", "Tinte Lima", "Tinte Verde", "Tinte Cian", "Tinte Celeste", "Tinte Azul", "Tinte Púrpura", "Tinte Magenta", "Tinte Rosa"] },
-            { name: "Lanas (16)", items: ["Lana Blanca", "Lana Gris Claro", "Lana Gris", "Lana Negra", "Lana Marrón", "Lana Roja", "Lana Naranja", "Lana Amarilla", "Lana Lima", "Lana Verde", "Lana Cian", "Lana Celeste", "Lana Azul", "Lana Púrpura", "Lana Magenta", "Lana Rosa"] },
-            { name: "Camas (16)", items: ["Cama Blanca", "Cama Gris Claro", "Cama Gris", "Cama Negra", "Cama Marrón", "Cama Roja", "Cama Naranja", "Cama Amarilla", "Cama Lima", "Cama Verde", "Cama Cian", "Cama Celeste", "Cama Azul", "Cama Púrpura", "Cama Magenta", "Cama Rosa"] },
-            { name: "Terracotas (17)", items: ["Terracota", "Terracota Blanca", "Terracota Gris Claro", "Terracota Gris", "Terracota Negra", "Terracota Marrón", "Terracota Roja", "Terracota Naranja", "Terracota Amarilla", "Terracota Lima", "Terracota Verde", "Terracota Cian", "Terracota Celeste", "Terracota Azul", "Terracota Púrpura", "Terracota Magenta", "Terracota Rosa"] },
-            { name: "Terracotas Vidriadas (16)", items: ["Terracota Vidriada Blanca", "Terracota Vidriada Gris Claro", "Terracota Vidriada Gris", "Terracota Vidriada Negra", "Terracota Vidriada Marrón", "Terracota Vidriada Roja", "Terracota Vidriada Naranja", "Terracota Vidriada Amarilla", "Terracota Vidriada Lima", "Terracota Vidriada Verde", "Terracota Vidriada Cian", "Terracota Vidriada Celeste", "Terracota Vidriada Azul", "Terracota Vidriada Púrpura", "Terracota Vidriada Magenta", "Terracota Vidriada Rosa"] },
-            { name: "Hormigones (16)", items: ["Hormigón Blanco", "Hormigón Gris Claro", "Hormigón Gris", "Hormigón Negro", "Hormigón Marrón", "Hormigón Rojo", "Hormigón Naranja", "Hormigón Amarillo", "Hormigón Lima", "Hormigón Verde", "Hormigón Cian", "Hormigón Celeste", "Hormigón Azul", "Hormigón Púrpura", "Hormigón Magenta", "Hormigón Rosa"] },
-            { name: "Polvos de Hormigón (16)", items: ["Polvo de Hormigón Blanco", "Polvo de Hormigón Gris Claro", "Polvo de Hormigón Gris", "Polvo de Hormigón Negro", "Polvo de Hormigón Marrón", "Polvo de Hormigón Rojo", "Polvo de Hormigón Naranja", "Polvo de Hormigón Amarillo", "Polvo de Hormigón Lima", "Polvo de Hormigón Verde", "Polvo de Hormigón Cian", "Polvo de Hormigón Celeste", "Polvo de Hormigón Azul", "Polvo de Hormigón Púrpura", "Polvo de Hormigón Magenta", "Polvo de Hormigón Rosa"] },
-            { name: "Cristales Teñidos (16)", items: ["Cristal Blanco", "Cristal Gris Claro", "Cristal Gris", "Cristal Negro", "Cristal Marrón", "Cristal Rojo", "Cristal Naranja", "Cristal Amarillo", "Cristal Lima", "Cristal Verde", "Cristal Cian", "Cristal Celeste", "Cristal Azul", "Cristal Púrpura", "Cristal Magenta", "Cristal Rosa"] }
-        ]
-    },
-    {
-        day: "Día 3",
-        title: "Deepslate, Océano, Mobs y Arqueología",
-        categories: [
-            { name: "Pizarra Profunda (Deepslate)", items: ["Pizarra Profunda", "Adoquín de Pizarra Profunda", "Pizarra Profunda Pulida", "Ladrillos de Pizarra Profunda", "Azulejos de Pizarra Profunda", "Pizarra Profunda Cincelada", "Espeleotema", "Estalagmita", "Líquen Luminoso", "Bayas Resplandecientes", "Sculk", "Catalizador de Sculk", "Sensor de Sculk", "Chillón de Sculk", "Vena de Sculk"] },
-            { name: "Océanos", items: ["Arcilla", "Bloque de Arcilla", "Kelp", "Kelp Seco", "Bloque de Kelp Seco", "Pepinillo de Mar", "Prismarina", "Ladrillos de Prismarina", "Prismarina Oscura", "Linterna Marina", "Esponja", "Esponja Mojada", "Bloque de Coral de Tubo", "Bloque de Coral de Cerebro", "Bloque de Coral de Burbuja", "Bloque de Coral de Fuego", "Bloque de Coral de Cuerno", "Huevo de Tortuga", "Huevo de Sniffer", "Concha de Nautilus", "Corazón del Mar", "Escama de Tortuga", "Escama de Armadillo"] },
-            { name: "Drops de Mobs", items: ["Cuero", "Pluma", "Hilo", "Ojo de Araña", "Ojo de Araña Fermentado", "Pólvora", "Hueso", "Carne Podrida", "Bola de Slime", "Membrana de Phantom", "Asta de Cabra", "Pata de Conejo", "Piel de Conejo", "Saco de Tinta", "Saco de Tinta Luminosa", "Cabeza de Esqueleto", "Cabeza de Zombie", "Cabeza de Creeper", "Cabeza de Piglin"] },
-            { name: "Arqueología", items: ["Pincel", "Arena Sospechosa", "Grava Sospechosa", "Fragmento de Vasija de Arquero", "Fragmento de Vasija de Brazos Levantados", "Fragmento de Vasija de Hoja", "Fragmento de Vasija de Cervedero", "Fragmento de Vasija de Fuego", "Fragmento de Vasija de Peligro", "Fragmento de Vasija de Explorador", "Fragmento de Vasija de Amigo", "Fragmento de Vasija de Corazón", "Fragmento de Vasija de Desamor", "Fragmento de Vasija de Aullido", "Fragmento de Vasija de Minero", "Fragmento de Vasija de Luto", "Fragmento de Vasija de Abundancia", "Fragmento de Vasija de Premio", "Fragmento de Vasija de Gavilla", "Fragmento de Vasija de Refugio", "Fragmento de Vasija de Snort"] }
-        ]
-    },
-    {
-        day: "Día 4",
-        title: "Dimensiones: Nether y End",
-        categories: [
-            { name: "Bloques del Nether", items: ["Netherrack", "Piedra Negra", "Piedra Negra Pulida", "Ladrillos de Piedra Negra Pulida", "Piedra Negra Pulida Cincelada", "Basalto", "Basalto Pulido", "Basalto Suave", "Arena de Almas", "Tierra de Almas", "Bloque de Verrugas del Nether", "Bloque de Verrugas Deformadas", "Cuarzo del Nether", "Bloque de Cuarzo", "Ladrillos de Cuarzo", "Cuarzo Cincelado", "Cuarzo Pulido", "Ladrillos del Nether", "Ladrillos del Nether Rojos", "Ladrillos del Nether Cincelados", "Glowstone", "Luz de Hongo", "Obsidiana Llorosa", "Anclaje de Resurgimiento"] },
-            { name: "Bosques Carmesí y Deformado", items: ["Tallo Carmesí", "Hifas Carmesí", "Tallo Carmesí Despojado", "Tablas Carmesí", "Nylium Carmesí", "Hongo Carmesí", "Lianas Lloronas", "Tallo Deformado", "Hifas Deformadas", "Tallo Deformado Despojado", "Tablas Deformadas", "Nylium Deformado", "Hongo Deformado", "Lianas Retorcidas"] },
-            { name: "Recursos y Botín del Nether", items: ["Escombros Ancestrales", "Fragmento de Netherita", "Lingote de Netherita", "Bloque de Netherita", "Varilla de Blaze", "Polvo de Blaze", "Lágrima de Ghast", "Pepita de Oro", "Crema de Magma", "Verruga del Nether", "Calavera de Wither Skeleton"] },
-            { name: "Dimensión del End", items: ["Piedra del End", "Ladrillos de Piedra del End", "Bloque Purpur", "Pilar Purpur", "Losa Purpur", "Escaleras Purpur", "Vara del End", "Flor de Chorus", "Fruta de Chorus", "Fruta de Chorus Horneada", "Caja de Shulker", "Élitros", "Cabeza de Dragón", "Aliento de Dragón", "Huevo de Dragón", "Perla de Ender", "Ojo de Ender"] }
-        ]
-    },
-    {
-        day: "Día 5",
-        title: "Redstone, Mecanismos y Transporte",
-        categories: [
-            { name: "Mecanismos y Redstone", items: ["Antorcha de Redstone", "Repetidor de Redstone", "Comparador de Redstone", "Observador", "Sensor Sculk Calibrado", "Detector de Luz Solar", "Gancho de Hilo", "Palanca", "Pistón", "Pistón Pegajoso", "Soltador", "Dispensador", "Tolva", "Crafter", "Bloque de Nota", "Tocadiscos", "Campana", "Lámpara de Redstone", "Pararrayos", "TNT", "Cofre Trampa", "Núcleo Pesado"] },
-            { name: "Vías y Transportes", items: ["Raíl", "Raíl Propulsor", "Raíl Detector", "Raíl Activador", "Vagoneta", "Vagoneta con Cofre", "Vagoneta con Tolva", "Vagoneta con TNT", "Vagoneta con Horno", "Montura", "Zanahoria en un Palo", "Hongo Deformado en un Palo"] }
-        ]
-    },
-    {
-        day: "Día 6",
-        title: "Equipamiento, Discos y Moldes de Herrería",
-        categories: [
-            { name: "Herramientas de Madera / Piedra / Hierro / Oro / Diamante / Netherita", items: ["Espada de Madera", "Pico de Madera", "Hacha de Madera", "Pala de Madera", "Azada de Madera", "Espada de Piedra", "Pico de Piedra", "Hacha de Piedra", "Pala de Piedra", "Azada de Piedra", "Espada de Hierro", "Pico de Hierro", "Hacha de Hierro", "Pala de Hierro", "Azada de Hierro", "Espada de Oro", "Pico de Oro", "Hacha de Oro", "Pala de Oro", "Azada de Oro", "Espada de Diamante", "Pico de Diamante", "Hacha de Diamante", "Pala de Diamante", "Azada de Diamante", "Espada de Netherita", "Pico de Netherita", "Hacha de Netherita", "Pala de Netherita", "Azada de Netherita"] },
-            { name: "Armaduras", items: ["Casco de Cuero", "Túnica de Cuero", "Pantalones de Cuero", "Botas de Cuero", "Casco de Cota de Malla", "Pechera de Cota de Malla", "Grebas de Cota de Malla", "Botas de Cota de Malla", "Casco de Hierro", "Pechera de Hierro", "Grebas de Hierro", "Botas de Hierro", "Casco de Oro", "Pechera de Oro", "Grebas de Oro", "Botas de Oro", "Casco de Diamante", "Pechera de Diamante", "Grebas de Diamante", "Botas de Diamante", "Casco de Netherita", "Pechera de Netherita", "Grebas de Netherita", "Botas de Netherita", "Armadura para Lobo"] },
-            { name: "Armas Especiales y Útiles", items: ["Arco", "Ballesta", "Tridente", "Maza", "Escudo", "Caña de Pescar", "Tijeras", "Catalejo", "Reloj", "Brújula", "Brújula de Recuperación", "Rienda", "Etiqueta"] },
-            { name: "Discos de Música", items: ["Disco 13", "Disco Cat", "Disco Blocks", "Disco Chirp", "Disco Far", "Disco Mall", "Disco Mellohi", "Disco Stal", "Disco Strad", "Disco Ward", "Disco 11", "Disco Wait", "Disco Pigstep", "Disco Otherside", "Disco 5", "Disco Relic", "Disco Creator", "Disco Creator (Caja de Música)", "Disco Precipice"] },
-            { name: "Moldes de Herrería (Armor Trims)", items: ["Mejora de Netherita", "Molde de Costa", "Molde de Duna", "Molde de Ojo", "Molde de Anfitrión", "Molde de Elevador", "Molde de Costilla", "Molde de Centinela", "Molde de Moldeador", "Molde de Silencio", "Molde de Hocico", "Molde de Aguja", "Molde de Marea", "Molde de Vex", "Molde de Tutela", "Molde de Rastreador", "Molde Salvaje"] }
-        ]
-    },
-    {
-        day: "Día 7",
-        title: "Alquimia, Comida Elaborada y Épicos",
-        categories: [
-            { name: "Pociones", items: ["Frasco de Agua", "Poción Rara", "Poción de Fuerza", "Poción de Velocidad", "Poción de Vida Instantánea", "Poción de Regeneración", "Poción de Invisibilidad", "Poción de Caída Lenta", "Poción de Apnea", "Poción de Visión Nocturna", "Poción de Salto", "Poción de Lentitud", "Poción de Veneno", "Poción de Debilidad", "Poción de Daño Instantáneo", "Poción de Resistencia al Fuego", "Poción de Maestro Tortuga", "Poción de Caída Lenta"] },
-            { name: "Comidas", items: ["Pan", "Tarta", "Galleta", "Manzana Dorada", "Manzana Dorada Encantada", "Zanahoria Dorada", "Estofado de Champiñones", "Estofado de Conejo", "Estofado de Remolacha", "Estofado Sospechoso", "Tarta de Calabaza", "Bote de Miel", "Panal", "Bloque de Panal", "Bloque de Miel"] },
-            { name: "Bloques de Trabajo y Leyendas", items: ["Faro", "Estrella del Nether", "Conducto", "Tótem de la Inmortalidad", "Yunque", "Yunque Dañado", "Yunque Muy Dañado", "Mesa de Encantamientos", "Librería", "Librería Cincelada", "Telar", "Mesa de Cartografía", "Mesa de Flecheria", "Mesa de Herrería", "Afiladora", "Cortapiedras", "Ahumador", "Alto Horno", "Hoguera", "Hoguera de Almas", "Cristal del End"] }
-        ]
+      <div class="timer-controls">
+        <button class="btn-primary" id="timer-start-btn" onclick="toggleTimer()">Iniciar</button>
+        <button class="btn-secondary" onclick="resetTimer()">Reiniciar</button>
+      </div>
+
+      <div style="margin-top: 1rem; text-align: left;">
+        <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+          <span>Progreso del día</span>
+          <span id="progress-percent">0%</span>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar" id="daily-progress-bar"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COLUMNA 2: CALENDARIO -->
+    <section class="card">
+      <div class="calendar-header">
+        <h2 id="calendar-month-year">Mes Año</h2>
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="nav-btn" onclick="changeMonth(-1)">◀</button>
+          <button class="nav-btn" onclick="goToToday()">Hoy</button>
+          <button class="nav-btn" onclick="changeMonth(1)">▶</button>
+        </div>
+      </div>
+
+      <div class="calendar-weekdays">
+        <div>LUN</div><div>MAR</div><div>MIÉ</div><div>JUE</div><div>VIE</div><div>SÁB</div><div>DOM</div>
+      </div>
+
+      <div class="calendar-days" id="calendar-days">
+        <!-- Días generados dinámicamente -->
+      </div>
+    </section>
+
+    <!-- COLUMNA 3: TAREAS DEL DÍA SELECCIONADO -->
+    <section class="card">
+      <div class="tasks-header">
+        <div>
+          <h2>Tareas del Día</h2>
+          <p id="selected-date-text">Selecciona una fecha</p>
+        </div>
+      </div>
+
+      <form class="task-form" id="task-form" onsubmit="handleAddTask(event)">
+        <input type="text" id="task-input" placeholder="¿Qué vas a lograr?" required>
+        <div class="form-row">
+          <input type="time" id="task-time">
+          <select id="task-priority">
+            <option value="Media">Media</option>
+            <option value="Alta">Alta</option>
+            <option value="Baja">Baja</option>
+          </select>
+          <select id="task-category">
+            <option value="Trabajo">💼 Trabajo</option>
+            <option value="Estudio">📚 Estudio</option>
+            <option value="Personal">🌱 Personal</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-primary" style="padding: 0.5rem;">+ Añadir Tarea</button>
+      </form>
+
+      <ul class="task-list" id="task-list">
+        <!-- Lista de tareas generadas dinámicamente -->
+      </ul>
+    </section>
+  </main>
+
+  <script>
+    /* ==========================================================
+       ESTADO GLOBAL & LOCAL STORAGE
+    ========================================================== */
+    let currentDate = new Date();
+    let selectedDate = new Date();
+    
+    // Formato de clave: "YYYY-MM-DD"
+    let tasks = JSON.parse(localStorage.getItem('focusflow_tasks')) || {};
+    let pomodoroCount = parseInt(localStorage.getItem('focusflow_pomos')) || 0;
+
+    function saveTasks() {
+      localStorage.setItem('focusflow_tasks', JSON.stringify(tasks));
+      renderCalendar();
+      renderTasks();
+      updateStats();
     }
-];
 
-let totalItems = 0;
-let hideCompleted = false;
+    function formatDateKey(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
 
-function renderApp() {
-    const container = document.getElementById('days-container');
-    container.innerHTML = '';
-    totalItems = 0;
+    /* ==========================================================
+       CALENDARIO
+    ========================================================== */
+    const monthNames = [
+      "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+      "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    ];
 
-    db.forEach((d, dayIndex) => {
-        const dayCard = document.createElement('div');
-        dayCard.className = 'day-card';
+    function renderCalendar() {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
 
-        let html = `
-            <div class="day-header">
-                <span>${d.day}</span>
-                <span style="font-size:0.85rem; color:var(--text-muted);">${d.title}</span>
-            </div>
-        `;
+      document.getElementById('calendar-month-year').textContent = `${monthNames[month]} ${year}`;
 
-        d.categories.forEach((cat, catIndex) => {
-            html += `<div class="category-title">${cat.name} (${cat.items.length})</div>`;
-            cat.items.forEach((item, itemIndex) => {
-                totalItems++;
-                const itemId = `item_${dayIndex}_${catIndex}_${itemIndex}`;
-                html += `
-                    <div class="item-row" id="row_${itemId}" data-name="${item.toLowerCase()}">
-                        <input type="checkbox" id="${itemId}" onchange="updateProgress()">
-                        <label for="${itemId}"><span>${item}</span></label>
-                    </div>
-                `;
-            });
+      const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7; // Ajuste para Lunes = 0
+      const lastDay = new Date(year, month + 1, 0).getDate();
+      const prevLastDay = new Date(year, month, 0).getDate();
+
+      const daysContainer = document.getElementById('calendar-days');
+      daysContainer.innerHTML = '';
+
+      const todayStr = formatDateKey(new Date());
+      const selectedStr = formatDateKey(selectedDate);
+
+      // Días del mes anterior
+      for (let x = firstDayIndex; x > 0; x--) {
+        const day = prevLastDay - x + 1;
+        const cell = document.createElement('div');
+        cell.classList.add('day-cell', 'other-month');
+        cell.innerHTML = `<span class="day-number">${day}</span>`;
+        daysContainer.appendChild(cell);
+      }
+
+      // Días del mes actual
+      for (let i = 1; i <= lastDay; i++) {
+        const cellDate = new Date(year, month, i);
+        const cellDateStr = formatDateKey(cellDate);
+
+        const cell = document.createElement('div');
+        cell.classList.add('day-cell');
+        
+        if (cellDateStr === todayStr) cell.classList.add('today');
+        if (cellDateStr === selectedStr) cell.classList.add('selected');
+
+        // Indicadores de tareas (puntos)
+        let dotsHtml = '';
+        const dayTasks = tasks[cellDateStr] || [];
+        if (dayTasks.length > 0) {
+          dotsHtml = '<div class="dots-container">';
+          dayTasks.slice(0, 4).forEach(t => {
+            dotsHtml += `<div class="dot ${t.completed ? 'done' : ''}"></div>`;
+          });
+          dotsHtml += '</div>';
+        }
+
+        cell.innerHTML = `<span class="day-number">${i}</span>${dotsHtml}`;
+
+        cell.addEventListener('click', () => {
+          selectedDate = new Date(year, month, i);
+          renderCalendar();
+          renderTasks();
         });
 
-        dayCard.innerHTML = html;
-        container.appendChild(dayCard);
-    });
-
-    document.getElementById('total-count').innerText = totalItems;
-    loadProgress();
-}
-
-function updateProgress() {
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-    let checkedCount = 0;
-
-    checkboxes.forEach(cb => {
-        const row = document.getElementById(`row_${cb.id}`);
-        if (cb.checked) {
-            checkedCount++;
-            if (row) {
-                row.classList.add('checked');
-                if (hideCompleted) row.style.display = 'none';
-            }
-        } else {
-            if (row) {
-                row.classList.remove('checked');
-                if (hideCompleted) row.style.display = 'flex';
-            }
-        }
-        localStorage.setItem(cb.id, cb.checked);
-    });
-
-    const percent = Math.round((checkedCount / totalItems) * 100) || 0;
-    document.getElementById('collected-count').innerText = checkedCount;
-    document.getElementById('percent-text').innerText = percent + '%';
-    document.getElementById('progress-bar').style.width = percent + '%';
-}
-
-function filterItems() {
-    const query = document.getElementById('search-input').value.toLowerCase();
-    const rows = document.querySelectorAll('.item-row');
-
-    rows.forEach(row => {
-        const name = row.getAttribute('data-name');
-        if (name.includes(query)) {
-            row.style.display = 'flex';
-        } else {
-            row.style.display = 'none';
-        }
-    });
-}
-
-function toggleCompletedVisibility() {
-    hideCompleted = !hideCompleted;
-    const btn = document.getElementById('hide-btn');
-    btn.innerText = hideCompleted ? "Mostrar Conseguidos" : "Ocultar Conseguidos";
-
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-    checkboxes.forEach(cb => {
-        const row = document.getElementById(`row_${cb.id}`);
-        if (row && cb.checked) {
-            row.style.display = hideCompleted ? 'none' : 'flex';
-        }
-    });
-}
-
-function loadProgress() {
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-    checkboxes.forEach(cb => {
-        if (localStorage.getItem(cb.id) === 'true') {
-            cb.checked = true;
-        }
-    });
-    updateProgress();
-}
-
-function resetChallenge() {
-    if (confirm('¿Seguro que quieres borrar todas las casillas marcadas para empezar el reto de cero?')) {
-        localStorage.clear();
-        location.reload();
+        daysContainer.appendChild(cell);
+      }
     }
-}
 
-window.onload = renderApp;
-</script>
+    function changeMonth(delta) {
+      currentDate.setMonth(currentDate.getMonth() + delta);
+      renderCalendar();
+    }
+
+    function goToToday() {
+      currentDate = new Date();
+      selectedDate = new Date();
+      renderCalendar();
+      renderTasks();
+    }
+
+    /* ==========================================================
+       GESTIÓN DE TAREAS
+    ========================================================== */
+    function renderTasks() {
+      const selectedKey = formatDateKey(selectedDate);
+      const dayTasks = tasks[selectedKey] || [];
+      const listElement = document.getElementById('task-list');
+      
+      const options = { weekday: 'long', day: 'numeric', month: 'long' };
+      document.getElementById('selected-date-text').textContent = 
+        selectedDate.toLocaleDateString('es-ES', options);
+
+      listElement.innerHTML = '';
+
+      if (dayTasks.length === 0) {
+        listElement.innerHTML = `<div class="empty-state">No hay tareas para este día.<br>¡Añade una arriba para empezar!</div>`;
+        return;
+      }
+
+      dayTasks.forEach((task, index) => {
+        const li = document.createElement('li');
+        li.className = `task-item prio-${task.priority} ${task.completed ? 'completed' : ''}`;
+        li.innerHTML = `
+          <div class="task-left">
+            <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${index})">
+            <div class="task-info">
+              <span class="task-text">${escapeHtml(task.text)}</span>
+              <span class="task-meta">
+                ${task.time ? `🕒 ${task.time}` : ''}
+                <span>🏷️ ${task.category}</span>
+              </span>
+            </div>
+          </div>
+          <button class="delete-btn" onclick="deleteTask(${index})" title="Eliminar">✕</button>
+        `;
+        listElement.appendChild(li);
+      });
+    }
+
+    function handleAddTask(e) {
+      e.preventDefault();
+      const input = document.getElementById('task-input');
+      const timeInput = document.getElementById('task-time');
+      const prioritySelect = document.getElementById('task-priority');
+      const categorySelect = document.getElementById('task-category');
+
+      const text = input.value.trim();
+      if (!text) return;
+
+      const selectedKey = formatDateKey(selectedDate);
+      if (!tasks[selectedKey]) {
+        tasks[selectedKey] = [];
+      }
+
+      tasks[selectedKey].push({
+        text: text,
+        time: timeInput.value || null,
+        priority: prioritySelect.value,
+        category: categorySelect.value,
+        completed: false
+      });
+
+      input.value = '';
+      timeInput.value = '';
+      saveTasks();
+    }
+
+    function toggleTask(index) {
+      const selectedKey = formatDateKey(selectedDate);
+      if (tasks[selectedKey] && tasks[selectedKey][index]) {
+        tasks[selectedKey][index].completed = !tasks[selectedKey][index].completed;
+        saveTasks();
+      }
+    }
+
+    function deleteTask(index) {
+      const selectedKey = formatDateKey(selectedDate);
+      if (tasks[selectedKey]) {
+        tasks[selectedKey].splice(index, 1);
+        if (tasks[selectedKey].length === 0) {
+          delete tasks[selectedKey];
+        }
+        saveTasks();
+      }
+    }
+
+    function updateStats() {
+      const todayKey = formatDateKey(new Date());
+      const todayTasks = tasks[todayKey] || [];
+      const total = todayTasks.length;
+      const done = todayTasks.filter(t => t.completed).length;
+
+      document.getElementById('header-today-tasks').textContent = `${done}/${total}`;
+      document.getElementById('header-pomo-count').textContent = pomodoroCount;
+
+      const percent = total === 0 ? 0 : Math.round((done / total) * 100);
+      document.getElementById('progress-percent').textContent = `${percent}%`;
+      document.getElementById('daily-progress-bar').style.width = `${percent}%`;
+    }
+
+    function escapeHtml(text) {
+      const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+      return text.replace(/[&<>"']/g, m => map[m]);
+    }
+
+    /* ==========================================================
+       TEMPORIZADOR POMODORO + SONIDO DE ALARMA SINTETIZADO
+    ========================================================== */
+    const timerModes = {
+      work: 25 * 60,
+      shortBreak: 5 * 60,
+      longBreak: 15 * 60
+    };
+
+    let currentMode = 'work';
+    let timeLeft = timerModes.work;
+    let timerInterval = null;
+    let isRunning = false;
+
+    function playBeep() {
+      // Alarma sin archivos externos (Web Audio API)
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.8);
+      } catch(e) {
+        console.log("Audio not allowed yet");
+      }
+    }
+
+    function updateTimerDisplay() {
+      const min = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+      const sec = String(timeLeft % 60).padStart(2, '0');
+      document.getElementById('timer-display').textContent = `${min}:${sec}`;
+      document.title = isRunning ? `(${min}:${sec}) FocusFlow` : `FocusFlow`;
+    }
+
+    function toggleTimer() {
+      const btn = document.getElementById('timer-start-btn');
+      if (isRunning) {
+        clearInterval(timerInterval);
+        isRunning = false;
+        btn.textContent = 'Reanudar';
+        btn.style.background = 'var(--accent)';
+      } else {
+        isRunning = true;
+        btn.textContent = 'Pausar';
+        btn.style.background = 'var(--warning)';
+        
+        timerInterval = setInterval(() => {
+          timeLeft--;
+          updateTimerDisplay();
+
+          if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            isRunning = false;
+            playBeep();
+            btn.textContent = 'Iniciar';
+            btn.style.background = 'var(--accent)';
+            
+            if (currentMode === 'work') {
+              pomodoroCount++;
+              localStorage.setItem('focusflow_pomos', pomodoroCount);
+              updateStats();
+              alert('🎉 ¡Excelente sesión de trabajo terminada! Tómate un descanso.');
+              setTimerMode('shortBreak');
+            } else {
+              alert('⏰ Descanso terminado. ¡A por el siguiente bloque!');
+              setTimerMode('work');
+            }
+          }
+        }, 1000);
+      }
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      isRunning = false;
+      timeLeft = timerModes[currentMode];
+      const btn = document.getElementById('timer-start-btn');
+      btn.textContent = 'Iniciar';
+      btn.style.background = 'var(--accent)';
+      updateTimerDisplay();
+    }
+
+    function setTimerMode(mode) {
+      currentMode = mode;
+      document.querySelectorAll('.timer-mode-btn').forEach(btn => btn.classList.remove('active'));
+      event?.target?.classList?.add('active') || 
+        document.querySelector(`[onclick="setTimerMode('${mode}')"]`).classList.add('active');
+      
+      resetTimer();
+    }
+
+    /* ==========================================================
+       INICIALIZACIÓN AL CARGAR LA PÁGINA
+    ========================================================== */
+    window.onload = () => {
+      renderCalendar();
+      renderTasks();
+      updateStats();
+      updateTimerDisplay();
+    };
+  </script>
 </body>
 </html>
