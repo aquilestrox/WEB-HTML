@@ -3,23 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apple Calendar - macOS Dark</title>
+    <title>Apple Calendar - Persistente</title>
     <style>
         :root {
             --bg-window: #1e1e1e;
-            --bg-sidebar: #171717;
+            --bg-sidebar: #161618;
             --bg-calendar: #1e1e20;
             --grid-line: #2b2b2e;
-            --text-main: #f0f0f0;
+            --text-main: #f5f5f7;
             --text-muted: #8e8e93;
             --accent-orange: #ff9f0a;
-            --accent-orange-bg: rgba(255, 159, 10, 0.28);
             --accent-blue: #0a84ff;
-            --accent-blue-bg: rgba(10, 132, 255, 0.28);
             --accent-pink: #ff375f;
             --accent-green: #30d158;
             --accent-yellow: #ffd60a;
-            --accent-gray-bg: rgba(142, 142, 147, 0.18);
+            --accent-brown: #a2845e;
+            --accent-purple: #bf5af2;
             --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
@@ -86,7 +85,6 @@
             color: var(--text-muted);
             font-size: 11px;
             font-weight: 600;
-            text-transform: capitalize;
             margin: 10px 6px 6px 6px;
         }
 
@@ -107,26 +105,32 @@
         }
 
         .calendar-item:hover {
-            background: rgba(255,255,255,0.05);
-        }
-
-        .calendar-item.selected {
-            background: rgba(255, 159, 10, 0.15);
+            background: rgba(255,255,255,0.06);
         }
 
         .custom-checkbox {
-            width: 13px;
-            height: 13px;
+            width: 14px;
+            height: 14px;
             border-radius: 3px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 9px;
+            font-size: 10px;
             color: #000;
             font-weight: bold;
+            transition: opacity 0.2s;
         }
 
-        /* Minicalendario Lateral */
+        .calendar-item.inactive .custom-checkbox {
+            background: transparent !important;
+            border: 1px solid var(--text-muted);
+            color: transparent;
+        }
+        .calendar-item.inactive span:last-child {
+            opacity: 0.5;
+        }
+
+        /* Minicalendario */
         .mini-calendar {
             background: rgba(0,0,0,0.25);
             padding: 10px;
@@ -153,11 +157,6 @@
             color: var(--text-muted);
         }
 
-        .mini-grid .day-name {
-            font-weight: 500;
-            padding-bottom: 4px;
-        }
-
         .mini-grid .day-num {
             height: 18px;
             display: flex;
@@ -167,18 +166,14 @@
             cursor: pointer;
             color: #ddd;
         }
-
-        .mini-grid .day-num.other-month {
-            color: #555;
-        }
-
         .mini-grid .day-num.today {
             background: #ff3b30;
             color: white;
             font-weight: bold;
         }
+        .mini-grid .day-num.other-month { color: #555; }
 
-        /* CONTENIDO PRINCIPAL */
+        /* VISTA PRINCIPAL */
         .main-view {
             flex: 1;
             display: flex;
@@ -187,7 +182,6 @@
             overflow: hidden;
         }
 
-        /* Top Bar */
         .top-bar {
             height: 52px;
             display: flex;
@@ -220,10 +214,8 @@
         .main-title {
             font-size: 19px;
             font-weight: 600;
-            letter-spacing: -0.3px;
         }
 
-        /* Segmented control (Día, Semana, Mes, Año) */
         .segmented-control {
             display: flex;
             background: rgba(255,255,255,0.08);
@@ -245,7 +237,6 @@
         .segment-btn.active {
             background: rgba(255,255,255,0.18);
             color: var(--text-main);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .top-right {
@@ -264,15 +255,45 @@
             cursor: pointer;
         }
 
-        /* CALENDARIO SEMANAL */
+        .btn-reset {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-muted);
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+        .btn-reset:hover { color: #ff5f56; border-color: #ff5f56; }
+
+        /* CALENDARIO BODY */
         .calendar-body {
             flex: 1;
             display: flex;
             flex-direction: column;
             overflow-y: auto;
+            position: relative;
         }
 
-        /* Fila Todo el día */
+        .days-header {
+            display: grid;
+            grid-template-columns: 60px repeat(7, 1fr);
+            border-bottom: 1px solid var(--grid-line);
+            text-align: center;
+            font-size: 12px;
+            padding: 7px 0;
+            background: var(--bg-calendar);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .day-header-cell {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Todo el día */
         .all-day-row {
             display: grid;
             grid-template-columns: 60px repeat(7, 1fr);
@@ -280,7 +301,7 @@
             min-height: 28px;
             align-items: center;
             font-size: 11px;
-            background: rgba(0,0,0,0.1);
+            background: rgba(0,0,0,0.15);
         }
 
         .all-day-label {
@@ -294,48 +315,12 @@
             border-left: 1px solid var(--grid-line);
             height: 100%;
             display: flex;
-            align-items: center;
-            padding: 2px 4px;
-            position: relative;
+            flex-direction: column;
+            gap: 2px;
+            padding: 3px 4px;
         }
 
-        .all-day-event {
-            font-size: 11px;
-            padding: 1px 6px;
-            border-radius: 3px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            width: 100%;
-        }
-        .all-day-event.blue {
-            background: rgba(10, 132, 255, 0.4);
-            border-left: 3px solid var(--accent-blue);
-        }
-        .all-day-event.gray {
-            color: var(--text-muted);
-        }
-
-        /* Encabezado de columnas de días */
-        .days-header {
-            display: grid;
-            grid-template-columns: 60px repeat(7, 1fr);
-            border-bottom: 1px solid var(--grid-line);
-            text-align: center;
-            font-size: 12px;
-            padding: 6px 0;
-            background: var(--bg-calendar);
-            position: sticky;
-            top: 0;
-            z-index: 5;
-        }
-
-        .day-header-cell {
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        /* Rejilla de Horas */
+        /* Grid de Horas */
         .time-grid-container {
             display: grid;
             grid-template-columns: 60px repeat(7, 1fr);
@@ -360,13 +345,14 @@
         .day-column {
             border-left: 1px solid var(--grid-line);
             position: relative;
-            height: calc(60px * 18); /* 18 horas de 6:00 a 24:00 */
+            height: calc(60px * 18);
+            cursor: pointer;
         }
 
-        /* Líneas horizontales de horas */
         .hour-row-line {
             height: 60px;
             border-bottom: 1px solid var(--grid-line);
+            box-sizing: border-box;
         }
 
         /* EVENTOS */
@@ -382,50 +368,53 @@
             flex-direction: column;
             gap: 2px;
             cursor: pointer;
-            transition: filter 0.15s;
-            border-left-width: 3px;
+            border-left-width: 3.5px;
             border-left-style: solid;
             line-height: 1.25;
+            z-index: 2;
+            transition: filter 0.15s, transform 0.1s;
         }
 
         .event-card:hover {
-            filter: brightness(1.15);
+            filter: brightness(1.2);
+            transform: scale(0.99);
         }
 
         .event-card .event-time {
             font-size: 10px;
-            opacity: 0.8;
+            opacity: 0.85;
             display: flex;
             align-items: center;
             gap: 3px;
         }
 
-        .event-orange {
-            background: var(--accent-orange-bg);
-            border-left-color: var(--accent-orange);
-            color: #ffd899;
+        .all-day-chip {
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-size: 10.5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+            border-left-width: 3px;
+            border-left-style: solid;
         }
 
-        .event-blue {
-            background: var(--accent-blue-bg);
-            border-left-color: var(--accent-blue);
-            color: #99ccff;
-        }
+        /* Colores de Categorías */
+        .cat-grabacion { background: rgba(255, 159, 10, 0.3); border-left-color: var(--accent-orange); color: #ffd899; }
+        .cat-edicion { background: rgba(10, 132, 255, 0.3); border-left-color: var(--accent-blue); color: #99ccff; }
+        .cat-ocio { background: rgba(162, 132, 94, 0.3); border-left-color: var(--accent-brown); color: #ded0c0; }
+        .cat-casa { background: rgba(10, 132, 255, 0.25); border-left-color: var(--accent-blue); color: #bde0fe; }
+        .cat-preparacion { background: rgba(255, 55, 95, 0.3); border-left-color: var(--accent-pink); color: #ffb3c1; }
+        .cat-completado { background: rgba(48, 209, 88, 0.3); border-left-color: var(--accent-green); color: #b7efc5; }
+        .cat-cumpleanos { background: rgba(191, 90, 242, 0.3); border-left-color: var(--accent-purple); color: #e8c5ff; }
 
-        .event-gray {
-            background: var(--accent-gray-bg);
-            border-left-color: #8e8e93;
-            color: #ccc;
-        }
-
-        /* Modal para agregar evento */
+        /* MODAL */
         .modal-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.6);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(4px);
             display: none;
             justify-content: center;
             align-items: center;
@@ -433,22 +422,22 @@
         }
 
         .modal {
-            background: #252528;
+            background: #252529;
             border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 10px;
-            width: 320px;
-            padding: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border-radius: 12px;
+            width: 330px;
+            padding: 18px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
         }
 
         .modal h3 {
-            margin-bottom: 12px;
+            margin-bottom: 14px;
             font-size: 14px;
             font-weight: 600;
         }
 
         .form-group {
-            margin-bottom: 10px;
+            margin-bottom: 11px;
             display: flex;
             flex-direction: column;
             gap: 4px;
@@ -459,37 +448,66 @@
             color: var(--text-muted);
         }
 
+        .form-row {
+            display: flex;
+            gap: 8px;
+        }
+
         .form-group input, .form-group select {
-            background: #19191b;
-            border: 1px solid rgba(255,255,255,0.1);
+            background: #18181a;
+            border: 1px solid rgba(255,255,255,0.12);
             color: white;
-            padding: 6px;
-            border-radius: 5px;
+            padding: 7px;
+            border-radius: 6px;
             outline: none;
+            font-size: 12.5px;
+            width: 100%;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 6px 0;
             font-size: 12px;
+            color: #ddd;
         }
 
         .modal-actions {
             display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-            margin-top: 14px;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
         }
+
+        .btn-delete {
+            background: transparent;
+            border: none;
+            color: #ff453a;
+            cursor: pointer;
+            font-size: 12px;
+            padding: 6px 8px;
+            border-radius: 5px;
+        }
+        .btn-delete:hover { background: rgba(255,69,58,0.15); }
 
         .btn-cancel {
             background: transparent;
             border: none;
             color: var(--text-muted);
             cursor: pointer;
-            padding: 5px 10px;
+            padding: 6px 10px;
+            font-size: 12px;
         }
 
         .btn-save {
             background: var(--accent-blue);
             color: white;
             border: none;
-            border-radius: 5px;
-            padding: 5px 12px;
+            border-radius: 6px;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 500;
             cursor: pointer;
         }
     </style>
@@ -500,60 +518,45 @@
     <!-- BARRA LATERAL -->
     <div class="sidebar">
         <div>
-            <!-- Botones ventana -->
             <div class="traffic-lights">
                 <span class="dot red"></span>
                 <span class="dot yellow"></span>
                 <span class="dot green"></span>
             </div>
 
-            <!-- iCloud Calendars -->
             <div class="section-title">iCloud</div>
-            <ul class="calendar-list">
-                <li class="calendar-item">
-                    <span class="custom-checkbox" style="background:#0a84ff;">✓</span>
+            <ul class="calendar-list" id="categories-icloud">
+                <li class="calendar-item" data-cat="casa">
+                    <span class="custom-checkbox" style="background:var(--accent-blue);">✓</span>
                     <span>Casa</span>
                 </li>
-                <li class="calendar-item">
-                    <span class="custom-checkbox" style="background:#ff375f;">✓</span>
+                <li class="calendar-item" data-cat="preparacion">
+                    <span class="custom-checkbox" style="background:var(--accent-pink);">✓</span>
                     <span>Preparación</span>
                 </li>
-                <li class="calendar-item selected">
-                    <span class="custom-checkbox" style="background:#ff9f0a;">✓</span>
+                <li class="calendar-item" data-cat="grabacion">
+                    <span class="custom-checkbox" style="background:var(--accent-orange);">✓</span>
                     <span>Grabación</span>
                 </li>
-                <li class="calendar-item">
-                    <span class="custom-checkbox" style="background:#30d158;">✓</span>
+                <li class="calendar-item" data-cat="completado">
+                    <span class="custom-checkbox" style="background:var(--accent-green);">✓</span>
                     <span>Completado</span>
                 </li>
-                <li class="calendar-item">
-                    <span class="custom-checkbox" style="background:#ffd60a;">✓</span>
+                <li class="calendar-item" data-cat="edicion">
+                    <span class="custom-checkbox" style="background:var(--accent-yellow);">✓</span>
                     <span>Edición</span>
                 </li>
-                <li class="calendar-item">
-                    <span class="custom-checkbox" style="background:#8d6e63;">✓</span>
+                <li class="calendar-item" data-cat="ocio">
+                    <span class="custom-checkbox" style="background:var(--accent-brown);">✓</span>
                     <span>Ocio</span>
                 </li>
             </ul>
 
-            <!-- Otros Calendars -->
             <div class="section-title">Otros</div>
-            <ul class="calendar-list">
-                <li class="calendar-item">
-                    <span class="custom-checkbox" style="background:#0a84ff;">✓</span>
-                    <span>Recordatorios</span>
-                </li>
-                <li class="calendar-item">
-                    <span class="custom-checkbox" style="background:#bf5af2;">✓</span>
+            <ul class="calendar-list" id="categories-otros">
+                <li class="calendar-item" data-cat="cumpleanos">
+                    <span class="custom-checkbox" style="background:var(--accent-purple);">✓</span>
                     <span>Cumpleaños</span>
-                </li>
-                <li class="calendar-item">
-                    <span class="custom-checkbox" style="background:#af52de;">✓</span>
-                    <span>Festivos en España</span>
-                </li>
-                <li class="calendar-item">
-                    <span class="custom-checkbox" style="background:#ff9f0a;">✓</span>
-                    <span>Sugerencias de Siri</span>
                 </li>
             </ul>
         </div>
@@ -566,15 +569,14 @@
                 <span>&gt;</span>
             </div>
             <div class="mini-grid">
-                <div class="day-name">lun</div>
-                <div class="day-name">mar</div>
-                <div class="day-name">mié</div>
-                <div class="day-name">jue</div>
-                <div class="day-name">vie</div>
-                <div class="day-name">sáb</div>
-                <div class="day-name">dom</div>
+                <span style="color:var(--text-muted)">l</span>
+                <span style="color:var(--text-muted)">m</span>
+                <span style="color:var(--text-muted)">x</span>
+                <span style="color:var(--text-muted)">j</span>
+                <span style="color:var(--text-muted)">v</span>
+                <span style="color:var(--text-muted)">s</span>
+                <span style="color:var(--text-muted)">d</span>
 
-                <!-- Días -->
                 <div class="day-num other-month">31</div>
                 <div class="day-num">1</div>
                 <div class="day-num">2</div>
@@ -582,23 +584,15 @@
                 <div class="day-num">4</div>
                 <div class="day-num">5</div>
                 <div class="day-num">6</div>
-                <div class="day-num">7</div>
-                <div class="day-num">8</div>
-                <div class="day-num">9</div>
-                <div class="day-num">10</div>
-                <div class="day-num">11</div>
-                <div class="day-num">12</div>
-                <div class="day-num">13</div>
             </div>
         </div>
     </div>
 
     <!-- VISTA PRINCIPAL -->
     <div class="main-view">
-        <!-- Barra Superior -->
         <div class="top-bar">
             <div class="top-left">
-                <button class="btn-icon" id="open-modal-btn">+</button>
+                <button class="btn-icon" id="open-modal-btn" title="Nuevo evento">+</button>
                 <div class="segmented-control">
                     <button class="segment-btn">Día</button>
                     <button class="segment-btn active">Semana</button>
@@ -609,6 +603,7 @@
             </div>
 
             <div class="top-right">
+                <button class="btn-reset" id="btn-reset" title="Restablecer eventos por defecto">↺ Restaurar</button>
                 <button class="btn-icon">&lt;</button>
                 <button class="btn-today">Hoy</button>
                 <button class="btn-icon">&gt;</button>
@@ -616,9 +611,8 @@
             </div>
         </div>
 
-        <!-- Calendario Semanal con Scroll -->
         <div class="calendar-body">
-            <!-- Encabezados de días -->
+            <!-- Encabezado de columnas -->
             <div class="days-header">
                 <div></div>
                 <div class="day-header-cell">mié 26</div>
@@ -633,25 +627,18 @@
             <!-- Fila Todo el día -->
             <div class="all-day-row">
                 <div class="all-day-label">todo el día</div>
-                <div class="all-day-cell">
-                    <span class="all-day-event gray">🏖️ playa</span>
-                </div>
-                <div class="all-day-cell"></div>
-                <div class="all-day-cell"></div>
-                <div class="all-day-cell"></div>
-                <div class="all-day-cell"></div>
-                <div class="all-day-cell">
-                    <span class="all-day-event blue">🎂 Papa cumple años</span>
-                </div>
-                <div class="all-day-cell"></div>
+                <div class="all-day-cell" data-allday-day="0"></div>
+                <div class="all-day-cell" data-allday-day="1"></div>
+                <div class="all-day-cell" data-allday-day="2"></div>
+                <div class="all-day-cell" data-allday-day="3"></div>
+                <div class="all-day-cell" data-allday-day="4"></div>
+                <div class="all-day-cell" data-allday-day="5"></div>
+                <div class="all-day-cell" data-allday-day="6"></div>
             </div>
 
-            <!-- Rejilla de Horas y Eventos -->
-            <div class="time-grid-container" id="time-grid">
-                <!-- Columna Etiquetas de Horas -->
+            <!-- Rejilla de Horas -->
+            <div class="time-grid-container">
                 <div class="time-labels" id="hour-labels"></div>
-
-                <!-- Columnas de días (0 = mié 26, 1 = jue 27, ..., 6 = mar 1) -->
                 <div class="day-column" data-day="0"></div>
                 <div class="day-column" data-day="1"></div>
                 <div class="day-column" data-day="2"></div>
@@ -664,14 +651,17 @@
     </div>
 </div>
 
-<!-- MODAL PARA AGREGAR EVENTO -->
+<!-- MODAL PARA CREAR / EDITAR / ELIMINAR EVENTO -->
 <div class="modal-overlay" id="modal">
     <div class="modal">
-        <h3>Nuevo Evento</h3>
+        <h3 id="modal-title">Detalles del Evento</h3>
+        <input type="hidden" id="event-id">
+        
         <div class="form-group">
             <label>Título</label>
-            <input type="text" id="event-title" placeholder="Ej. Grabación de vídeo">
+            <input type="text" id="event-title" placeholder="Añadir título...">
         </div>
+
         <div class="form-group">
             <label>Día</label>
             <select id="event-day">
@@ -684,47 +674,86 @@
                 <option value="6">mar 1</option>
             </select>
         </div>
-        <div class="form-group">
-            <label>Hora Inicio (ej. 10.75 para 10:45)</label>
-            <input type="number" id="event-start" min="6" max="23" step="0.25" value="10">
+
+        <div class="checkbox-row">
+            <input type="checkbox" id="event-allday">
+            <label for="event-allday">Todo el día</label>
         </div>
-        <div class="form-group">
-            <label>Hora Fin</label>
-            <input type="number" id="event-end" min="7" max="24" step="0.25" value="15">
+
+        <div class="form-row" id="time-inputs-container">
+            <div class="form-group" style="flex:1;">
+                <label>Inicio</label>
+                <input type="time" id="event-start-time" value="10:00">
+            </div>
+            <div class="form-group" style="flex:1;">
+                <label>Fin</label>
+                <input type="time" id="event-end-time" value="12:00">
+            </div>
         </div>
+
         <div class="form-group">
-            <label>Color / Categoría</label>
-            <select id="event-color">
-                <option value="event-orange">Grabación (Naranja)</option>
-                <option value="event-blue">Edición (Azul)</option>
-                <option value="event-gray">General (Gris)</option>
+            <label>Calendario / Categoría</label>
+            <select id="event-category">
+                <option value="grabacion">Grabación (Naranja)</option>
+                <option value="edicion">Edición (Azul)</option>
+                <option value="ocio">Ocio (Marrón/Gris)</option>
+                <option value="casa">Casa (Azul)</option>
+                <option value="preparacion">Preparación (Rosa)</option>
+                <option value="completado">Completado (Verde)</option>
+                <option value="cumpleanos">Cumpleaños (Morado)</option>
             </select>
         </div>
+
         <div class="modal-actions">
-            <button class="btn-cancel" id="cancel-btn">Cancelar</button>
-            <button class="btn-save" id="save-btn">Guardar</button>
+            <button class="btn-delete" id="delete-btn" style="visibility:hidden;">Eliminar</button>
+            <div>
+                <button class="btn-cancel" id="cancel-btn">Cancelar</button>
+                <button class="btn-save" id="save-btn">Guardar</button>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    // 1. Configuración de Horas (6:00 a 23:00)
     const START_HOUR = 6;
     const END_HOUR = 23;
-    const HOUR_HEIGHT = 60; // 60px por hora (1px por minuto)
+    const HOUR_HEIGHT = 60; // 60px por hora (1px = 1 minuto)
 
-    // Renderizar líneas y horas
+    // Claves de LocalStorage
+    const STORAGE_EVENTS_KEY = 'apple_cal_events_v2';
+    const STORAGE_CATS_KEY = 'apple_cal_cats_v2';
+
+    // Datos por defecto idénticos a la foto
+    const DEFAULT_EVENTS = [
+        { id: '1', day: 1, title: 'Grabación mobs bebés G2', startTime: '10:45', endTime: '15:00', category: 'grabacion', isAllDay: false },
+        { id: '2', day: 1, title: 'Edición y creación de la intro video base perfecta', startTime: '16:00', endTime: '21:00', category: 'edicion', isAllDay: false },
+        { id: '3', day: 2, title: 'piscina', startTime: '10:00', endTime: '15:45', category: 'ocio', isAllDay: false },
+        { id: '4', day: 2, title: 'Edición y creación de la intro video base perfecta', startTime: '15:45', endTime: '17:30', category: 'edicion', isAllDay: false },
+        { id: '5', day: 3, title: 'Edición mobs bebés G2 y G3', startTime: '10:00', endTime: '15:00', category: 'edicion', isAllDay: false },
+        { id: '6', day: 3, title: 'Miniaturas del vídeo Base Perfecta', startTime: '16:00', endTime: '21:00', category: 'edicion', isAllDay: false },
+        { id: '7', day: 4, title: 'Grabación mobs bebés G5', startTime: '10:05', endTime: '13:45', category: 'grabacion', isAllDay: false },
+        { id: '8', day: 4, title: 'Grabación mobs bebés G6', startTime: '16:00', endTime: '20:45', category: 'grabacion', isAllDay: false },
+        { id: '9', day: 0, title: 'playa', startTime: '00:00', endTime: '23:59', category: 'ocio', isAllDay: true },
+        { id: '10', day: 5, title: 'Papa cumple años', startTime: '00:00', endTime: '23:59', category: 'cumpleanos', isAllDay: true }
+    ];
+
+    // Estados
+    let events = [];
+    let activeCategories = {
+        casa: true, preparacion: true, grabacion: true,
+        completado: true, edicion: true, ocio: true, cumpleanos: true
+    };
+
+    // 1. DIBUJAR LÍNEAS HORARIAS
     const hourLabelsContainer = document.getElementById('hour-labels');
     const dayColumns = document.querySelectorAll('.day-column');
 
     for (let h = START_HOUR; h <= END_HOUR; h++) {
-        // Etiquetas
         const label = document.createElement('div');
         label.className = 'time-label';
         label.textContent = `${h}:00`;
         hourLabelsContainer.appendChild(label);
 
-        // Líneas en columnas
         dayColumns.forEach(col => {
             const line = document.createElement('div');
             line.className = 'hour-row-line';
@@ -732,140 +761,236 @@
         });
     }
 
-    // 2. Eventos iniciales (iguales a los de tu captura de pantalla)
-    const initialEvents = [
-        {
-            day: 1, // jue 27
-            title: 'Grabación mobs bebés G2',
-            start: 10.75, // 10:45
-            end: 15.0,
-            timeLabel: '10:45 - 15:00',
-            type: 'event-orange'
-        },
-        {
-            day: 1, // jue 27
-            title: 'Edición y creación de la intro video base perfecta',
-            start: 16.0,
-            end: 21.0,
-            timeLabel: '16:00 - 21:00',
-            type: 'event-blue'
-        },
-        {
-            day: 2, // vie 28
-            title: 'piscina',
-            start: 10.0,
-            end: 15.75, // 15:45
-            timeLabel: '10:00 - 15:45',
-            type: 'event-gray'
-        },
-        {
-            day: 2, // vie 28
-            title: 'Edición y creación de la intro video base perfecta',
-            start: 15.75,
-            end: 17.5,
-            timeLabel: '15:45 - 17:30',
-            type: 'event-blue'
-        },
-        {
-            day: 3, // sáb 29
-            title: 'Edición mobs bebés G2 y G3',
-            start: 10.0,
-            end: 15.0,
-            timeLabel: '10:00 - 15:00',
-            type: 'event-blue'
-        },
-        {
-            day: 3, // sáb 29
-            title: 'Miniaturas del vídeo Base Perfecta',
-            start: 16.0,
-            end: 21.0,
-            timeLabel: '16:00 - 21:00',
-            type: 'event-blue'
-        },
-        {
-            day: 4, // dom 30
-            title: 'Grabación mobs bebés G5',
-            start: 10.08,
-            end: 13.75,
-            timeLabel: '10:05 - 13:45',
-            type: 'event-orange'
-        },
-        {
-            day: 4, // dom 30
-            title: 'Grabación mobs bebés G6',
-            start: 16.0,
-            end: 20.75,
-            timeLabel: '16:00 - 20:45',
-            type: 'event-orange'
-        }
-    ];
-
-    function renderEvent(ev) {
-        const targetColumn = document.querySelector(`.day-column[data-day="${ev.day}"]`);
-        if (!targetColumn) return;
-
-        const eventEl = document.createElement('div');
-        eventEl.className = `event-card ${ev.type}`;
-
-        const topPosition = (ev.start - START_HOUR) * HOUR_HEIGHT;
-        const height = (ev.end - ev.start) * HOUR_HEIGHT;
-
-        eventEl.style.top = `${topPosition}px`;
-        eventEl.style.height = `${height}px`;
-
-        eventEl.innerHTML = `
-            <strong>${ev.title}</strong>
-            <span class="event-time">🕒 ${ev.timeLabel}</span>
-        `;
-
-        targetColumn.appendChild(eventEl);
+    // 2. CONVERSIÓN DE HORAS
+    function timeStringToDecimal(timeStr) {
+        if (!timeStr) return 0;
+        const [h, m] = timeStr.split(':').map(Number);
+        return h + (m / 60);
     }
 
-    // Renderizar eventos iniciales
-    initialEvents.forEach(renderEvent);
+    // 3. PERSISTENCIA EN LOCALSTORAGE
+    function loadSavedData() {
+        const savedEvents = localStorage.getItem(STORAGE_EVENTS_KEY);
+        const savedCats = localStorage.getItem(STORAGE_CATS_KEY);
 
-    // 3. Control del Modal para Agregar Eventos
+        events = savedEvents ? JSON.parse(savedEvents) : [...DEFAULT_EVENTS];
+        if (savedCats) activeCategories = JSON.parse(savedCats);
+
+        updateSidebarUI();
+        renderAllEvents();
+    }
+
+    function saveAll() {
+        localStorage.setItem(STORAGE_EVENTS_KEY, JSON.stringify(events));
+        localStorage.setItem(STORAGE_CATS_KEY, JSON.stringify(activeCategories));
+    }
+
+    // 4. RENDERIZADO DE EVENTOS
+    function renderAllEvents() {
+        // Limpiar eventos existentes
+        document.querySelectorAll('.event-card').forEach(el => el.remove());
+        document.querySelectorAll('.all-day-cell').forEach(cell => cell.innerHTML = '');
+
+        events.forEach(ev => {
+            // Filtrar si la categoría está oculta
+            if (!activeCategories[ev.category]) return;
+
+            if (ev.isAllDay) {
+                // Evento de todo el día
+                const cell = document.querySelector(`.all-day-cell[data-allday-day="${ev.day}"]`);
+                if (cell) {
+                    const chip = document.createElement('div');
+                    chip.className = `all-day-chip cat-${ev.category}`;
+                    chip.textContent = ev.title;
+                    chip.onclick = (e) => { e.stopPropagation(); openEditModal(ev); };
+                    cell.appendChild(chip);
+                }
+            } else {
+                // Evento con horas normales
+                const col = document.querySelector(`.day-column[data-day="${ev.day}"]`);
+                if (!col) return;
+
+                const startDec = timeStringToDecimal(ev.startTime);
+                const endDec = timeStringToDecimal(ev.endTime);
+
+                const topPos = Math.max(0, (startDec - START_HOUR) * HOUR_HEIGHT);
+                const height = Math.max(22, (endDec - startDec) * HOUR_HEIGHT);
+
+                const card = document.createElement('div');
+                card.className = `event-card cat-${ev.category}`;
+                card.style.top = `${topPos}px`;
+                card.style.height = `${height}px`;
+
+                card.innerHTML = `
+                    <strong>${ev.title}</strong>
+                    <span class="event-time">🕒 ${ev.startTime} - ${ev.endTime}</span>
+                `;
+
+                card.onclick = (e) => {
+                    e.stopPropagation();
+                    openEditModal(ev);
+                };
+
+                col.appendChild(card);
+            }
+        });
+    }
+
+    // 5. MODAL: CREAR / EDITAR / BORRAR
     const modal = document.getElementById('modal');
-    const openModalBtn = document.getElementById('open-modal-btn');
-    const cancelBtn = document.getElementById('cancel-btn');
-    const saveBtn = document.getElementById('save-btn');
+    const modalTitle = document.getElementById('modal-title');
+    const eventIdInput = document.getElementById('event-id');
+    const eventTitleInput = document.getElementById('event-title');
+    const eventDayInput = document.getElementById('event-day');
+    const eventAllDayInput = document.getElementById('event-allday');
+    const eventStartTimeInput = document.getElementById('event-start-time');
+    const eventEndTimeInput = document.getElementById('event-end-time');
+    const eventCatInput = document.getElementById('event-category');
+    const deleteBtn = document.getElementById('delete-btn');
+    const timeInputsContainer = document.getElementById('time-inputs-container');
 
-    openModalBtn.addEventListener('click', () => modal.style.display = 'flex');
-    cancelBtn.addEventListener('click', () => modal.style.display = 'none');
+    // Toggle All-Day view
+    eventAllDayInput.addEventListener('change', () => {
+        timeInputsContainer.style.display = eventAllDayInput.checked ? 'none' : 'flex';
+    });
 
-    saveBtn.addEventListener('click', () => {
-        const title = document.getElementById('event-title').value.trim();
-        const day = parseInt(document.getElementById('event-day').value);
-        const start = parseFloat(document.getElementById('event-start').value);
-        const end = parseFloat(document.getElementById('event-end').value);
-        const type = document.getElementById('event-color').value;
+    function openCreateModal(day = 0, hour = 10) {
+        modalTitle.textContent = "Nuevo Evento";
+        eventIdInput.value = "";
+        eventTitleInput.value = "";
+        eventDayInput.value = day;
+        eventAllDayInput.checked = false;
+        timeInputsContainer.style.display = 'flex';
+        
+        const hStr = String(hour).padStart(2, '0');
+        const hEndStr = String(Math.min(23, hour + 2)).padStart(2, '0');
+        eventStartTimeInput.value = `${hStr}:00`;
+        eventEndTimeInput.value = `${hEndStr}:00`;
+        eventCatInput.value = "grabacion";
 
+        deleteBtn.style.visibility = 'hidden';
+        modal.style.display = 'flex';
+        eventTitleInput.focus();
+    }
+
+    function openEditModal(ev) {
+        modalTitle.textContent = "Editar Evento";
+        eventIdInput.value = ev.id;
+        eventTitleInput.value = ev.title;
+        eventDayInput.value = ev.day;
+        eventAllDayInput.checked = !!ev.isAllDay;
+        timeInputsContainer.style.display = ev.isAllDay ? 'none' : 'flex';
+
+        eventStartTimeInput.value = ev.startTime || "10:00";
+        eventEndTimeInput.value = ev.endTime || "12:00";
+        eventCatInput.value = ev.category;
+
+        deleteBtn.style.visibility = 'visible';
+        modal.style.display = 'flex';
+    }
+
+    // Botón Cancelar y Guardar
+    document.getElementById('cancel-btn').onclick = () => modal.style.display = 'none';
+
+    document.getElementById('save-btn').onclick = () => {
+        const title = eventTitleInput.value.trim();
         if (!title) {
-            alert('Por favor añade un título');
+            alert("Por favor escribe un título para el evento.");
             return;
         }
 
-        renderEvent({
-            day,
+        const id = eventIdInput.value || Date.now().toString();
+        const newEvent = {
+            id,
             title,
-            start,
-            end,
-            timeLabel: `${start}:00 - ${end}:00`,
-            type
-        });
+            day: parseInt(eventDayInput.value),
+            isAllDay: eventAllDayInput.checked,
+            startTime: eventAllDayInput.checked ? "00:00" : eventStartTimeInput.value,
+            endTime: eventAllDayInput.checked ? "23:59" : eventEndTimeInput.value,
+            category: eventCatInput.value
+        };
 
+        const existingIndex = events.findIndex(e => e.id === id);
+        if (existingIndex > -1) {
+            events[existingIndex] = newEvent; // Actualizar
+        } else {
+            events.push(newEvent); // Crear nuevo
+        }
+
+        saveAll();
+        renderAllEvents();
         modal.style.display = 'none';
-        document.getElementById('event-title').value = '';
+    };
+
+    // Botón Eliminar
+    deleteBtn.onclick = () => {
+        const id = eventIdInput.value;
+        events = events.filter(e => e.id !== id);
+        saveAll();
+        renderAllEvents();
+        modal.style.display = 'none';
+    };
+
+    // Botón "+" superior
+    document.getElementById('open-modal-btn').onclick = () => openCreateModal();
+
+    // Clic en columnas para crear evento en esa hora exacta
+    dayColumns.forEach(col => {
+        col.addEventListener('click', (e) => {
+            const rect = col.getBoundingClientRect();
+            const offsetY = e.clientY - rect.top;
+            const clickedHour = Math.floor(START_HOUR + (offsetY / HOUR_HEIGHT));
+            const day = parseInt(col.dataset.day);
+            openCreateModal(day, clickedHour);
+        });
     });
 
-    // 4. Segmented Control interactivo (Día, Semana, Mes, Año)
-    const segmentButtons = document.querySelectorAll('.segment-btn');
-    segmentButtons.forEach(btn => {
+    // 6. TOGGLE DE CALENDARIOS EN LA BARRA LATERAL
+    function updateSidebarUI() {
+        document.querySelectorAll('.calendar-item').forEach(item => {
+            const cat = item.dataset.cat;
+            if (activeCategories[cat] === false) {
+                item.classList.add('inactive');
+            } else {
+                item.classList.remove('inactive');
+            }
+        });
+    }
+
+    document.querySelectorAll('.calendar-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const cat = item.dataset.cat;
+            activeCategories[cat] = !activeCategories[cat];
+            updateSidebarUI();
+            saveAll();
+            renderAllEvents();
+        });
+    });
+
+    // 7. BOTÓN RESTAURAR (Por si quieres volver a los datos originales)
+    document.getElementById('btn-reset').onclick = () => {
+        if (confirm('¿Restaurar los eventos originales del calendario?')) {
+            events = [...DEFAULT_EVENTS];
+            activeCategories = {
+                casa: true, preparacion: true, grabacion: true,
+                completado: true, edicion: true, ocio: true, cumpleanos: true
+            };
+            saveAll();
+            updateSidebarUI();
+            renderAllEvents();
+        }
+    };
+
+    // 8. Vistas Día/Semana/Mes/Año
+    document.querySelectorAll('.segment-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            segmentButtons.forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.segment-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
         });
     });
+
+    // Inicializar cargando datos de LocalStorage
+    loadSavedData();
 </script>
 </body>
 </html>
