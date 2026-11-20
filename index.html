@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Short Studio — Guion a MP4 9:16 (Estilo Boston / RicksClips)</title>
+  <title>Short 2.5D Engine — Mundo 3D Real + Cámara Dinámica (Sin APIs)</title>
   <style>
     :root {
-      --bg: #0d1017;
-      --panel: #151a24;
-      --panel-alt: #1d2332;
-      --border: #2c3549;
+      --bg: #0b0e14;
+      --panel: #141923;
+      --panel-alt: #1c2230;
+      --border: #2b3448;
       --text: #eef1f7;
-      --muted: #96a3bb;
+      --muted: #93a1b9;
       --primary: #4f7cff;
-      --accent: #efae5b;
-      --export: #e54865;
+      --accent: #00c2a8;
+      --export: #ff4d6d;
       --radius: 10px;
     }
 
@@ -44,7 +44,7 @@
 
     .badge {
       background: var(--accent);
-      color: #1f160c;
+      color: #06211c;
       font-size: 0.72rem;
       font-weight: 800;
       padding: 2px 8px;
@@ -62,7 +62,7 @@
 
     .workspace {
       display: grid;
-      grid-template-columns: minmax(360px, 1.15fr) minmax(320px, 0.85fr);
+      grid-template-columns: minmax(360px, 1.1fr) minmax(320px, 0.9fr);
       gap: 18px;
       padding: 18px;
       max-width: 1520px;
@@ -124,19 +124,11 @@
       cursor: pointer;
     }
 
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
     .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 10px; }
-
-    .toggles-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      margin: 10px 0;
-    }
-
+    .toggles-grid { display: flex; flex-wrap: wrap; gap: 16px; margin: 10px 0; }
     .preset-row, .actions-row { display: flex; gap: 8px; align-items: center; }
     .preset-row { flex: 1; min-width: 240px; }
-    .actions-row { margin-top: 12px; }
+    .actions-row { margin-top: 12px; gap: 10px; }
 
     button, .download-btn {
       border: none;
@@ -162,7 +154,7 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
-      max-height: 300px;
+      max-height: 360px;
       overflow-y: auto;
     }
 
@@ -176,32 +168,6 @@
 
     .scene-pill strong { color: var(--accent); }
     .scene-pill small { display: block; color: var(--muted); margin-top: 2px; }
-
-    .qa-box {
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 0.78rem;
-      background: #0b0e14;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px;
-      color: #b9c7e2;
-      white-space: pre-wrap;
-    }
-
-    .contact-sheet {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 6px;
-      margin-top: 10px;
-    }
-
-    .contact-sheet img {
-      width: 100%;
-      aspect-ratio: 9 / 16;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      display: block;
-    }
 
     .preview-card { position: sticky; top: 16px; }
 
@@ -267,41 +233,39 @@
 <body>
   <header class="topbar">
     <div>
-      <h1>Short Studio 2.5D <span class="badge">GUION AUTOMÁTICO · MÚSICA + SFX</span></h1>
-      <p class="subtitle">Basado en tu pipeline del ZIP: escribe el guion y la web crea escenas, rótulos, cámara, audio y QA automáticamente</p>
+      <h1>Short 2.5D Engine <span class="badge">MUNDO 3D REAL + CÁMARA MÓVIL</span></h1>
+      <p class="subtitle">Cada historia genera su propio mundo 3D, cámara orbitando/volando, música + SFX y MP4 9:16</p>
     </div>
     <div id="codecSupportBadge" class="status-pill">Iniciando...</div>
   </header>
 
   <main class="workspace">
-    <!-- PANEL IZQUIERDO: SOLO EL GUION Y OPCIONES GLOBALES -->
+    <!-- PANEL IZQUIERDO -->
     <section class="panel controls-panel">
       <div class="card">
         <div class="card-header">
-          <h2>1. Escribe o pega tu Guion</h2>
+          <h2>1. Tu Guion o Idea</h2>
           <div class="preset-row">
             <select id="presetSelect">
-              <option value="boston_melaza">1. La inundación de melaza de Boston (GUION.md)</option>
-              <option value="torre_eiffel">2. El hombre que vendió la Torre Eiffel</option>
-              <option value="jarron">3. El Jarrón Antiguo de los Dragones</option>
-              <option value="emues">4. La guerra contra los emúes (1932)</option>
-              <option value="pepsi">5. El día que Pepsi tuvo una flota militar</option>
-              <option value="banco_londres">6. El túnel bajo el Banco de Inglaterra</option>
-              <option value="calendario">7. Los 11 días que desaparecieron (1752)</option>
-              <option value="troya">8. El Caballo de Troya</option>
+              <option value="boston">Boston 1919: La inundación de melaza</option>
+              <option value="hacker">Un hacker robó un banco con una tostadora</option>
+              <option value="espacio">El astronauta que quedó atrapado en órbita</option>
+              <option value="torre_eiffel">El estafador que vendió la Torre Eiffel</option>
+              <option value="pepsi">El día que Pepsi tuvo submarinos militares</option>
+              <option value="faraon">El secreto enterrado bajo la pirámide</option>
             </select>
             <button id="loadPresetBtn" type="button" class="btn-secondary">Cargar</button>
           </div>
         </div>
 
-        <textarea id="storyInput" rows="9" placeholder="Escribe o pega tu guion aquí (cada línea o frase será dirigida automáticamente como parte del Short, sin tener que editar plano por plano)..."></textarea>
+        <textarea id="storyInput" rows="7" placeholder="Escribe cualquier historia nueva aquí (aunque sea corta). Cada historia genera automáticamente nuevos escenarios 3D, colores, personajes y movimientos de cámara..."></textarea>
 
         <div class="grid-3" style="margin-top:10px;">
           <label>
             Resolución
             <select id="resolutionSelect">
-              <option value="1080x1920" selected>1080×1920 (Full HD)</option>
-              <option value="720x1280">720×1280 (Rápido)</option>
+              <option value="720x1280" selected>720×1280 (Rápido)</option>
+              <option value="1080x1920">1080×1920 (Full HD)</option>
             </select>
           </label>
           <label>
@@ -312,10 +276,10 @@
             </select>
           </label>
           <label>
-            Subtítulos Inferiores
+            Subtítulos
             <select id="subtitleModeSelect">
-              <option value="off">Desactivados (solo rótulo superior)</option>
               <option value="on" selected>Activados al ritmo</option>
+              <option value="off">Solo rótulo superior</option>
             </select>
           </label>
         </div>
@@ -323,37 +287,29 @@
         <div class="toggles-grid">
           <label class="checkbox-label">
             <input type="checkbox" id="musicToggle" checked />
-            Banda sonora atmosférica (estilo audio_mix.py)
+            Música cinematográfica
           </label>
           <label class="checkbox-label">
             <input type="checkbox" id="sfxToggle" checked />
-            Efectos de sonido (grietas, remaches, oleada, impactos)
+            Efectos de sonido (SFX)
           </label>
         </div>
 
         <div class="actions-row">
-          <button id="buildShortBtn" type="button" class="btn-primary" style="width:100%">⚡ Crear Short Automáticamente desde el Guion</button>
+          <button id="buildShortBtn" type="button" class="btn-primary" style="flex:1">⚡ Crear Short 3D desde mi Historia</button>
+          <button id="remixVisualsBtn" type="button" class="btn-secondary" title="Cambia semilla visual si quieres otra estética">🎲 Variar Visuales</button>
         </div>
       </div>
 
       <div class="card">
         <div class="card-header">
-          <h2>2. Escaleta Generada Automáticamente (<span id="sceneCount">0</span> bloques)</h2>
+          <h2>2. Escenas Generadas Automáticamente (<span id="sceneCount">0</span>)</h2>
         </div>
         <div id="scenesSummary" class="scenes-summary"></div>
       </div>
-
-      <div class="card">
-        <div class="card-header">
-          <h2>3. Control de Calidad (QA tipo short_qa.py)</h2>
-          <button id="genSheetBtn" type="button" class="btn-secondary">Generar hoja de 9 cuadros</button>
-        </div>
-        <div id="qaReportBox" class="qa-box">Esperando generación...</div>
-        <div id="contactSheetGrid" class="contact-sheet hidden"></div>
-      </div>
     </section>
 
-    <!-- PANEL DERECHO: PREVIEW 9:16 + MP4 -->
+    <!-- PANEL DERECHO -->
     <section class="panel preview-panel">
       <div class="card preview-card">
         <div class="phone-frame">
@@ -383,7 +339,7 @@
         <div id="exportResultWrap" class="export-result hidden">
           <h3>¡Short MP4 listo!</h3>
           <video id="exportedVideoPreview" controls playsinline></video>
-          <a id="downloadMp4Link" class="btn-primary download-btn" download="short-animado.mp4">⬇ Descargar MP4</a>
+          <a id="downloadMp4Link" class="btn-primary download-btn" download="short-25d.mp4">⬇ Descargar MP4</a>
         </div>
       </div>
     </section>
@@ -418,9 +374,9 @@
     }
 
     // =========================================================================
-    // 1. MOTOR DE AUDIO PORTADO DE audio_mix.py (SOLO MÚSICA + SFX)
+    // 1. AUDIO: SOLO MÚSICA + SFX DINÁMICOS (SIN VOZ)
     // =========================================================================
-    window.ZipAudioEngine = (() => {
+    window.AudioEngine = (() => {
       const SR = 48000;
       let liveCtx = null;
 
@@ -433,134 +389,110 @@
         return liveCtx;
       }
 
-      // Genera la pista exacta inspirada en audio_mix.py en OfflineAudioContext
-      async function renderAudioMix({ scenes, totalDuration, enableMusic, enableSFX }) {
+      async function renderAudioMix({ scenes, totalDuration, enableMusic, enableSFX, seedVal }) {
         const N = Math.ceil(totalDuration * SR);
         const buf = new AudioBuffer({ numberOfChannels: 2, length: N, sampleRate: SR });
-        const mix = new Float64Array(N);
         const music = new Float64Array(N);
         const sfx = new Float64Array(N);
 
-        // Semilla determinista
-        let seed = 22;
+        let seed = (seedVal || 42) >>> 0;
         const rand = () => {
           seed = (seed * 1664525 + 1013904223) >>> 0;
           return (seed / 4294967296) * 2 - 1;
         };
 
         if (enableMusic) {
-          // 1. Drone atmosférico en acordes menores (Am - G - F# - Em - G - Am)
+          const rootPool = [55, 65.41, 49, 73.42];
+          const root = rootPool[seedVal % rootPool.length];
           const chords = [
-            [55, 82.4, 110],
-            [49, 73.4, 98],
-            [46.2, 69.3, 92.5],
-            [41.2, 61.7, 82.4],
-            [49, 73.4, 98],
-            [55, 82.4, 110]
+            [root, root * 1.5, root * 2],
+            [root * 0.89, root * 1.33, root * 1.78],
+            [root * 0.84, root * 1.26, root * 1.68],
+            [root * 0.75, root * 1.12, root * 1.5]
           ];
           const segDur = totalDuration / chords.length;
           chords.forEach((notes, cIdx) => {
-            const a = cIdx * segDur;
-            const b = (cIdx + 1) * segDur;
-            const i0 = Math.floor(a * SR);
-            const i1 = Math.min(N, Math.floor(b * SR));
+            const i0 = Math.floor(cIdx * segDur * SR);
+            const i1 = Math.min(N, Math.floor((cIdx + 1) * segDur * SR));
             for (let i = i0; i < i1; i++) {
               const tt = (i - i0) / SR;
-              const env = Math.min(1, tt / 1.5) * Math.min(1, (b - a - tt) / 1.2);
-              let val = 0;
-              for (let j = 0; j < notes.length; j++) {
-                const f = notes[j];
-                val += 0.045 * env * Math.sin(2 * Math.PI * f * tt + j * 0.5);
-                val += 0.015 * env * Math.sin(2 * Math.PI * f * 2.01 * tt + j);
-              }
-              music[i] += val;
+              const env = Math.min(1, tt / 1.2) * Math.min(1, (segDur - tt) / 1.0);
+              let v = 0;
+              notes.forEach((f, j) => {
+                v += 0.045 * env * Math.sin(2 * Math.PI * f * tt + j * 0.4);
+                v += 0.014 * env * Math.sin(2 * Math.PI * f * 2.01 * tt);
+              });
+              music[i] += v;
             }
           });
 
-          // 2. Pulso grave suave cada 0.75 s (62 Hz)
-          for (let beat = 0; beat < totalDuration; beat += 0.75) {
+          // Pulso rítmico
+          for (let beat = 0; beat < totalDuration; beat += 0.5) {
             const idx = Math.floor(beat * SR);
-            const ln = Math.min(Math.floor(0.28 * SR), N - idx);
+            const ln = Math.min(Math.floor(0.24 * SR), N - idx);
             for (let q = 0; q < ln; q++) {
               const qt = q / SR;
-              music[idx + q] += 0.095 * Math.sin(2 * Math.PI * 62 * qt) * Math.exp(-qt * 18);
+              music[idx + q] += 0.08 * Math.sin(2 * Math.PI * (beat % 1 === 0 ? 64 : 92) * qt) * Math.exp(-qt * 18);
             }
           }
 
-          // 3. Notas suaves tipo campana a lo largo del short
-          const bells = [440, 392, 349, 330, 294, 261, 220, 247, 294, 330, 392];
-          for (let k = 0; k < bells.length; k++) {
-            const sec = (k + 0.3) * (totalDuration / bells.length);
+          // Notas melódicas espaciadas
+          const scale = [1, 1.189, 1.335, 1.498, 1.782, 2.0];
+          for (let k = 0; k < Math.floor(totalDuration / 1.8); k++) {
+            const sec = k * 1.8 + 0.35;
             const idx = Math.floor(sec * SR);
-            const ln = Math.min(Math.floor(1.5 * SR), N - idx);
-            const f = bells[k];
+            const ln = Math.min(Math.floor(1.3 * SR), N - idx);
+            const f = root * 4 * scale[(k * 3 + seedVal) % scale.length];
             for (let q = 0; q < ln; q++) {
               const qt = q / SR;
-              const tone = Math.sin(2 * Math.PI * f * qt) + 0.35 * Math.sin(2 * Math.PI * f * 2.01 * qt);
-              music[idx + q] += 0.042 * tone * Math.exp(-qt * 2.6);
+              music[idx + q] += 0.045 * Math.sin(2 * Math.PI * f * qt) * Math.exp(-qt * 3.0);
             }
           }
         }
 
         if (enableSFX) {
-          const addBandNoise = (sec, length, amp, lo, hi) => {
+          const addBand = (sec, dur, amp, lo, hi) => {
             const idx = Math.floor(sec * SR);
-            const ln = Math.min(Math.floor(length * SR), N - idx);
+            const ln = Math.min(Math.floor(dur * SR), N - idx);
             if (ln <= 0) return;
-            // Filtro paso banda simple por IIR de primer orden en cascada
             let lp = 0, hp = 0, prev = 0;
-            const alphaLP = Math.min(0.95, (2 * Math.PI * hi) / (SR + 2 * Math.PI * hi));
-            const alphaHP = SR / (SR + 2 * Math.PI * lo);
+            const aLP = Math.min(0.95, (2 * Math.PI * hi) / (SR + 2 * Math.PI * hi));
+            const aHP = SR / (SR + 2 * Math.PI * lo);
             for (let q = 0; q < ln; q++) {
               const qt = q / SR;
-              const raw = rand();
-              lp = lp + alphaLP * (raw - lp);
-              hp = alphaHP * (hp + lp - prev);
+              lp += aLP * (rand() - lp);
+              hp = aHP * (hp + lp - prev);
               prev = lp;
-              const env = Math.exp(-qt * 3.5) * Math.min(1, qt * 10);
-              sfx[idx + q] += amp * hp * env;
+              sfx[idx + q] += amp * hp * Math.exp(-qt * 3.8) * Math.min(1, qt * 12);
             }
           };
 
           scenes.forEach((sc, idx) => {
-            // Transición sutil en cambios de escena
-            if (idx > 0) addBandNoise(sc.startTime, 0.35, 0.09, 240, 2400);
-
-            if (sc.type === 'tank_crack') {
-              // Riser previo + crujido + pings metálicos de remaches saltando
-              addBandNoise(sc.startTime + 0.2, 1.4, 0.22, 350, 4800);
-              [0.35, 0.58, 0.85, 1.15].forEach((off) => {
-                const pIdx = Math.floor((sc.startTime + off) * SR);
-                const ln = Math.min(Math.floor(0.35 * SR), N - pIdx);
-                for (let q = 0; q < ln; q++) {
-                  const qt = q / SR;
-                  sfx[pIdx + q] += 0.14 * Math.sin(2 * Math.PI * (1250 - 700 * qt) * qt) * Math.exp(-qt * 12);
-                }
-              });
-            } else if (sc.type === 'wave_surge' || sc.type === 'opening_wave') {
-              // Rugido denso de oleada (60-900 Hz)
-              addBandNoise(sc.startTime + 0.1, Math.min(3.5, sc.duration), 0.32, 60, 900);
-            } else if (sc.type === 'rescue_aftermath') {
-              // Mangueras / agua de mar
-              addBandNoise(sc.startTime + 0.2, Math.min(2.8, sc.duration), 0.14, 300, 3800);
-            } else if (sc.type === 'city_destruction' || sc.type === 'civic_courthouse') {
-              addBandNoise(sc.startTime + 0.05, 1.0, 0.2, 70, 600);
+            if (idx > 0) addBand(sc.startTime, 0.35, 0.14, 240, 2600); // Whoosh de cámara en corte
+            if (sc.camType === 'impact_shake' || sc.hazard === 'explosion' || sc.hazard === 'flood') {
+              addBand(sc.startTime + 0.12, 1.6, 0.34, 55, 850);
+            } else if (sc.camType === 'orbit_hero') {
+              // Tono cristalino de revelación
+              const pIdx = Math.floor((sc.startTime + 0.25) * SR);
+              const ln = Math.min(Math.floor(0.65 * SR), N - pIdx);
+              for (let q = 0; q < ln; q++) {
+                const qt = q / SR;
+                sfx[pIdx + q] += 0.11 * Math.sin(2 * Math.PI * 784 * qt) * Math.exp(-qt * 6);
+              }
+            } else {
+              addBand(sc.startTime + 0.15, 0.25, 0.08, 400, 1800);
             }
           });
         }
 
-        // Mezcla con soft-clipping tanh (igual que audio_mix.py -> pico ~ -1.0 dBFS)
         const L = buf.getChannelData(0);
         const R = buf.getChannelData(1);
-        const tanhNorm = Math.tanh(1.1);
+        const norm = Math.tanh(1.1);
         for (let i = 0; i < N; i++) {
-          const m = music[i] + sfx[i];
-          const comp = Math.tanh(m * 1.35) / tanhNorm;
-          L[i] = Math.max(-0.9, Math.min(0.9, comp + 0.02 * music[i]));
-          R[i] = Math.max(-0.9, Math.min(0.9, comp - 0.02 * music[i]));
-          mix[i] = comp;
+          const comp = Math.tanh((music[i] + sfx[i]) * 1.35) / norm;
+          L[i] = Math.max(-0.92, Math.min(0.92, comp + 0.02 * music[i]));
+          R[i] = Math.max(-0.92, Math.min(0.92, comp - 0.02 * music[i]));
         }
-
         return buf;
       }
 
@@ -568,124 +500,132 @@
     })();
 
     // =========================================================================
-    // 2. INTÉRPRETE AUTOMÁTICO DE GUION (De guion único -> escenas y rótulos)
+    // 2. DIRECTOR PROCEDURAL DE HISTORIAS (CERO REPETICIONES, 10 BIOMAS 3D)
     // =========================================================================
-    window.ZipScriptDirector = (() => {
+    window.StoryBrain = (() => {
       const PRESETS = {
-        boston_melaza:
-`¿Sabías que una ciudad fue inundada por una ola de melaza?
+        boston:
+`En 1919, un depósito gigantesco en Boston guardaba dos millones de galones de melaza.
+El quince de enero, el acero empezó a crujir y los remaches saltaron por los aires.
+Una ola marrón avanzó por toda la ciudad a cincuenta y seis kilómetros por hora.
+Los edificios quedaron rodeados y los rescatistas tuvieron que usar agua de mar.`,
 
-Ocurrió en Boston, en mil novecientos diecinueve. En North End, un depósito gigantesco guardaba dos coma tres millones de galones de melaza.
+        hacker:
+`Un joven hacker prometió que podía vaciar un banco usando solo una tostadora modificada.
+Durante semanas estudió los cables subterráneos y las cámaras acorazadas del edificio.
+Una noche conectó su aparato a la red eléctrica y todas las alarmas de la ciudad saltaron.
+En lugar de robar oro, dejó sin electricidad al barrio entero durante tres horas.`,
 
-El quince de enero, mientras la gente seguía con su día, el acero empezó a crujir.
-
-De pronto, los remaches saltaron. El tanque se abrió y una oleada avanzó por las calles a cincuenta y seis kilómetros por hora.
-
-No era agua: era un jarabe tan denso que atrapaba a las personas y arrasaba estructuras.
-
-Las mangueras no conseguían retirarlo. Los rescatistas tuvieron que usar agua de mar.
-
-El desastre dejó veintiuna personas muertas y alrededor de ciento cincuenta heridas. Y aquella melaza terminó impulsando cambios en la seguridad de las construcciones.`,
+        espacio:
+`En plena misión orbital, la cápsula espacial sufrió un fallo en sus propulsores principales.
+La estación espacial quedaba cada vez más lejos mientras el oxígeno bajaba rápido.
+El astronauta improvisó un cálculo de gravedad usando solo una linterna y un cronómetro.
+Logró encender los motores de reserva justo a tiempo y regresar a la Tierra.`,
 
         torre_eiffel:
-`¿Sabías que un estafador logró vender la Torre Eiffel entera dos veces?
-
-Ocurrió en París, en mil novecientos veinticinco. Victor Lustig leyó que la torre necesitaba reparaciones carísimas.
-
-Falsificó documentos oficiales del gobierno y reunió en secreto a cinco empresarios millonarios.
-
-De pronto, les aseguró que Francia quería vender la Torre Eiffel como chatarra al mejor postor.
-
-Uno de los empresarios mordió el anzuelo y le pagó una maleta llena de dinero en efectivo.
-
-Meses después, en lugar de esconderse, volvió a París e intentó venderla por segunda vez.`,
-
-        jarron:
-`¿Sabías que un jarrón antiguo predijo terremotos antes de que existiera la tecnología?
-
-Ocurrió en China hace casi dos mil años. Un inventor colocó ocho dragones con bolas de bronce alrededor de un depósito metálico.
-
-Ante toda la corte, avisó al emperador que si una bola caía debían evacuar el palacio.
-
-Todos se rieron creyendo que era un juguete inútil y lo expulsaron de la ciudad hasta una colina.
-
-Una noche cayeron todas las bolas a la vez, pero los guardias volvieron a burlarse de él.
-
-A la mañana siguiente, el palacio entero era una pila de escombros tras un gran terremoto.`,
-
-        emues:
-`¿Sabías que un ejército moderno perdió oficialmente una guerra contra pájaros?
-
-En mil novecientos treinta y dos, veinte mil emúes arrasaban los cultivos en Australia.
-
-El gobierno envió soldados armados con ametralladoras creyendo que sería facilísimo.
-
-Pero los pájaros corrían a cincuenta kilómetros por hora y se dividían en grupos tácticos.
-
-Tras disparar casi diez mil balas, apenas lograron derribar unos pocos.
-
-Al final, los soldados ordenaron la retirada y los emúes ganaron la guerra.`,
+`En 1925, un estafador en París falsificó documentos oficiales del gobierno francés.
+Reunió en secreto a cinco empresarios millonarios bajo la gran Torre Eiffel.
+Les aseguró que la ciudad quería vender la torre entera como chatarra al mejor postor.
+Uno le pagó una maleta llena de billetes y meses después intentó venderla otra vez.`,
 
         pepsi:
-`¿Sabías que una marca de refrescos llegó a tener la sexta flota militar del mundo?
+`En 1989, la Unión Soviética quería comprar Pepsi pero su moneda no valía fuera del país.
+Sus generales propusieron el intercambio más absurdo en mitad del océano.
+Pagaron a la empresa con diecisiete submarinos, un crucero y un destructor reales.
+Durante unos días, una marca de refrescos tuvo una de las mayores flotas del planeta.`,
 
-En mil novecientos ochenta y nueve, la Unión Soviética quería comprar Pepsi pero su moneda no valía fuera del país.
-
-Así que sus generales propusieron el intercambio más absurdo de la historia.
-
-Pagaron a Pepsi con diecisiete submarinos, un crucero y un destructor de guerra reales.
-
-Durante unos días, la empresa tuvo más barcos de combate que muchos países.
-
-Al final vendieron toda la flota como chatarra para recuperar el dinero.`,
-
-        banco_londres:
-`¿Sabías que un obrero apareció saliendo del suelo dentro de la bóveda del Banco de Inglaterra?
-
-En mil ochocientos treinta y seis, un trabajador de alcantarillas encontró un túnel olvidado bajo Londres.
-
-Siguiendo el pasadizo subterráneo llegó justo debajo de la cámara acorazada llena de oro.
-
-En lugar de robar millones, envió una carta secreta a los directores del banco.
-
-Esa noche se reunieron frente al oro y lo vieron levantar una baldosa desde las alcantarillas.
-
-El banco quedó tan agradecido que le regaló una enorme recompensa en efectivo.`,
-
-        calendario:
-`¿Sabías que septiembre de mil setecientos cincuenta y dos solo tuvo diecinueve días?
-
-El calendario antiguo en Inglaterra había acumulado un error de varios siglos.
-
-Así que el gobierno decidió saltarse once días de golpe para arreglar las fechas.
-
-La gente se acostó una noche normal y despertó directamente once días más tarde.
-
-Muchos pensaron que el rey les había robado once días de vida.
-
-Salieron a las calles a protestar frente al palacio exigiendo que les devolvieran su tiempo.`,
-
-        troya:
-`¿Sabías cómo un regalo gigante destruyó una ciudad invencible en una sola noche?
-
-Tras diez años asediando las murallas de Troya, el ejército griego fingió rendirse.
-
-Dejaron en la playa un gigantesco caballo de madera y desaparecieron en el horizonte.
-
-Los troyanos celebraron la victoria y metieron el monumento dentro de la ciudad.
-
-Cuando cayó la noche y todo el mundo dormía, una trampilla oculta se abrió.
-
-Decenas de soldados salieron del interior y conquistaron la ciudad entera.`
+        faraon:
+`Un grupo de exploradores encontró una puerta oculta bajo las arenas de una pirámide.
+Al cruzar el túnel iluminado con antorchas descubrieron mecanismos de piedra intactos.
+Una trampa antigua hizo temblar todo el templo mientras las columnas empezaban a caer.
+Consiguieron escapar justo antes de que la cámara secreta se sellara para siempre.`
       };
+
+      const BIOMES = [
+        'modern_city',      // Rascacielos modernos, neones, coches/carretera
+        'cyber_lab',        // Laboratorio futurista, servidores, núcleos brillantes
+        'outer_space',      // Espacio profundo, planetas, asteroides, cohete/estación
+        'bank_heist',       // Banco, columnas, cajas fuertes, lingotes de oro
+        'ocean_naval',      // Océano con olas 3D, submarino, barcos
+        'industrial_flood', // Ciudad ladrillo 1919, depósito industrial, ola densa
+        'desert_pyramid',   // Desierto dorado, pirámides, obeliscos, esfinge
+        'forest_night',     // Bosque nocturno con pinos 3D, luna llena, hoguera
+        'medieval_fortress',// Castillo con torres almenadas, murallas, estandartes
+        'paris_avenue'      // Bulevar europeo con Torre Eiffel 3D y farolas
+      ];
+
+      const ROLES_BY_BIOME = {
+        modern_city: ['casual', 'exec', 'hacker'],
+        cyber_lab: ['scientist', 'hacker', 'exec'],
+        outer_space: ['astronaut', 'scientist'],
+        bank_heist: ['exec', 'hacker', 'casual'],
+        ocean_naval: ['explorer', 'exec'],
+        industrial_flood: ['worker', 'casual'],
+        desert_pyramid: ['explorer', 'monarch'],
+        forest_night: ['explorer', 'casual'],
+        medieval_fortress: ['knight', 'monarch'],
+        paris_avenue: ['exec', 'casual']
+      };
+
+      function hashString(str) {
+        let h = 2166136261;
+        for (let i = 0; i < str.length; i++) {
+          h ^= str.charCodeAt(i);
+          h = Math.imul(h, 16777619);
+        }
+        return h >>> 0;
+      }
+
+      function detectBiome(fullText, seed) {
+        const l = fullText.toLowerCase();
+        if (/espacio|órbita|astronauta|cohete|planeta|galaxia|luna|estrella|marte/.test(l)) return 'outer_space';
+        if (/hacker|tostadora|código|laboratorio|ciencia|robot|ia|servidor|experimento|láser/.test(l)) return 'cyber_lab';
+        if (/banco|bóveda|oro|dinero|estafador|millon|alarma|ladrón|atraco/.test(l)) return 'bank_heist';
+        if (/submarino|océano|mar|barco|flota|pepsi|pirata|isla|tiburón/.test(l)) return 'ocean_naval';
+        if (/melaza|depósito|tanque|boston|remaches|fábrica|inund/.test(l)) return 'industrial_flood';
+        if (/pirámide|faraón|arena|desierto|egipto|templo|momia/.test(l)) return 'desert_pyramid';
+        if (/torre eiffel|parís|francia|bulevar/.test(l)) return 'paris_avenue';
+        if (/castillo|rey|caballero|espada|dragón|medieval|troya|imperio/.test(l)) return 'medieval_fortress';
+        if (/bosque|hoguera|campamento|árbol|lobo|montaña|noche/.test(l)) return 'forest_night';
+        if (/ciudad|calle|coche|policía|edificio|carrera/.test(l)) return 'modern_city';
+        // Si no hay palabras clave reconocibles, elegir un bioma completamente distinto según el hash del texto
+        return BIOMES[seed % BIOMES.length];
+      }
+
+      function detectHazardAndProps(text, biome) {
+        const l = text.toLowerCase();
+        let hazard = 'none';
+        if (/ola|inund|melaza|agua|mar/.test(l)) hazard = 'flood';
+        else if (/explot|saltaron|tembl|caer|trampa|fuego|alarma|destru|accidente|fallo/.test(l)) hazard = 'explosion';
+        else if (/oro|dinero|billetes|millon/.test(l)) hazard = 'gold_rain';
+        else if (/nieve|frío|noche|bosque/.test(l)) hazard = 'particles';
+
+        let prop = 'monolith';
+        if (/tanque|depósito|acero|remaches/.test(l)) prop = 'tank';
+        else if (/cohete|cápsula|nave|propulsor|estación/.test(l)) prop = 'rocket';
+        else if (/submarino|barco|flota/.test(l)) prop = 'submarine';
+        else if (/torre eiffel|torre/.test(l)) prop = 'eiffel';
+        else if (/pirámide|templo/.test(l)) prop = 'pyramid';
+        else if (/bóveda|banco|oro|caja/.test(l)) prop = 'vault';
+        else if (/tostadora|servidor|máquina|aparato|robot/.test(l)) prop = 'machine';
+        else if (biome === 'outer_space') prop = 'rocket';
+        else if (biome === 'ocean_naval') prop = 'submarine';
+        else if (biome === 'desert_pyramid') prop = 'pyramid';
+        else if (biome === 'paris_avenue') prop = 'eiffel';
+        else if (biome === 'bank_heist') prop = 'vault';
+        else if (biome === 'cyber_lab') prop = 'machine';
+        else if (biome === 'industrial_flood') prop = 'tank';
+
+        return { hazard, prop };
+      }
 
       function buildWords(text, duration) {
         const list = text.trim().split(/\s+/).filter(Boolean);
         if (!list.length) return [];
-        const usable = Math.max(0.9, duration - 0.3);
+        const usable = Math.max(0.8, duration - 0.25);
         const w = list.map((x) => Math.max(2, x.length) + (/[,.;:!?]$/.test(x) ? 2 : 0));
         const tot = w.reduce((a, b) => a + b, 0);
-        let cur = 0.15;
+        let cur = 0.12;
         return list.map((word, i) => {
           const d = (w[i] / tot) * usable;
           const obj = { word, start: cur, end: cur + d };
@@ -694,949 +634,219 @@ Decenas de soldados salieron del interior y conquistaron la ciudad entera.`
         });
       }
 
-      function makeTopBanner(text, idx, total) {
-        const l = text.toLowerCase();
-
-        // Extraer año o número llamativo para el titular superior (como draw_label en render_short.py)
-        if (/boston/.test(l) && /1919|diecinueve/.test(l)) return { title: 'BOSTON · 1919', sub: 'NORTH END, BOSTON' };
-        if (/2,3|dos coma tres/.test(l)) return { title: '2,3 MILLONES', sub: 'DE GALONES DE MELAZA' };
-        if (/56|cincuenta y seis/.test(l)) return { title: '56 KM/H', sub: 'UNA OLEADA DE MELAZA' };
-        if (/crujir|remaches|cedió|abrió/.test(l)) return { title: 'EL ACERO CEDIÓ', sub: 'EL DEPÓSITO SE ABRIÓ' };
-        if (/mangueras|agua de mar|rescatistas/.test(l)) return { title: 'EL AGUA NO BASTABA', sub: 'USARON AGUA DE MAR' };
-        if (/veintiuna|21|ciento cincuenta|seguridad/.test(l)) return { title: '21 VIDAS PERDIDAS', sub: 'CAMBIO EN LA SEGURIDAD INDUSTRIAL' };
-
-        // Extractor general para cualquier guion nuevo
-        const numYear = text.match(/\b(1[0-9]{3}|20[0-2][0-9])\b/);
-        const numQty = text.match(/\b(\d+(?:[.,]\d+)?\s?(?:mil|millones|km\/h|días|años|%))\b/i);
-        let title = 'HISTORIA REAL';
-        if (idx === 0) title = numYear ? `AÑO ${numYear[1]}` : '¿SABÍAS ESTO?';
-        else if (numQty) title = numQty[1].toUpperCase();
-        else if (numYear) title = `AÑO ${numYear[1]}`;
-        else if (idx === total - 1) title = 'EL DESENLACE';
-        else {
-          const words = text.replace(/[¿?¡!.,;:]/g, '').split(/\s+/).filter((w) => w.length > 3);
-          title = words.slice(0, 3).join(' ').toUpperCase() || `CAPÍTULO ${idx + 1}`;
-        }
-
-        const cleanSub = text.replace(/[¿?¡!]/g, '').split(/[.,;]/)[0].trim();
-        const sub = cleanSub.length > 46 ? cleanSub.slice(0, 44).trim() + '...' : cleanSub.toUpperCase();
-        return { title, sub };
+      function makeHeadline(text, idx, total) {
+        const num = text.match(/\b(1[0-9]{3}|20[0-2][0-9]|\d+(?:[.,]\d+)?\s?(?:millones|mil|km\/h|horas|días|%))\b/i);
+        if (num) return num[1].toUpperCase();
+        if (idx === 0) return 'EL INICIO';
+        if (idx === total - 1) return 'EL FINAL';
+        const clean = text.replace(/[¿?¡!.,;:]/g, '').split(/\s+/).filter((w) => w.length > 3);
+        return clean.slice(0, 2).join(' ').toUpperCase() || `ESCENA ${idx + 1}`;
       }
 
-      function inferSceneType(text, idx, total) {
-        const l = text.toLowerCase();
-        if (idx === 0 && /melaza|ola|inund/.test(l)) return 'opening_wave';
-        if (/crujir|remaches|abrió|grieta|cedió/.test(l)) return 'tank_crack';
-        if (/oleada|56|cincuenta y seis|jarabe|arrasaba|atrapaba/.test(l)) return 'wave_surge';
-        if (/mangueras|rescatistas|agua de mar/.test(l)) return 'rescue_aftermath';
-        if (/depósito|tanque|galones|millones/.test(l)) return 'tank_reveal';
-        if (/investigación|juicio|seguridad|construcciones|empresa|palacio|rey|emperador|gobierno|protest/.test(l) && idx >= total - 2) {
-          return 'civic_courthouse';
+      function compileStory(rawText, extraSeed = 0) {
+        const trimmed = rawText.trim();
+        if (!trimmed) return { scenes: [], storySeed: 1 };
+        const storySeed = (hashString(trimmed) + extraSeed * 7919) >>> 0;
+
+        let blocks = trimmed.split(/\n+/).map((b) => b.trim()).filter(Boolean);
+        if (blocks.length === 1) {
+          const sents = trimmed.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [trimmed];
+          blocks = sents.map((s) => s.trim()).filter(Boolean);
         }
-        if (/torre eiffel|parís/.test(l)) return 'paris_tower';
-        if (/submarino|océano|flota|barcos/.test(l)) return 'ocean_fleet';
-        if (/túnel|alcantarilla|bóveda|oro/.test(l)) return 'underground_vault';
-        if (/jarrón|dragón|bronce/.test(l)) return 'dragon_jar';
-        if (/escombros|terremoto|conquistaron|guerra|balas/.test(l)) return 'tank_crack';
-        return 'street_crowd';
-      }
-
-      function compileScript(rawText) {
-        const cleaned = rawText.trim();
-        if (!cleaned) return [];
-
-        // Dividir por párrafos (saltos de línea) o frases si viene en un solo bloque
-        let blocks = cleaned.split(/\n+/).map((b) => b.trim()).filter(Boolean);
-        if (blocks.length <= 2) {
-          blocks = cleaned.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [cleaned];
-          blocks = blocks.map((b) => b.trim()).filter(Boolean);
+        // Si el usuario escribe solo 1 línea corta (ej: una palabra o idea), la dividimos en 3 actos dinámicos para que haya movimiento y variedad
+        if (blocks.length === 1) {
+          const t = blocks[0];
+          blocks = [
+            t,
+            'De pronto algo inesperado cambió todo el escenario.',
+            'Y el desenlace sorprendió a todos.'
+          ];
         }
 
-        return blocks.map((text, idx) => {
-          const type = inferSceneType(text, idx, blocks.length);
-          const banner = makeTopBanner(text, idx, blocks.length);
+        const primaryBiome = detectBiome(trimmed, storySeed);
+        // Secuencia de cámaras obligatoriamente distintas entre escenas consecutivas
+        const camSequence = ['dolly_flyin', 'orbit_hero', 'whip_pan_chase', 'impact_shake', 'crane_up_reveal', 'orbit_reverse'];
+
+        const scenes = blocks.map((text, idx) => {
+          const scSeed = (storySeed + idx * 104729) >>> 0;
+          // Cada escena puede variar o evolucionar de bioma si el texto cambia o en el clímax
+          let biome = idx === 0 ? primaryBiome : detectBiome(text, scSeed);
+          if (idx > 0 && biome === primaryBiome && idx % 2 === 1 && blocks.length >= 3) {
+            // Variar ligeramente entre exterior e interior/detalle manteniendo coherencia
+            biome = primaryBiome;
+          }
+
+          const roles = ROLES_BY_BIOME[biome] || ['casual', 'exec'];
+          const role = roles[scSeed % roles.length];
+          const emotions = ['smug', 'shocked', 'thinking', 'angry', 'laughing'];
+          let emotion = emotions[scSeed % emotions.length];
+          if (/peligro|alarma|atrapad|saltaron|tembl|huir|shock/.test(text.toLowerCase())) emotion = 'shocked';
+          else if (/ri|burl|celebr|victoria/.test(text.toLowerCase())) emotion = 'laughing';
+          else if (/guerra|enfad|luch|robo/.test(text.toLowerCase())) emotion = 'angry';
+
+          const { hazard, prop } = detectHazardAndProps(text, biome);
+          let camType = camSequence[idx % camSequence.length];
+          if (hazard === 'explosion' || hazard === 'flood') camType = 'impact_shake';
+
           const wordsCnt = text.split(/\s+/).length;
-          const duration = Math.max(3.6, Math.min(7.8, wordsCnt * 0.28 + 1.5));
+          const duration = Math.max(3.2, Math.min(6.5, wordsCnt * 0.28 + 1.6));
+
           return {
             id: idx + 1,
             text,
-            type,
-            title: banner.title,
-            sub: banner.sub,
+            title: makeHeadline(text, idx, blocks.length),
+            biome,
+            camType,
+            role,
+            emotion,
+            hazard,
+            prop,
+            seed: scSeed,
             duration,
             words: buildWords(text, duration)
           };
         });
+
+        return { scenes, storySeed };
       }
 
-      return { PRESETS, compileScript };
+      return { PRESETS, compileStory };
     })();
 
     // =========================================================================
-    // 3. RENDERIZADOR PICTÓRICO 2.5D (PORTADO DE render_short.py + BostonMelaza.tsx)
+    // 3. MOTOR 3D REAL POR PROYECCIÓN PERSPECTIVA (Cámara libre + Z-Sort)
     // =========================================================================
-    window.ZipRenderer = (() => {
-      const INK = '#1d1f2a';
-      let grainPattern = null;
-
-      function getGrainPattern(ctx) {
-        if (grainPattern) return grainPattern;
-        const gc = document.createElement('canvas');
-        gc.width = 128; gc.height = 128;
-        const gctx = gc.getContext('2d');
-        const img = gctx.createImageData(128, 128);
-        let s = 77;
-        for (let i = 0; i < img.data.length; i += 4) {
-          s = (s * 1664525 + 1013904223) >>> 0;
-          const v = (s % 256);
-          img.data[i] = v; img.data[i + 1] = v; img.data[i + 2] = v; img.data[i + 3] = 20;
-        }
-        gctx.putImageData(img, 0, 0);
-        grainPattern = ctx.createPattern(gc, 'repeat');
-        return grainPattern;
-      }
+    window.Engine3D = (() => {
+      const BIOME_PALETTES = {
+        modern_city: { skyA: '#1a2a6c', skyB: '#fdbb2d', groundA: '#334155', groundB: '#1e293b', road: '#0f172a', bldgA: '#64748b', bldgB: '#475569', sun: '#fde047' },
+        cyber_lab: { skyA: '#090d16', skyB: '#312e81', groundA: '#1e1b4b', groundB: '#0f172a', road: '#312e81', bldgA: '#1e293b', bldgB: '#0f172a', sun: '#22d3ee' },
+        outer_space: { skyA: '#020617', skyB: '#1e1b4b', groundA: '#334155', groundB: '#0f172a', road: '#475569', bldgA: '#475569', bldgB: '#334155', sun: '#f43f5e' },
+        bank_heist: { skyA: '#0f172a', skyB: '#475569', groundA: '#78350f', groundB: '#451a03', road: '#991b1b', bldgA: '#cbd5e1', bldgB: '#94a3b8', sun: '#facc15' },
+        ocean_naval: { skyA: '#0369a1', skyB: '#bae6fd', groundA: '#0284c7', groundB: '#0369a1', road: '#0ea5e9', bldgA: '#475569', bldgB: '#334155', sun: '#fef08a' },
+        industrial_flood: { skyA: '#24354c', skyB: '#b48c65', groundA: '#4a4d4e', groundB: '#2d3136', road: '#383b40', bldgA: '#9d674a', bldgB: '#8b6f5a', sun: '#dca669' },
+        desert_pyramid: { skyA: '#9a3412', skyB: '#fde047', groundA: '#eab308', groundB: '#ca8a04', road: '#a16207', bldgA: '#f59e0b', bldgB: '#d97706', sun: '#ffffff' },
+        forest_night: { skyA: '#050816', skyB: '#1e3a8a', groundA: '#14532d', groundB: '#052e16', road: '#78350f', bldgA: '#166534', bldgB: '#14532d', sun: '#fef9c3' },
+        medieval_fortress: { skyA: '#312e81', skyB: '#c084fc', groundA: '#57534e', groundB: '#292524', road: '#7f1d1d', bldgA: '#94a3b8', bldgB: '#64748b', sun: '#fde047' },
+        paris_avenue: { skyA: '#1e3a8a', skyB: '#fbcfe8', groundA: '#475569', groundB: '#334155', road: '#1e293b', bldgA: '#e2e8f0', bldgB: '#cbd5e1', sun: '#fef08a' }
+      };
 
       function rRect(ctx, x, y, w, h, r) {
-        if (ctx.roundRect) {
-          ctx.beginPath(); ctx.roundRect(x, y, w, h, r);
-        } else {
-          ctx.beginPath();
-          ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y);
-          ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-          ctx.lineTo(x + w, y + h - r);
-          ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-          ctx.lineTo(x + r, y + h);
-          ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-          ctx.lineTo(x, y + r);
-          ctx.quadraticCurveTo(x, y, x + r, y);
-          ctx.closePath();
-        }
+        if (ctx.roundRect) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); }
+        else { ctx.beginPath(); ctx.rect(x, y, w, h); }
       }
 
-      function ease(t) { t = Math.max(0, Math.min(1, t)); return 1 - Math.pow(1 - t, 3); }
-      function smooth(t) { t = Math.max(0, Math.min(1, t)); return t * t * (3 - 2 * t); }
+      // Proyección matemática 3D real (yaw, pitch, roll, fov)
+      function project3D(wx, wy, wz, cam) {
+        const dx = wx - cam.x;
+        const dy = wy - cam.y;
+        const dz = wz - cam.z;
 
-      function drawBuilding(ctx, x, y, w, h, frontCol, roofCol, seed) {
-        ctx.save();
-        // Fachada + sombra lateral 2.5D
-        ctx.fillStyle = frontCol;
-        ctx.strokeStyle = INK; ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(x, y - h); ctx.lineTo(x + w, y - h + 12);
-        ctx.lineTo(x + w, y); ctx.lineTo(x, y + 10); ctx.closePath();
-        ctx.fill(); ctx.stroke();
+        const cosY = Math.cos(-cam.yaw), sinY = Math.sin(-cam.yaw);
+        const rx = dx * cosY - dz * sinY;
+        const rz = dx * sinY + dz * cosY;
 
-        // Tejado en perspectiva
-        ctx.fillStyle = roofCol;
-        ctx.beginPath();
-        ctx.moveTo(x, y - h); ctx.lineTo(x + w * 0.52, y - h - 30);
-        ctx.lineTo(x + w, y - h + 12); ctx.lineTo(x + w * 0.52, y - h + 42);
-        ctx.closePath(); ctx.fill();
-        ctx.strokeStyle = '#22232d'; ctx.lineWidth = 3; ctx.stroke();
+        const cosP = Math.cos(-cam.pitch), sinP = Math.sin(-cam.pitch);
+        const ry = dy * cosP - rz * sinP;
+        const tz = dy * sinP + rz * cosP;
 
-        // Ventanas iluminadas cálidas (como render_short.py)
-        const cols = Math.max(2, Math.floor(w / 55));
-        const rows = Math.max(2, Math.floor(h / 68));
-        for (let r = 0; r < rows; r++) {
-          for (let c = 0; c < cols; c++) {
-            const wx = x + 12 + c * ((w - 24) / cols);
-            const wy = y - h + 25 + r * ((h - 40) / rows);
-            const ww = Math.min(20, ((w - 28) / cols) * 0.5);
-            const hh = 29;
-            ctx.fillStyle = '#223343'; ctx.strokeStyle = '#41302d'; ctx.lineWidth = 2;
-            rRect(ctx, wx, wy, ww, hh, 3); ctx.fill(); ctx.stroke();
-            if (((r * 7 + c * 13 + seed) % 10) < 7) {
-              ctx.fillStyle = '#e1a75c';
-              ctx.fillRect(wx + 3, wy + 4, ww - 6, hh - 8);
+        if (tz < 0.5) return null;
+
+        let sx = (rx / tz) * cam.fov;
+        let sy = -(ry / tz) * cam.fov;
+
+        if (cam.roll) {
+          const cR = Math.cos(cam.roll), sR = Math.sin(cam.roll);
+          const nx = sx * cR - sy * sR;
+          const ny = sx * sR + sy * cR;
+          sx = nx; sy = ny;
+        }
+
+        return { x: 270 + sx, y: 480 + sy, z: tz };
+      }
+
+      function quadSignedArea(p0, p1, p2) {
+        return (p1.x - p0.x) * (p2.y - p0.y) - (p1.y - p0.y) * (p2.x - p0.x);
+      }
+
+      function pushFace(queue, pts3D, cam, fill, stroke = '#181a24', lineWidth = 1.5, skipCull = false) {
+        const p = pts3D.map((v) => project3D(v[0], v[1], v[2], cam));
+        if (p.some((v) => !v)) return;
+        if (!skipCull && quadSignedArea(p[0], p[1], p[2]) <= 0) return;
+        const zAvg = p.reduce((a, b) => a + b.z, 0) / p.length;
+        queue.push({ kind: 'poly', z: zAvg, pts: p, fill, stroke, lineWidth });
+      }
+
+      // Caja 3D extruida real con 5-6 caras + ventanas proyectadas en 3D
+      function addBox3D(queue, cam, x, y, z, w, h, d, cTop, cFront, cSide, addWindows = false) {
+        const hw = w / 2, hd = d / 2;
+        const x0 = x - hw, x1 = x + hw;
+        const y0 = y, y1 = y + h;
+        const z0 = z - hd, z1 = z + hd;
+
+        // Frente (-Z), Atrás (+Z), Arriba (+Y), Izquierda (-X), Derecha (+X)
+        pushFace(queue, [[x0, y1, z0], [x1, y1, z0], [x1, y0, z0], [x0, y0, z0]], cam, cFront);
+        pushFace(queue, [[x1, y1, z1], [x0, y1, z1], [x0, y0, z1], [x1, y0, z1]], cam, cFront);
+        pushFace(queue, [[x0, y1, z1], [x1, y1, z1], [x1, y1, z0], [x0, y1, z0]], cam, cTop);
+        pushFace(queue, [[x0, y1, z1], [x0, y1, z0], [x0, y0, z0], [x0, y0, z1]], cam, cSide);
+        pushFace(queue, [[x1, y1, z0], [x1, y1, z1], [x1, y0, z1], [x1, y0, z0]], cam, cSide);
+
+        if (addWindows && h >= 4) {
+          const rows = Math.min(5, Math.floor(h / 2));
+          for (let r = 0; r < rows; r++) {
+            const wy0 = y + 1.0 + r * 1.8;
+            const wy1 = wy0 + 0.9;
+            // Ventanas en cara frontal (-Z) y lateral interna
+            const winCol = r % 2 === 0 ? '#fde047' : '#38bdf8';
+            pushFace(queue, [[x - hw * 0.6, wy1, z0 - 0.02], [x - hw * 0.15, wy1, z0 - 0.02], [x - hw * 0.15, wy0, z0 - 0.02], [x - hw * 0.6, wy0, z0 - 0.02]], cam, winCol, '#1e293b', 1);
+            pushFace(queue, [[x + hw * 0.15, wy1, z0 - 0.02], [x + hw * 0.6, wy1, z0 - 0.02], [x + hw * 0.6, wy0, z0 - 0.02], [x + hw * 0.15, wy0, z0 - 0.02]], cam, winCol, '#1e293b', 1);
+            if (x < 0) {
+              pushFace(queue, [[x1 + 0.02, wy1, z - hd * 0.45], [x1 + 0.02, wy1, z + hd * 0.45], [x1 + 0.02, wy0, z + hd * 0.45], [x1 + 0.02, wy0, z - hd * 0.45]], cam, winCol, '#1e293b', 1);
+            } else if (x > 0) {
+              pushFace(queue, [[x0 - 0.02, wy1, z + hd * 0.45], [x0 - 0.02, wy1, z - hd * 0.45], [x0 - 0.02, wy0, z - hd * 0.45], [x0 - 0.02, wy0, z + hd * 0.45]], cam, winCol, '#1e293b', 1);
             }
           }
         }
-        // Puerta inferior
-        ctx.fillStyle = '#42302c'; ctx.strokeStyle = '#242023';
-        rRect(ctx, x + w * 0.38, y - 62, w * 0.27, 68, 3); ctx.fill(); ctx.stroke();
-        ctx.restore();
       }
 
-      function drawTank(ctx, cx, base, scale, crack) {
-        const rx = 95 * scale;
-        const h = 300 * scale;
-        const top = base - h;
-
-        // Sombra elíptica
-        ctx.fillStyle = 'rgba(25, 29, 38, 0.85)';
-        ctx.beginPath(); ctx.ellipse(cx + 8, base + 8, rx + 26, 22, 0, 0, Math.PI * 2); ctx.fill();
-
-        // Cilindro metálico con sombreado 3D
-        const cylGrad = ctx.createLinearGradient(cx - rx, 0, cx + rx, 0);
-        cylGrad.addColorStop(0, '#5a6670');
-        cylGrad.addColorStop(0.35, '#97a4aa');
-        cylGrad.addColorStop(0.75, '#7f8c91');
-        cylGrad.addColorStop(1, '#48545d');
-
-        ctx.fillStyle = cylGrad; ctx.strokeStyle = '#1c2531'; ctx.lineWidth = 4;
-        ctx.fillRect(cx - rx, top + 18, rx * 2, h - 18);
-        ctx.strokeRect(cx - rx, top + 18, rx * 2, h - 18);
-
-        // Placas verticales
-        ctx.strokeStyle = '#52626e'; ctx.lineWidth = 2;
-        [-rx + 25, -rx + 60, 0, rx - 60, rx - 25].forEach((ox) => {
-          ctx.beginPath(); ctx.moveTo(cx + ox, top + 25); ctx.lineTo(cx + ox, base - 10); ctx.stroke();
-        });
-
-        // Bandas horizontales y remaches dorados
-        [top + 65, top + 145, top + 225, base - 28].forEach((yy) => {
-          ctx.strokeStyle = '#45525e'; ctx.lineWidth = 4;
-          ctx.beginPath(); ctx.moveTo(cx - rx + 3, yy); ctx.lineTo(cx + rx - 3, yy); ctx.stroke();
-          ctx.fillStyle = '#cfbc97';
-          for (let xx = cx - rx + 12; xx < cx + rx - 10; xx += 18) {
-            ctx.beginPath(); ctx.arc(xx + 2, yy, 2.8, 0, Math.PI * 2); ctx.fill();
-          }
-        });
-
-        // Tapa superior
-        ctx.fillStyle = '#acb2ab'; ctx.strokeStyle = '#1f2833'; ctx.lineWidth = 4;
-        ctx.beginPath(); ctx.ellipse(cx, top + 11, rx, 19, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-
-        // Patas de soporte
-        ctx.strokeStyle = '#394249'; ctx.lineWidth = 8; ctx.lineCap = 'round';
-        [cx - rx + 24, cx + rx - 30].forEach((lx) => {
-          ctx.beginPath(); ctx.moveTo(lx, base - 6); ctx.lineTo(lx - 10, base + 40); ctx.stroke();
-        });
-
-        // Grieta animada y melaza saliendo
-        if (crack > 0) {
-          const yy = top + 90;
-          const pts = [
-            [cx + rx - 5, yy],
-            [cx + rx + 4, yy + 18 * crack],
-            [cx + rx - 8, yy + 35 * crack],
-            [cx + rx + 13, yy + 53 * crack],
-            [cx + rx + 3, yy + 80 * crack]
-          ];
-          ctx.strokeStyle = '#1e1b1c'; ctx.lineWidth = 5;
-          ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]);
-          pts.slice(1).forEach((p) => ctx.lineTo(p[0], p[1]));
-          ctx.stroke();
-
-          ctx.strokeStyle = '#cf9a53'; ctx.lineWidth = 2;
-          ctx.beginPath(); ctx.moveTo(pts[0][0] - 4, pts[0][1]);
-          pts.slice(1).forEach((p) => ctx.lineTo(p[0] - 4, p[1]));
-          ctx.stroke();
-
-          ctx.fillStyle = '#ecbb77';
-          for (let i = 0; i < 4; i++) {
-            const yy2 = top + 105 + i * 16;
-            ctx.beginPath(); ctx.ellipse(cx + rx + 4, yy2 + 3, 5, 3.5, 0, 0, Math.PI * 2); ctx.fill();
-          }
+      // Cilindro / prisma 3D de 10 caras
+      function addCylinder3D(queue, cam, cx, y, cz, r, h, cSideA, cSideB, cTop) {
+        const segs = 10;
+        for (let i = 0; i < segs; i++) {
+          const a0 = (i / segs) * Math.PI * 2;
+          const a1 = ((i + 1) / segs) * Math.PI * 2;
+          const x0 = cx + Math.cos(a0) * r, z0 = cz + Math.sin(a0) * r;
+          const x1 = cx + Math.cos(a1) * r, z1 = cz + Math.sin(a1) * r;
+          const col = i % 2 === 0 ? cSideA : cSideB;
+          pushFace(queue, [[x0, y + h, z0], [x1, y + h, z1], [x1, y, z1], [x0, y, z0]], cam, col, '#181a24', 1);
+          pushFace(queue, [[cx, y + h, cz], [x1, y + h, z1], [x0, y + h, z0]], cam, cTop, '#181a24', 1);
         }
       }
 
-      function drawPerson(ctx, x, y, s, pose, coat) {
-        const sway = Math.sin(pose) * 4 * s;
+      // Pirámide / Cono 3D
+      function addPyramid3D(queue, cam, cx, y, cz, r, h, cFront, cSide) {
+        const top = [cx, y + h, cz];
+        const b0 = [cx - r, y, cz - r], b1 = [cx + r, y, cz - r], b2 = [cx + r, y, cz + r], b3 = [cx - r, y, cz + r];
+        pushFace(queue, [top, b1, b0], cam, cFront);
+        pushFace(queue, [top, b2, b1], cam, cSide);
+        pushFace(queue, [top, b3, b2], cam, cFront);
+        pushFace(queue, [top, b0, b3], cam, cSide);
+      }
+
+      // Personaje 2D cel-shaded insertado en el mundo 3D con escala y profundidad reales
+      function addCharacter3D(queue, cam, cfg) {
+        const pFoot = project3D(cfg.x, cfg.y, cfg.z, cam);
+        const pHead = project3D(cfg.x, cfg.y + 3.0, cfg.z, cam);
+        if (!pFoot || !pHead) return;
+        const pxHeight = Math.abs(pFoot.y - pHead.y);
+        queue.push({ kind: 'char', z: pFoot.z, sx: pFoot.x, sy: pFoot.y, scale: pxHeight / 230, cfg });
+      }
+
+      function draw2DCharacter(ctx, sx, sy, scale, cfg, t) {
+        const { role = 'casual', emotion = 'smug' } = cfg;
+        const bounce = emotion === 'laughing' ? Math.abs(Math.sin(t * 20)) * 10 : Math.sin(t * 4) * 2;
         ctx.save();
-        ctx.lineCap = 'round';
-        // Piernas
-        ctx.strokeStyle = '#1b222d'; ctx.lineWidth = Math.max(2, 8 * s);
-        ctx.beginPath(); ctx.moveTo(x - 7 * s, y - 40 * s); ctx.lineTo(x - 12 * s + sway, y); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(x + 7 * s, y - 40 * s); ctx.lineTo(x + 12 * s - sway, y); ctx.stroke();
-        // Zapatos
-        ctx.strokeStyle = '#202127'; ctx.lineWidth = Math.max(2, 7 * s);
-        ctx.beginPath(); ctx.moveTo(x - 12 * s, y); ctx.lineTo(x - 23 * s, y + 2 * s); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(x + 12 * s, y); ctx.lineTo(x + 23 * s, y + 2 * s); ctx.stroke();
-        // Abrigo / Torso
-        ctx.fillStyle = coat; ctx.strokeStyle = '#1a202b'; ctx.lineWidth = 2;
-        rRect(ctx, x - 17 * s, y - 92 * s, 34 * s, 54 * s, 7); ctx.fill(); ctx.stroke();
-        // Brazos
-        ctx.strokeStyle = coat; ctx.lineWidth = Math.max(2, 8 * s);
-        ctx.beginPath(); ctx.moveTo(x - 14 * s, y - 82 * s); ctx.lineTo(x - 26 * s - sway, y - 50 * s); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(x + 14 * s, y - 82 * s); ctx.lineTo(x + 25 * s + sway, y - 53 * s); ctx.stroke();
-        // Cabeza + gorra + cuello bufanda
-        ctx.fillStyle = '#d8a178'; ctx.strokeStyle = '#1d212a'; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.ellipse(x, y - 105 * s, 13 * s, 14 * s, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = '#303036';
-        rRect(ctx, x - 16 * s, y - 124 * s, 32 * s, 10 * s, 3); ctx.fill(); ctx.stroke();
-        ctx.strokeStyle = '#c59769'; ctx.lineWidth = 3;
-        ctx.beginPath(); ctx.moveTo(x - 8 * s, y - 88 * s); ctx.lineTo(x, y - 77 * s); ctx.lineTo(x + 8 * s, y - 88 * s); ctx.stroke();
-        ctx.restore();
-      }
-
-      function drawWave(ctx, progress, offset) {
-        const yfront = 870 - progress * 640;
-        const amp = 30 + progress * 55;
-        ctx.save();
-        ctx.fillStyle = '#783719';
-        ctx.strokeStyle = '#2d1f1b'; ctx.lineWidth = 4;
-        ctx.beginPath();
-        ctx.moveTo(-30, 960); ctx.lineTo(570, 960); ctx.lineTo(570, yfront + 55);
-        for (let x = 570; x >= -40; x -= 10) {
-          const phase = x / 48 + progress * 11 + offset;
-          const y = yfront + amp * Math.sin(phase) + 18 * Math.sin(phase * 0.47);
-          ctx.lineTo(x, y);
-        }
-        ctx.closePath(); ctx.fill(); ctx.stroke();
-
-        // Brillos superiores de espuma densa
-        for (let k = 0; k < 16; k++) {
-          const x = ((k * 47 + Math.floor(progress * 300)) % 600) - 30;
-          const y = yfront + 25 * Math.sin(x / 48 + progress * 11 + offset);
-          ctx.fillStyle = '#aa5b26'; ctx.strokeStyle = '#532b1a'; ctx.lineWidth = 1;
-          ctx.beginPath(); ctx.ellipse(x + 12, y, 12 + (k % 8), 6 + (k % 5), 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-        }
-        // Gotas de salpicadura deterministas
-        ctx.fillStyle = '#b05f26';
-        for (let g = 0; g < 42; g++) {
-          const gx = ((g * 83 + progress * 60) % 580) - 20;
-          const gy = yfront + ((g * 37) % 150) - 55 + 10 * Math.sin(progress * 4 + g);
-          const r = 2 + (g % 5);
-          ctx.beginPath(); ctx.arc(gx, gy, r, 0, Math.PI * 2); ctx.fill();
-        }
-        ctx.restore();
-      }
-
-      function drawSceneBase(ctx, pan) {
-        // Cielo frío invierno + sol ámbar
-        const sky = ctx.createLinearGradient(0, 0, 0, 960);
-        sky.addColorStop(0, '#24354c');
-        sky.addColorStop(1, '#b48c65');
-        ctx.fillStyle = sky; ctx.fillRect(0, 0, 540, 960);
-
-        ctx.fillStyle = '#dca669';
-        ctx.beginPath(); ctx.arc(365, 155, 95, 0, Math.PI * 2); ctx.fill();
-
-        // Skyline lejano con ventanas iluminadas
-        for (let i = 0; i < 9; i++) {
-          const x = i * 75 - 30 + Math.floor(pan * 0.15);
-          const h = 150 + ((i * 37) % 90);
-          ctx.fillStyle = '#4c525b';
-          ctx.fillRect(x, 420 - h, 65, h + 10);
-          ctx.fillStyle = '#d2a063';
-          for (let yy = 440 - h; yy < 420; yy += 24) {
-            for (let xx = x + 10; xx < x + 58; xx += 20) ctx.fillRect(xx, yy, 7, 9);
-          }
-        }
-
-        // Suelo calle en perspectiva
-        ctx.fillStyle = '#4a4d4e'; ctx.strokeStyle = '#222730'; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.moveTo(0, 570); ctx.lineTo(540, 530); ctx.lineTo(540, 960); ctx.lineTo(0, 960); ctx.closePath();
-        ctx.fill(); ctx.stroke();
-
-        ctx.strokeStyle = '#6f6960'; ctx.lineWidth = 2;
-        for (let x = -200; x < 900; x += 110) {
-          ctx.beginPath(); ctx.moveTo(270, 520); ctx.lineTo(x, 960); ctx.stroke();
-        }
-        ctx.strokeStyle = '#32353b'; ctx.lineWidth = 3;
-        ctx.beginPath(); ctx.moveTo(0, 760); ctx.lineTo(540, 700); ctx.stroke();
-
-        // Edificios flanqueando la calle en 2.5D
-        drawBuilding(ctx, -40, 670, 165, 300, '#9d674a', '#393037', 2);
-        drawBuilding(ctx, 380, 620, 200, 360, '#967056', '#37323a', 5);
-        drawBuilding(ctx, 80, 570, 110, 210, '#8b6f5a', '#363139', 9);
-        drawBuilding(ctx, 350, 560, 115, 220, '#ad845e', '#363139', 13);
-      }
-
-      function drawTopLabel(ctx, title, sub) {
-        ctx.save();
-        ctx.font = 'bold 26px system-ui, -apple-system, sans-serif';
-        const tw = ctx.measureText(title).width;
-        ctx.fillStyle = 'rgba(16, 24, 37, 0.62)';
-        rRect(ctx, 270 - tw / 2 - 16, 36, tw + 32, 42, 13);
-        ctx.fill();
-
-        ctx.fillStyle = '#ffe4b9';
-        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText(title, 270, 57);
-
-        if (sub) {
-          ctx.font = '600 14px system-ui, -apple-system, sans-serif';
-          ctx.fillStyle = '#ffefd7';
-          ctx.fillText(sub, 270, 92);
-        }
-        ctx.restore();
-      }
-
-      function drawBottomSubtitles(ctx, scene, sceneTime) {
-        const words = scene.words;
-        if (!words || !words.length) return;
-        let idx = 0;
-        for (let i = 0; i < words.length; i++) {
-          if (sceneTime >= words[i].start) idx = i;
-        }
-        const start = Math.floor(idx / 3) * 3;
-        const line = words.slice(start, start + 3).map((w) => w.word.toUpperCase()).join(' ');
-
-        ctx.save();
-        ctx.font = '900 32px system-ui, -apple-system, sans-serif';
-        const w = ctx.measureText(line).width;
-        const scale = w > 470 ? 470 / w : 1;
-        ctx.translate(270, 865);
+        ctx.translate(sx, sy);
         ctx.scale(scale, scale);
-        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.lineJoin = 'round'; ctx.lineWidth = 8; ctx.strokeStyle = '#10141c';
-        ctx.strokeText(line, 0, 0);
-        ctx.fillStyle = '#ffe4b9';
-        ctx.fillText(line, 0, 0);
-        ctx.restore();
-      }
 
-      function drawFrame(ctx, canvasW, canvasH, { t, totalDuration, scene, sceneTime, showSubtitles }) {
-        ctx.save();
-        ctx.clearRect(0, 0, canvasW, canvasH);
-        // Trabajamos en espacio lógico 540x960 (igual que render_short.py)
-        ctx.scale(canvasW / 540, canvasH / 960);
-
-        if (!scene) {
-          ctx.fillStyle = '#141824'; ctx.fillRect(0, 0, 540, 960);
-          ctx.restore(); return;
-        }
-
-        const p = Math.min(1, sceneTime / Math.max(0.5, scene.duration));
-        const zoom = 1.0 + 0.025 * Math.min(1, t / Math.max(1, totalDuration)) + 0.018 * Math.sin(t * 0.6);
-        let shake = 0;
-        if (scene.type === 'tank_crack') shake = Math.round(3 * Math.sin(t * 25) * (1 - smooth((p - 0.85) / 0.15)));
-        if (scene.type === 'wave_surge') shake = Math.round(2 * Math.sin(t * 18));
-
-        // Aplicar zoom + shake de cámara (como render_short.py)
-        ctx.save();
-        ctx.translate(270 + shake, 480);
-        ctx.scale(zoom, zoom);
-        ctx.translate(-270, -480);
-
-        drawSceneBase(ctx, t * 12);
-
-        if (scene.type === 'opening_wave') {
-          drawTank(ctx, 270, 630, 0.78, 0.25);
-          drawWave(ctx, Math.min(1, p) * 0.7, 1.2);
-        } else if (scene.type === 'street_crowd') {
-          const coats = ['#323f4f', '#593730', '#36464f'];
-          [90, 165, 300, 390, 455].forEach((px, j) => {
-            drawPerson(ctx, px, 730 + (j % 2) * 28, 0.8, t + j, coats[j % 3]);
-          });
-          ctx.fillStyle = '#e6ddce';
-          for (let j = 0; j < 25; j++) {
-            ctx.beginPath();
-            ctx.arc(((j * 89 + t * 55) % 560), ((j * 47 + t * 80) % 500), 1.5, 0, Math.PI * 2);
-            ctx.fill();
-          }
-        } else if (scene.type === 'tank_reveal') {
-          drawTank(ctx, 275, 750, 0.72 + 0.18 * ease(p), 0);
-          [70, 150, 400, 475].forEach((px, j) => drawPerson(ctx, px, 800, 0.75, t + j, '#2d3f53'));
-        } else if (scene.type === 'tank_crack') {
-          drawTank(ctx, 270, 750, 0.92, p);
-          ctx.fillStyle = '#dbb474';
-          for (let j = 0; j < 10; j++) {
-            ctx.beginPath(); ctx.arc(330 + Math.floor(100 * p) + j * 3, 420 + j * 18, 3, 0, Math.PI * 2); ctx.fill();
-          }
-          ctx.strokeStyle = '#e3be88'; ctx.lineWidth = 2;
-          for (let j = 0; j < 6; j++) {
-            ctx.beginPath(); ctx.moveTo(40 + j * 80, 825); ctx.lineTo(65 + j * 80, 815); ctx.lineTo(83 + j * 80, 829); ctx.stroke();
-          }
-        } else if (scene.type === 'wave_surge') {
-          drawTank(ctx, 450, 570, 0.62, 1);
-          drawWave(ctx, ease(p), 2.1);
-        } else if (scene.type === 'rescue_aftermath') {
-          ctx.fillStyle = '#67341a'; ctx.strokeStyle = '#33231c'; ctx.lineWidth = 3;
-          ctx.beginPath();
-          ctx.moveTo(0, 740 - 150 * p); ctx.lineTo(540, 700 - 130 * p); ctx.lineTo(540, 960); ctx.lineTo(0, 960);
-          ctx.closePath(); ctx.fill(); ctx.stroke();
-          [120, 220, 390].forEach((px, j) => drawPerson(ctx, px, 790, 0.95, t + j, '#2e3f4e'));
-          // Escalera de rescate
-          ctx.strokeStyle = '#c9ae86'; ctx.lineWidth = 7;
-          ctx.beginPath(); ctx.moveTo(260, 490); ctx.lineTo(330, 805); ctx.moveTo(295, 488); ctx.lineTo(365, 800); ctx.stroke();
-          ctx.lineWidth = 4;
-          for (let y = 530; y < 790; y += 45) {
-            ctx.beginPath(); ctx.moveTo(267 + (y - 490) * 0.1, y); ctx.lineTo(302 + (y - 490) * 0.1, y); ctx.stroke();
-          }
-        } else if (scene.type === 'civic_courthouse') {
-          ctx.fillStyle = '#50392c'; ctx.strokeStyle = '#232227'; ctx.lineWidth = 2;
-          ctx.beginPath(); ctx.moveTo(0, 760); ctx.lineTo(540, 720); ctx.lineTo(540, 960); ctx.lineTo(0, 960); ctx.closePath(); ctx.fill(); ctx.stroke();
-          ctx.fillStyle = '#c2ac8b'; ctx.strokeStyle = '#2c2b2f'; ctx.lineWidth = 3;
-          ctx.beginPath(); ctx.moveTo(95, 490); ctx.lineTo(270, 400); ctx.lineTo(445, 490); ctx.closePath(); ctx.fill(); ctx.stroke();
-          ctx.fillStyle = '#ae9777'; ctx.fillRect(105, 490, 330, 270); ctx.strokeRect(105, 490, 330, 270);
-          [150, 220, 290, 360].forEach((cx) => {
-            ctx.fillStyle = '#dccaa8'; ctx.strokeStyle = '#413831'; ctx.lineWidth = 2;
-            ctx.fillRect(cx, 510, 22, 210); ctx.strokeRect(cx, 510, 22, 210);
-          });
-          ctx.fillStyle = '#675344'; ctx.fillRect(80, 740, 380, 20);
-          ctx.strokeStyle = 'rgba(226, 184, 123, 0.55)'; ctx.lineWidth = 2;
-          for (let j = 0; j < 5; j++) {
-            ctx.beginPath(); ctx.moveTo(60 + j * 100, 0); ctx.lineTo(120 + j * 90, 380); ctx.stroke();
-          }
-        } else if (scene.type === 'paris_tower') {
-          ctx.fillStyle = '#7f8c96'; ctx.strokeStyle = INK; ctx.lineWidth = 3;
-          ctx.beginPath();
-          ctx.moveTo(262, 240); ctx.lineTo(278, 240); ctx.lineTo(295, 520);
-          ctx.lineTo(355, 760); ctx.lineTo(315, 760); ctx.quadraticCurveTo(270, 680, 225, 760);
-          ctx.lineTo(185, 760); ctx.lineTo(245, 520); ctx.closePath(); ctx.fill(); ctx.stroke();
-          [140, 400].forEach((px, j) => drawPerson(ctx, px, 790, 0.85, t + j, '#2e3f4e'));
-        } else if (scene.type === 'ocean_fleet') {
-          ctx.fillStyle = '#24476b';
-          ctx.fillRect(0, 640, 540, 320);
-          ctx.fillStyle = '#475569'; ctx.strokeStyle = INK; ctx.lineWidth = 3;
-          rRect(ctx, 130, 610 + Math.sin(t * 2) * 8, 280, 60, 28); ctx.fill(); ctx.stroke();
-          rRect(ctx, 230, 565 + Math.sin(t * 2) * 8, 80, 48, 8); ctx.fill(); ctx.stroke();
-        } else if (scene.type === 'underground_vault') {
-          ctx.fillStyle = '#3b2c25'; ctx.fillRect(0, 650, 540, 310);
-          ctx.fillStyle = '#94a3b8'; ctx.strokeStyle = INK; ctx.lineWidth = 4;
-          ctx.beginPath(); ctx.arc(270, 540, 110, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-          ctx.fillStyle = '#efae5b'; ctx.fillRect(190, 720, 160, 55); ctx.strokeRect(190, 720, 160, 55);
-          drawPerson(ctx, 140, 780, 0.9, t, '#36464f');
-        } else if (scene.type === 'dragon_jar') {
-          drawTank(ctx, 270, 720, 0.65, 0);
-          ctx.fillStyle = '#eab308'; ctx.strokeStyle = INK; ctx.lineWidth = 3;
-          [185, 270, 355].forEach((dx) => {
-            ctx.beginPath(); ctx.arc(dx, 580, 16, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-          });
-          drawPerson(ctx, 110, 780, 0.85, t, '#2563eb');
-        }
-
-        ctx.restore(); // Fin cámara
-
-        // Viñeta radial suave (igual que render_short.py)
-        const vig = ctx.createRadialGradient(270, 480, 160, 270, 480, 560);
-        vig.addColorStop(0, 'rgba(0,0,0,0)');
-        vig.addColorStop(1, 'rgba(0,0,0,0.34)');
-        ctx.fillStyle = vig; ctx.fillRect(0, 0, 540, 960);
-
-        // Textura grano de papel determinista
-        ctx.fillStyle = getGrainPattern(ctx);
-        ctx.fillRect(0, 0, 540, 960);
-
-        // Rótulo superior estilo Boston Short + subtítulos inferiores opcionales
-        drawTopLabel(ctx, scene.title, scene.sub);
-        if (showSubtitles) drawBottomSubtitles(ctx, scene, sceneTime);
-
-        ctx.restore();
-      }
-
-      return { drawFrame };
-    })();
-
-    // =========================================================================
-    // 4. EXPORTADOR MP4 DETERMINISTA (WebCodecs + mp4-muxer)
-    // =========================================================================
-    window.ZipExporter = (() => {
-      const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-      async function pickVideoConfig(width, height, fps) {
-        for (const codec of ['avc1.64002a', 'avc1.4d002a', 'avc1.42002a', 'avc1.42001f']) {
-          const cfg = { codec, width, height, bitrate: width >= 1080 ? 5_800_000 : 3_400_000, framerate: fps };
-          if ((await VideoEncoder.isConfigSupported(cfg)).supported) return cfg;
-        }
-        return null;
-      }
-
-      async function pickAudioConfig(sampleRate) {
-        for (const c of [{ codec: 'mp4a.40.2', mux: 'aac' }, { codec: 'opus', mux: 'opus' }]) {
-          const cfg = { codec: c.codec, numberOfChannels: 2, sampleRate, bitrate: 128000 };
-          if ((await AudioEncoder.isConfigSupported(cfg)).supported) return { cfg, mux: c.mux };
-        }
-        return null;
-      }
-
-      async function exportWithMediaRecorderFallback(opts) {
-        const { scenes, masterBuffer, totalDuration, width, height, fps, showSubtitles, onProgress } = opts;
-        const canvas = document.createElement('canvas');
-        canvas.width = width; canvas.height = height;
-        const ctx = canvas.getContext('2d');
-
-        const audioCtx = window.ZipAudioEngine.ensureLiveContext();
-        const dest = audioCtx.createMediaStreamDestination();
-        const src = audioCtx.createBufferSource();
-        src.buffer = masterBuffer; src.connect(dest);
-
-        const stream = new MediaStream([...canvas.captureStream(fps).getVideoTracks(), ...dest.stream.getAudioTracks()]);
-        const mime = MediaRecorder.isTypeSupported('video/mp4') ? 'video/mp4' : 'video/webm';
-        const rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 4_500_000 });
-        const chunks = [];
-        rec.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
-
-        return new Promise((resolve) => {
-          rec.onstop = () => resolve({ blob: new Blob(chunks, { type: mime }), ext: mime.includes('mp4') ? 'mp4' : 'webm' });
-          const startT = audioCtx.currentTime + 0.05;
-          rec.start(); src.start(startT);
-
-          const tick = () => {
-            const elapsed = Math.max(0, audioCtx.currentTime - startT);
-            if (elapsed >= totalDuration) { rec.stop(); try { src.stop(); } catch (_) {} return; }
-            let active = scenes[scenes.length - 1];
-            for (const s of scenes) { if (elapsed >= s.startTime && elapsed < s.startTime + s.duration) { active = s; break; } }
-            window.ZipRenderer.drawFrame(ctx, width, height, {
-              t: elapsed, totalDuration, scene: active, sceneTime: Math.max(0, elapsed - active.startTime), showSubtitles
-            });
-            if (onProgress) onProgress(Math.min(0.98, elapsed / totalDuration), `Grabando vídeo (${elapsed.toFixed(1)}s)...`);
-            requestAnimationFrame(tick);
-          };
-          requestAnimationFrame(tick);
-        });
-      }
-
-      async function exportToMP4(opts) {
-        const { scenes, masterBuffer, totalDuration, width, height, fps, showSubtitles, onProgress } = opts;
-        if (onProgress) onProgress(0.02, 'Cargando empaquetador MP4...');
-        const hasMuxer = await ensureMp4MuxerLoaded();
-        const hasWebCodecs = typeof VideoEncoder !== 'undefined' && typeof AudioEncoder !== 'undefined';
-
-        if (!hasMuxer || !hasWebCodecs) return await exportWithMediaRecorderFallback(opts);
-        const vConfig = await pickVideoConfig(width, height, fps);
-        const aChoice = await pickAudioConfig(masterBuffer.sampleRate);
-        if (!vConfig || !aChoice) return await exportWithMediaRecorderFallback(opts);
-
-        const muxer = new Mp4Muxer.Muxer({
-          target: new Mp4Muxer.ArrayBufferTarget(),
-          video: { codec: 'avc', width, height },
-          audio: { codec: aChoice.mux, numberOfChannels: 2, sampleRate: masterBuffer.sampleRate },
-          fastStart: 'in-memory'
-        });
-
-        const videoEncoder = new VideoEncoder({ output: (c, m) => muxer.addVideoChunk(c, m), error: console.error });
-        videoEncoder.configure(vConfig);
-        const audioEncoder = new AudioEncoder({ output: (c, m) => muxer.addAudioChunk(c, m), error: console.error });
-        audioEncoder.configure(aChoice.cfg);
-
-        if (onProgress) onProgress(0.06, 'Codificando música y SFX...');
-        const sr = masterBuffer.sampleRate;
-        const ch0 = masterBuffer.getChannelData(0);
-        const ch1 = masterBuffer.getChannelData(1);
-        for (let offset = 0; offset < ch0.length; offset += 2048) {
-          const n = Math.min(2048, ch0.length - offset);
-          const planar = new Float32Array(n * 2);
-          planar.set(ch0.subarray(offset, offset + n), 0);
-          planar.set(ch1.subarray(offset, offset + n), n);
-          const ad = new AudioData({
-            format: 'f32-planar', sampleRate: sr, numberOfFrames: n, numberOfChannels: 2,
-            timestamp: Math.round((offset * 1_000_000) / sr), data: planar
-          });
-          while (audioEncoder.encodeQueueSize > 16) await sleep(4);
-          audioEncoder.encode(ad); ad.close();
-        }
-
-        const offCanvas = document.createElement('canvas');
-        offCanvas.width = width; offCanvas.height = height;
-        const offCtx = offCanvas.getContext('2d');
-        const totalFrames = Math.ceil(totalDuration * fps);
-        const frameDurUs = Math.round(1_000_000 / fps);
-
-        for (let f = 0; f < totalFrames; f++) {
-          const t = f / fps;
-          let active = scenes[scenes.length - 1];
-          for (const s of scenes) { if (t >= s.startTime && t < s.startTime + s.duration) { active = s; break; } }
-
-          window.ZipRenderer.drawFrame(offCtx, width, height, {
-            t, totalDuration, scene: active, sceneTime: Math.max(0, t - active.startTime), showSubtitles
-          });
-
-          const frame = new VideoFrame(offCanvas, { timestamp: Math.round((f * 1_000_000) / fps), duration: frameDurUs });
-          while (videoEncoder.encodeQueueSize > 8) await sleep(6);
-          videoEncoder.encode(frame, { keyFrame: f % (fps * 2) === 0 });
-          frame.close();
-
-          if (f % 10 === 0 && onProgress) {
-            onProgress(0.1 + 0.85 * (f / totalFrames), `Renderizando (${f}/${totalFrames} fotogramas)...`);
-            await sleep(0);
-          }
-        }
-
-        if (onProgress) onProgress(0.96, 'Finalizando MP4...');
-        await audioEncoder.flush();
-        await videoEncoder.flush();
-        muxer.finalize();
-        return { blob: new Blob([muxer.target.buffer], { type: 'video/mp4' }), ext: 'mp4' };
-      }
-
-      return { exportToMP4 };
-    })();
-
-    // =========================================================================
-    // 5. CONTROLADOR PRINCIPAL
-    // =========================================================================
-    function initZipStudio() {
-      const el = {
-        codecSupportBadge: document.getElementById('codecSupportBadge'),
-        presetSelect: document.getElementById('presetSelect'),
-        loadPresetBtn: document.getElementById('loadPresetBtn'),
-        storyInput: document.getElementById('storyInput'),
-        resolutionSelect: document.getElementById('resolutionSelect'),
-        fpsSelect: document.getElementById('fpsSelect'),
-        subtitleModeSelect: document.getElementById('subtitleModeSelect'),
-        musicToggle: document.getElementById('musicToggle'),
-        sfxToggle: document.getElementById('sfxToggle'),
-        buildShortBtn: document.getElementById('buildShortBtn'),
-        sceneCount: document.getElementById('sceneCount'),
-        scenesSummary: document.getElementById('scenesSummary'),
-        genSheetBtn: document.getElementById('genSheetBtn'),
-        qaReportBox: document.getElementById('qaReportBox'),
-        contactSheetGrid: document.getElementById('contactSheetGrid'),
-        previewCanvas: document.getElementById('previewCanvas'),
-        playPauseBtn: document.getElementById('playPauseBtn'),
-        restartBtn: document.getElementById('restartBtn'),
-        timelineScrubber: document.getElementById('timelineScrubber'),
-        timeDisplay: document.getElementById('timeDisplay'),
-        statusBanner: document.getElementById('statusBanner'),
-        exportMp4Btn: document.getElementById('exportMp4Btn'),
-        exportProgressWrap: document.getElementById('exportProgressWrap'),
-        exportProgressBar: document.getElementById('exportProgressBar'),
-        exportProgressText: document.getElementById('exportProgressText'),
-        exportResultWrap: document.getElementById('exportResultWrap'),
-        exportedVideoPreview: document.getElementById('exportedVideoPreview'),
-        downloadMp4Link: document.getElementById('downloadMp4Link')
-      };
-
-      const state = {
-        scenes: [], masterBuffer: null, totalDuration: 0,
-        isPlaying: false, playOffset: 0, audioStartTime: 0,
-        activeSourceNode: null, rafId: null, lastExportUrl: null
-      };
-
-      const previewCtx = el.previewCanvas.getContext('2d');
-
-      if (typeof VideoEncoder !== 'undefined' && typeof AudioEncoder !== 'undefined') {
-        el.codecSupportBadge.textContent = '✓ WebCodecs MP4 1080×1920 listo';
-        el.codecSupportBadge.style.color = '#6ee7b7';
-      } else {
-        el.codecSupportBadge.textContent = '✓ Modo Grabación Directa';
-        el.codecSupportBadge.style.color = '#fde047';
-      }
-
-      ensureMp4MuxerLoaded();
-      const setStatus = (m) => { el.statusBanner.textContent = m; };
-
-      function renderSummaryAndQA() {
-        el.sceneCount.textContent = state.scenes.length;
-        el.scenesSummary.innerHTML = '';
-
-        state.scenes.forEach((sc, idx) => {
-          const div = document.createElement('div');
-          div.className = 'scene-pill';
-          div.innerHTML = `<strong>#${idx + 1} [${sc.startTime.toFixed(1)}s–${(sc.startTime + sc.duration).toFixed(1)}s] · ${sc.title}</strong>` +
-            `<small>${sc.text}</small>`;
-          el.scenesSummary.appendChild(div);
-        });
-
-        const [w, h] = el.resolutionSelect.value.split('x').map(Number);
-        const fps = parseInt(el.fpsSelect.value, 10);
-        const totalFrames = Math.ceil(state.totalDuration * fps);
-
-        let peak = 0;
-        if (state.masterBuffer) {
-          const ch = state.masterBuffer.getChannelData(0);
-          for (let i = 0; i < ch.length; i += 64) {
-            const v = Math.abs(ch[i]);
-            if (v > peak) peak = v;
-          }
-        }
-        const dbfs = peak > 0 ? (20 * Math.log10(peak)).toFixed(1) : '-∞';
-
-        el.qaReportBox.textContent =
-          `SPECS ${w}x${h} ${fps} fps | ${totalFrames} frames | ${state.totalDuration.toFixed(2)} s | audio 48kHz stereo\n` +
-          `PEAK ${dbfs} dBFS | SILENCES none | FROZEN_SPANS none (zoom continuo + grain activo)\n` +
-          `BLOQUES_GUIÓN ${state.scenes.length} planos automáticos`;
-      }
-
-      function generate9FrameContactSheet() {
-        if (!state.scenes.length) return;
-        el.contactSheetGrid.innerHTML = '';
-        el.contactSheetGrid.classList.remove('hidden');
-
-        const c = document.createElement('canvas');
-        c.width = 270; c.height = 480;
-        const cx = c.getContext('2d');
-
-        for (let k = 0; k < 9; k++) {
-          const t = (k / 8) * Math.max(0.1, state.totalDuration - 0.1);
-          let active = state.scenes[state.scenes.length - 1];
-          for (const s of state.scenes) { if (t >= s.startTime && t < s.startTime + s.duration) { active = s; break; } }
-
-          window.ZipRenderer.drawFrame(cx, c.width, c.height, {
-            t, totalDuration: state.totalDuration, scene: active,
-            sceneTime: Math.max(0, t - active.startTime),
-            showSubtitles: el.subtitleModeSelect.value === 'on'
-          });
-          const img = document.createElement('img');
-          img.src = c.toDataURL('image/jpeg', 0.82);
-          img.title = `t = ${t.toFixed(1)}s`;
-          el.contactSheetGrid.appendChild(img);
-        }
-      }
-
-      async function rebuildShort() {
-        stopPlayback();
-        const raw = el.storyInput.value.trim();
-        if (!raw) return;
-
-        state.scenes = window.ZipScriptDirector.compileScript(raw);
-        let cursor = 0;
-        state.scenes.forEach((sc) => { sc.startTime = cursor; cursor += sc.duration; });
-        state.totalDuration = Math.max(1.0, cursor + 0.3);
-        state.playOffset = 0;
-
-        el.timelineScrubber.max = state.totalDuration.toFixed(2);
-        updateTimeLabel(0);
-        drawPreviewAt(0);
-
-        state.masterBuffer = await window.ZipAudioEngine.renderAudioMix({
-          scenes: state.scenes,
-          totalDuration: state.totalDuration,
-          enableMusic: el.musicToggle.checked,
-          enableSFX: el.sfxToggle.checked
-        });
-
-        renderSummaryAndQA();
-        el.contactSheetGrid.classList.add('hidden');
-        setStatus(`✓ Short creado desde tu guion (${state.scenes.length} escenas, ${state.totalDuration.toFixed(1)}s).`);
-      }
-
-      function updateTimeLabel(t) {
-        el.timeDisplay.textContent = `${t.toFixed(1)}s / ${state.totalDuration.toFixed(1)}s`;
-        el.timelineScrubber.value = Math.min(state.totalDuration, t);
-      }
-
-      function drawPreviewAt(t) {
-        if (!state.scenes.length) {
-          window.ZipRenderer.drawFrame(previewCtx, el.previewCanvas.width, el.previewCanvas.height, { t: 0, scene: null, sceneTime: 0 });
-          return;
-        }
-        let active = state.scenes[state.scenes.length - 1];
-        for (const s of state.scenes) { if (t >= s.startTime && t < s.startTime + s.duration) { active = s; break; } }
-
-        window.ZipRenderer.drawFrame(previewCtx, el.previewCanvas.width, el.previewCanvas.height, {
-          t, totalDuration: state.totalDuration, scene: active,
-          sceneTime: Math.max(0, t - active.startTime),
-          showSubtitles: el.subtitleModeSelect.value === 'on'
-        });
-      }
-
-      function stopPlayback() {
-        state.isPlaying = false;
-        el.playPauseBtn.textContent = '▶ Reproducir Preview';
-        if (state.activeSourceNode) {
-          try { state.activeSourceNode.stop(); } catch (_) {}
-          state.activeSourceNode = null;
-        }
-        if (state.rafId) cancelAnimationFrame(state.rafId);
-      }
-
-      async function startPlayback() {
-        if (!state.scenes.length || !state.masterBuffer) return;
-        const ctx = window.ZipAudioEngine.ensureLiveContext();
-        if (state.playOffset >= state.totalDuration - 0.05) state.playOffset = 0;
-
-        const src = ctx.createBufferSource();
-        src.buffer = state.masterBuffer;
-        src.connect(ctx.destination);
-
-        const startAt = ctx.currentTime + 0.04;
-        src.start(startAt, state.playOffset);
-        state.activeSourceNode = src;
-        state.audioStartTime = startAt - state.playOffset;
-        state.isPlaying = true;
-        el.playPauseBtn.textContent = '⏸ Pausar';
-
-        const loop = () => {
-          if (!state.isPlaying) return;
-          const elapsed = Math.max(0, ctx.currentTime - state.audioStartTime);
-          state.playOffset = elapsed;
-          if (elapsed >= state.totalDuration) {
-            stopPlayback(); state.playOffset = 0; updateTimeLabel(0); drawPreviewAt(0); return;
-          }
-          drawPreviewAt(elapsed);
-          updateTimeLabel(elapsed);
-          state.rafId = requestAnimationFrame(loop);
-        };
-        state.rafId = requestAnimationFrame(loop);
-      }
-
-      el.loadPresetBtn.addEventListener('click', () => {
-        el.storyInput.value = window.ZipScriptDirector.PRESETS[el.presetSelect.value] || '';
-        rebuildShort();
-      });
-
-      el.buildShortBtn.addEventListener('click', rebuildShort);
-      el.genSheetBtn.addEventListener('click', generate9FrameContactSheet);
-
-      [el.musicToggle, el.sfxToggle, el.resolutionSelect, el.fpsSelect].forEach((n) => {
-        n.addEventListener('change', async () => {
-          if (!state.scenes.length) return;
-          state.masterBuffer = await window.ZipAudioEngine.renderAudioMix({
-            scenes: state.scenes,
-            totalDuration: state.totalDuration,
-            enableMusic: el.musicToggle.checked,
-            enableSFX: el.sfxToggle.checked
-          });
-          renderSummaryAndQA();
-        });
-      });
-
-      el.subtitleModeSelect.addEventListener('change', () => drawPreviewAt(state.playOffset));
-
-      el.playPauseBtn.addEventListener('click', () => {
-        if (state.isPlaying) stopPlayback(); else startPlayback();
-      });
-
-      el.restartBtn.addEventListener('click', () => {
-        stopPlayback(); state.playOffset = 0; updateTimeLabel(0); drawPreviewAt(0);
-      });
-
-      el.timelineScrubber.addEventListener('input', (e) => {
-        stopPlayback(); state.playOffset = parseFloat(e.target.value);
-        updateTimeLabel(state.playOffset); drawPreviewAt(state.playOffset);
-      });
-
-      el.exportMp4Btn.addEventListener('click', async () => {
-        if (!state.scenes.length || !state.masterBuffer) return alert('Primero crea el Short desde tu guion.');
-        stopPlayback();
-
-        const [w, h] = el.resolutionSelect.value.split('x').map(Number);
-        const fps = parseInt(el.fpsSelect.value, 10);
-
-        el.exportMp4Btn.disabled = true;
-        el.exportProgressWrap.classList.remove('hidden');
-        el.exportResultWrap.classList.add('hidden');
-
-        try {
-          const { blob, ext } = await window.ZipExporter.exportToMP4({
-            scenes: state.scenes,
-            masterBuffer: state.masterBuffer,
-            totalDuration: state.totalDuration,
-            width: w, height: h, fps,
-            showSubtitles: el.subtitleModeSelect.value === 'on',
-            onProgress: (ratio, msg) => {
-              el.exportProgressBar.style.width = `${Math.round(ratio * 100)}%`;
-              el.exportProgressText.textContent = msg;
-            }
-          });
-
-          if (state.lastExportUrl) URL.revokeObjectURL(state.lastExportUrl);
-          const url = URL.createObjectURL(blob);
-          state.lastExportUrl = url;
-          el.exportedVideoPreview.src = url;
-          el.downloadMp4Link.href = url;
-          el.downloadMp4Link.download = `short-animado.${ext}`;
-          el.exportResultWrap.classList.remove('hidden');
-          setStatus(`¡Short exportado (${(blob.size / 1024 / 1024).toFixed(2)} MB) en .${ext}!`);
-        } catch (err) {
-          alert('Error al exportar: ' + err.message);
-          setStatus('Error exportando: ' + err.message);
-        } finally {
-          el.exportMp4Btn.disabled = false;
-          el.exportProgressWrap.classList.add('hidden');
-        }
-      });
-
-      el.storyInput.value = window.ZipScriptDirector.PRESETS.boston_melaza;
-      rebuildShort();
-    }
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => {
-        try { initZipStudio(); } catch (e) {
-          document.getElementById('codecSupportBadge').textContent = 'Error JS: ' + e.message;
-        }
-      });
-    } else {
-      try { initZipStudio(); } catch (e) {
-        document.getElementById('codecSupportBadge').textContent = 'Error JS: ' + e.message;
-      }
-    }
-  </script>
-</body>
-</html>
+        ctx.fillStyle = 'rgba(0,0,0,0.38)';
+        ctx.beginPath(); ctx.ellipse(0, 4, 52, 12, 0, 0, Math.PI * 2); ctx.fill();
