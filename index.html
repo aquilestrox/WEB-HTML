@@ -1,1220 +1,847 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apple Calendar - macOS Pro</title>
-    <style>
-        :root {
-            --bg-window: #1e1e1e;
-            --bg-sidebar: #161618;
-            --bg-calendar: #1e1e20;
-            --grid-line: #2b2b2f;
-            --grid-line-subtle: #232326;
-            --text-main: #f5f5f7;
-            --text-muted: #8e8e93;
-            --border-ui: rgba(255, 255, 255, 0.08);
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RicksClips Studio PRO — Shorts 9:16 Cinematográficos (Sin APIs, Solo Música + SFX)</title>
+  <script src="https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.2/build/mp4-muxer.js"></script>
+  <style>
+    :root {
+      --bg: #0c0e14;
+      --panel: #151923;
+      --panel-alt: #1d2331;
+      --border: #2b3347;
+      --text: #eef1f7;
+      --muted: #93a0b8;
+      --primary: #4f7cff;
+      --accent: #00c2a8;
+      --export: #ff4d6d;
+      --radius: 10px;
+    }
 
-            --accent-orange: #ff9f0a;
-            --accent-blue: #0a84ff;
-            --accent-pink: #ff375f;
-            --accent-green: #30d158;
-            --accent-yellow: #ffd60a;
-            --accent-brown: #a2845e;
-            --accent-purple: #bf5af2;
-            --accent-red: #ff453a;
+    * { box-sizing: border-box; }
 
-            --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, Helvetica, sans-serif;
-        }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.4;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-            -webkit-user-select: none;
-        }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 13px 22px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
+      flex-wrap: wrap;
+    }
 
-        body {
-            background: #000;
-            font-family: var(--font-stack);
-            color: var(--text-main);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            font-size: 13px;
-        }
+    .topbar h1 { margin: 0; font-size: 1.15rem; }
+    .subtitle { margin: 2px 0 0; font-size: 0.8rem; color: var(--muted); }
 
-        /* Ventana macOS */
-        .window {
-            width: 98vw;
-            height: 96vh;
-            background: var(--bg-window);
-            border-radius: 12px;
-            box-shadow: 0 35px 80px rgba(0,0,0,0.9), 0 0 0 1px var(--border-ui);
-            display: flex;
-            overflow: hidden;
-        }
+    .badge {
+      background: var(--accent);
+      color: #06211c;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 999px;
+      vertical-align: middle;
+    }
 
-        /* BARRA LATERAL */
-        .sidebar {
-            width: 230px;
-            background: var(--bg-sidebar);
-            border-right: 1px solid var(--border-ui);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 14px 12px;
-            flex-shrink: 0;
-        }
+    .status-pill {
+      font-size: 0.78rem;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--panel-alt);
+      border: 1px solid var(--border);
+    }
 
-        .traffic-lights {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 18px;
-            align-items: center;
-        }
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(360px, 1.2fr) minmax(320px, 0.85fr);
+      gap: 18px;
+      padding: 18px;
+      max-width: 1540px;
+      margin: 0 auto;
+    }
 
-        .dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-        .dot.red { background: #ff5f56; }
-        .dot.yellow { background: #ffbd2e; }
-        .dot.green { background: #27c93f; }
+    @media (max-width: 980px) {
+      .workspace { grid-template-columns: 1fr; }
+    }
 
-        .section-title {
-            color: var(--text-muted);
-            font-size: 11px;
-            font-weight: 600;
-            margin: 12px 6px 6px 6px;
-        }
+    .panel { display: flex; flex-direction: column; gap: 14px; }
 
-        .calendar-list {
-            list-style: none;
-            margin-bottom: 8px;
-        }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 15px;
+    }
 
-        .calendar-item {
-            display: flex;
-            align-items: center;
-            padding: 5px 8px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12.5px;
-            gap: 8px;
-            transition: background 0.15s;
-        }
+    .card h2 { margin: 0 0 10px; font-size: 0.98rem; }
 
-        .calendar-item:hover {
-            background: rgba(255,255,255,0.06);
-        }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
 
-        .custom-checkbox {
-            width: 14px;
-            height: 14px;
-            border-radius: 3px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 9px;
-            color: #000;
-            font-weight: 900;
-            transition: all 0.2s;
-        }
+    .card-header h2 { margin: 0; }
 
-        .calendar-item.inactive .custom-checkbox {
-            background: transparent !important;
-            border: 1.5px solid var(--text-muted);
-            color: transparent;
-        }
-        .calendar-item.inactive span:last-child {
-            opacity: 0.45;
-        }
+    textarea, input[type="text"], input[type="number"], select {
+      width: 100%;
+      background: var(--panel-alt);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 10px;
+      font: inherit;
+      font-size: 0.87rem;
+    }
 
-        /* Minicalendario */
-        .mini-calendar {
-            background: rgba(0,0,0,0.25);
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid var(--border-ui);
-        }
+    textarea { resize: vertical; }
 
-        .mini-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 11px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #ddd;
-        }
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
 
-        .mini-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 2px;
-            text-align: center;
-            font-size: 10px;
-            color: var(--text-muted);
-        }
+    .checkbox-label {
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+      color: var(--text);
+      cursor: pointer;
+    }
 
-        .mini-grid .mini-day-title {
-            padding-bottom: 4px;
-            font-weight: 600;
-        }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
 
-        .mini-grid .day-num {
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            cursor: pointer;
-            color: #ccc;
-        }
-        .mini-grid .day-num.current-day {
-            background: var(--accent-red);
-            color: #fff;
-            font-weight: bold;
-        }
-        .mini-grid .day-num.in-selected-week {
-            background: rgba(255,255,255,0.1);
-        }
-        .mini-grid .day-num.other-month { color: #444; }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 10px;
+    }
 
-        /* VISTA PRINCIPAL */
-        .main-view {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: var(--bg-calendar);
-            overflow: hidden;
-            position: relative;
-        }
+    .toggles-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin: 10px 0;
+    }
 
-        .top-bar {
-            height: 52px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 18px;
-            border-bottom: 1px solid var(--grid-line);
-            flex-shrink: 0;
-        }
+    .preset-row, .inline-form, .actions-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
 
-        .top-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
+    .actions-row { margin-top: 10px; }
 
-        .btn-icon {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            font-size: 17px;
-            cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .btn-icon:hover {
-            color: var(--text-main);
-            background: rgba(255,255,255,0.08);
-        }
+    button, .download-btn {
+      border: none;
+      border-radius: 8px;
+      padding: 9px 14px;
+      font: inherit;
+      font-weight: 600;
+      font-size: 0.86rem;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      transition: opacity 0.15s ease;
+    }
 
-        .main-title {
-            font-size: 18px;
-            font-weight: 600;
-            letter-spacing: -0.2px;
-            min-width: 180px;
-        }
+    button:hover, .download-btn:hover { opacity: 0.9; }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
 
-        .segmented-control {
-            display: flex;
-            background: rgba(255,255,255,0.08);
-            padding: 2px;
-            border-radius: 6px;
-        }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-secondary { background: var(--panel-alt); color: var(--text); border: 1px solid var(--border); }
+    .btn-export { background: var(--export); color: #fff; width: 100%; padding: 12px; font-size: 0.96rem; }
+    .btn-danger { background: #5a222b; color: #ffd4dc; padding: 5px 10px; font-size: 0.76rem; }
 
-        .segment-btn {
-            border: none;
-            background: transparent;
-            color: var(--text-muted);
-            padding: 4px 11px;
-            font-size: 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
-        }
+    .scenes-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 540px;
+      overflow-y: auto;
+    }
 
-        .segment-btn.active {
-            background: rgba(255,255,255,0.2);
-            color: var(--text-main);
-        }
+    .scene-card {
+      background: var(--panel-alt);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
 
-        .top-right {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+    .scene-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
 
-        .btn-today {
-            background: rgba(255,255,255,0.08);
-            border: 1px solid var(--border-ui);
-            color: var(--text-main);
-            padding: 4px 10px;
-            border-radius: 5px;
-            font-size: 12px;
-            cursor: pointer;
-        }
-        .btn-today:hover { background: rgba(255,255,255,0.15); }
+    .beat-badge {
+      background: #2c354c;
+      color: #a9c1ff;
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
 
-        .btn-reset {
-            background: transparent;
-            border: 1px solid var(--border-ui);
-            color: var(--text-muted);
-            padding: 4px 8px;
-            border-radius: 5px;
-            font-size: 11px;
-            cursor: pointer;
-            margin-right: 6px;
-        }
-        .btn-reset:hover { color: #ff5f56; border-color: #ff5f56; }
+    .scene-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
 
-        /* CUERPO DEL CALENDARIO */
-        .calendar-body {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-            position: relative;
-        }
+    @media (max-width: 640px) {
+      .scene-meta-grid, .grid-3 { grid-template-columns: 1fr 1fr; }
+    }
 
-        /* Encabezado columnas */
-        .days-header {
-            display: grid;
-            grid-template-columns: 55px repeat(7, 1fr);
-            border-bottom: 1px solid var(--grid-line);
-            text-align: center;
-            font-size: 12px;
-            padding: 8px 0;
-            background: var(--bg-calendar);
-            position: sticky;
-            top: 0;
-            z-index: 20;
-        }
+    .preview-card { position: sticky; top: 16px; }
 
-        .day-header-cell {
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-        .day-header-cell.is-today {
-            color: var(--accent-red);
-            font-weight: 700;
-        }
+    .phone-frame {
+      width: min(350px, 100%);
+      aspect-ratio: 9 / 16;
+      margin: 0 auto 12px;
+      background: #000;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 2px solid var(--border);
+    }
 
-        /* Todo el día */
-        .all-day-row {
-            display: grid;
-            grid-template-columns: 55px repeat(7, 1fr);
-            border-bottom: 1px solid var(--grid-line);
-            min-height: 28px;
-            background: rgba(0,0,0,0.15);
-            position: sticky;
-            top: 33px;
-            z-index: 19;
-        }
+    #previewCanvas { width: 100%; height: 100%; display: block; }
 
-        .all-day-label {
-            color: var(--text-muted);
-            text-align: right;
-            padding-right: 8px;
-            font-size: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-        }
+    .player-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
 
-        .all-day-cell {
-            border-left: 1px solid var(--grid-line);
-            min-height: 28px;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            padding: 3px 4px;
-            cursor: pointer;
-        }
+    .time-display {
+      margin-left: auto;
+      font-variant-numeric: tabular-nums;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
 
-        /* Rejilla Horaria */
-        .time-grid-container {
-            display: grid;
-            grid-template-columns: 55px repeat(7, 1fr);
-            position: relative;
-            flex: 1;
-        }
+    .scrubber { width: 100%; margin-bottom: 8px; }
+    .status-banner { margin: 4px 0 0; font-size: 0.82rem; color: #b7c4e0; }
+    .divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+    .progress-wrap { margin-top: 12px; }
 
-        .time-labels {
-            display: flex;
-            flex-direction: column;
-        }
+    .progress-track {
+      width: 100%;
+      height: 10px;
+      background: var(--panel-alt);
+      border-radius: 999px;
+      overflow: hidden;
+    }
 
-        .time-label {
-            height: 60px;
-            text-align: right;
-            padding-right: 8px;
-            font-size: 11px;
-            color: var(--text-muted);
-            transform: translateY(-7px);
-        }
+    .progress-fill { width: 0%; height: 100%; background: var(--accent); transition: width 0.1s linear; }
 
-        .day-column {
-            border-left: 1px solid var(--grid-line);
-            position: relative;
-            height: calc(60px * 18);
-            cursor: pointer;
-        }
+    .export-result {
+      margin-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
 
-        .hour-row-line {
-            height: 60px;
-            border-bottom: 1px solid var(--grid-line);
-            box-sizing: border-box;
-            pointer-events: none;
-        }
+    .export-result video {
+      width: min(260px, 100%);
+      aspect-ratio: 9 / 16;
+      margin: 0 auto;
+      border-radius: 10px;
+      background: #000;
+    }
 
-        /* Indicador de Hora Actual */
-        .current-time-line {
-            position: absolute;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--accent-red);
-            z-index: 10;
-            pointer-events: none;
-        }
-        .current-time-line::before {
-            content: '';
-            position: absolute;
-            left: -4px;
-            top: -3px;
-            width: 8px;
-            height: 8px;
-            background: var(--accent-red);
-            border-radius: 50%;
-        }
-
-        /* EVENTOS */
-        .event-card {
-            position: absolute;
-            border-radius: 4px;
-            padding: 4px 6px;
-            font-size: 11.5px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            cursor: pointer;
-            border-left-width: 3.5px;
-            border-left-style: solid;
-            line-height: 1.25;
-            z-index: 5;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            transition: filter 0.1s, transform 0.08s;
-        }
-
-        .event-card:hover {
-            filter: brightness(1.25);
-            z-index: 8;
-        }
-
-        .event-card .event-title-text {
-            font-weight: 600;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .event-card .event-time {
-            font-size: 10px;
-            opacity: 0.85;
-            display: flex;
-            align-items: center;
-            gap: 3px;
-            white-space: nowrap;
-        }
-
-        .all-day-chip {
-            border-radius: 3px;
-            padding: 2px 6px;
-            font-size: 11px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            cursor: pointer;
-            border-left-width: 3px;
-            border-left-style: solid;
-            font-weight: 500;
-        }
-
-        /* Temas de color de categorías */
-        .cat-grabacion { background: rgba(255, 159, 10, 0.28); border-left-color: var(--accent-orange); color: #ffd899; }
-        .cat-edicion { background: rgba(10, 132, 255, 0.28); border-left-color: var(--accent-blue); color: #a5d0ff; }
-        .cat-ocio { background: rgba(162, 132, 94, 0.28); border-left-color: var(--accent-brown); color: #dfd3c5; }
-        .cat-casa { background: rgba(10, 132, 255, 0.2); border-left-color: var(--accent-blue); color: #bde0fe; }
-        .cat-preparacion { background: rgba(255, 55, 95, 0.28); border-left-color: var(--accent-pink); color: #ffb3c1; }
-        .cat-completado { background: rgba(48, 209, 88, 0.28); border-left-color: var(--accent-green); color: #b7efc5; }
-        .cat-cumpleanos { background: rgba(191, 90, 242, 0.28); border-left-color: var(--accent-purple); color: #e8c5ff; }
-
-        /* MODAL */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(5px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-        }
-
-        .modal {
-            background: #252529;
-            border: 1px solid var(--border-ui);
-            border-radius: 12px;
-            width: 340px;
-            padding: 18px;
-            box-shadow: 0 20px 45px rgba(0,0,0,0.7);
-        }
-
-        .modal h3 {
-            margin-bottom: 14px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .form-group {
-            margin-bottom: 11px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .form-group label {
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-
-        .form-row {
-            display: flex;
-            gap: 8px;
-        }
-
-        .form-group input, .form-group select {
-            background: #18181a;
-            border: 1px solid var(--border-ui);
-            color: white;
-            padding: 7px 9px;
-            border-radius: 6px;
-            outline: none;
-            font-size: 12.5px;
-            width: 100%;
-            font-family: inherit;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            border-color: var(--accent-blue);
-        }
-
-        .checkbox-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin: 6px 0 10px 0;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 16px;
-        }
-
-        .btn-delete {
-            background: transparent;
-            border: none;
-            color: var(--accent-red);
-            cursor: pointer;
-            font-size: 12px;
-            padding: 6px 8px;
-            border-radius: 5px;
-        }
-        .btn-delete:hover { background: rgba(255,69,58,0.15); }
-
-        .btn-cancel {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            padding: 6px 10px;
-            font-size: 12px;
-        }
-        .btn-cancel:hover { color: var(--text-main); }
-
-        .btn-save {
-            background: var(--accent-blue);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            padding: 6px 14px;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-        }
-        .btn-save:hover { filter: brightness(1.1); }
-    </style>
+    .hidden { display: none !important; }
+  </style>
 </head>
 <body>
-
-<div class="window">
-    <!-- BARRA LATERAL -->
-    <div class="sidebar">
-        <div>
-            <div class="traffic-lights">
-                <span class="dot red"></span>
-                <span class="dot yellow"></span>
-                <span class="dot green"></span>
-            </div>
-
-            <div class="section-title">iCloud</div>
-            <ul class="calendar-list">
-                <li class="calendar-item" data-cat="casa">
-                    <span class="custom-checkbox" style="background:var(--accent-blue);">✓</span>
-                    <span>Casa</span>
-                </li>
-                <li class="calendar-item" data-cat="preparacion">
-                    <span class="custom-checkbox" style="background:var(--accent-pink);">✓</span>
-                    <span>Preparación</span>
-                </li>
-                <li class="calendar-item" data-cat="grabacion">
-                    <span class="custom-checkbox" style="background:var(--accent-orange);">✓</span>
-                    <span>Grabación</span>
-                </li>
-                <li class="calendar-item" data-cat="completado">
-                    <span class="custom-checkbox" style="background:var(--accent-green);">✓</span>
-                    <span>Completado</span>
-                </li>
-                <li class="calendar-item" data-cat="edicion">
-                    <span class="custom-checkbox" style="background:var(--accent-yellow);">✓</span>
-                    <span>Edición</span>
-                </li>
-                <li class="calendar-item" data-cat="ocio">
-                    <span class="custom-checkbox" style="background:var(--accent-brown);">✓</span>
-                    <span>Ocio</span>
-                </li>
-            </ul>
-
-            <div class="section-title">Otros</div>
-            <ul class="calendar-list">
-                <li class="calendar-item" data-cat="cumpleanos">
-                    <span class="custom-checkbox" style="background:var(--accent-purple);">✓</span>
-                    <span>Cumpleaños</span>
-                </li>
-            </ul>
-        </div>
-
-        <!-- Minicalendario -->
-        <div class="mini-calendar">
-            <div class="mini-header">
-                <span id="mini-prev" style="cursor:pointer;">&lt;</span>
-                <span id="mini-month-label">septiembre de 2026</span>
-                <span id="mini-next" style="cursor:pointer;">&gt;</span>
-            </div>
-            <div class="mini-grid" id="mini-calendar-grid">
-                <!-- Días inyectados por JS -->
-            </div>
-        </div>
+  <header class="topbar">
+    <div>
+      <h1>RicksClips Studio PRO <span class="badge">MÚSICA + SFX · SIN APIs</span></h1>
+      <p class="subtitle">Escenarios 2.5D multicapa, iluminación volumétrica, cámara dinámica, personajes detallados y MP4 9:16</p>
     </div>
+    <div id="codecSupportBadge" class="status-pill">Comprobando WebCodecs...</div>
+  </header>
 
-    <!-- VISTA PRINCIPAL -->
-    <div class="main-view">
-        <div class="top-bar">
-            <div class="top-left">
-                <button class="btn-icon" id="open-modal-btn" title="Nuevo evento">+</button>
-                <div class="segmented-control">
-                    <button class="segment-btn">Día</button>
-                    <button class="segment-btn active">Semana</button>
-                    <button class="segment-btn">Mes</button>
-                    <button class="segment-btn">Año</button>
-                </div>
-                <h1 class="main-title" id="current-month-title">Agosto de 2026</h1>
-            </div>
-
-            <div class="top-right">
-                <button class="btn-reset" id="btn-reset" title="Restablecer eventos por defecto">↺ Restaurar</button>
-                <button class="btn-icon" id="btn-prev">&lt;</button>
-                <button class="btn-today" id="btn-today">Hoy</button>
-                <button class="btn-icon" id="btn-next">&gt;</button>
-                <button class="btn-icon">🔍</button>
-            </div>
-        </div>
-
-        <div class="calendar-body" id="calendar-body">
-            <!-- Encabezados de días -->
-            <div class="days-header" id="days-header">
-                <div></div>
-                <!-- Celdas de días generadas dinámicamente -->
-            </div>
-
-            <!-- Fila Todo el día -->
-            <div class="all-day-row">
-                <div class="all-day-label">todo el día</div>
-                <div class="all-day-cell" data-day-index="0"></div>
-                <div class="all-day-cell" data-day-index="1"></div>
-                <div class="all-day-cell" data-day-index="2"></div>
-                <div class="all-day-cell" data-day-index="3"></div>
-                <div class="all-day-cell" data-day-index="4"></div>
-                <div class="all-day-cell" data-day-index="5"></div>
-                <div class="all-day-cell" data-day-index="6"></div>
-            </div>
-
-            <!-- Rejilla de Horas -->
-            <div class="time-grid-container" id="time-grid-container">
-                <div class="time-labels" id="hour-labels"></div>
-                <div class="day-column" data-day-index="0"></div>
-                <div class="day-column" data-day-index="1"></div>
-                <div class="day-column" data-day-index="2"></div>
-                <div class="day-column" data-day-index="3"></div>
-                <div class="day-column" data-day-index="4"></div>
-                <div class="day-column" data-day-index="5"></div>
-                <div class="day-column" data-day-index="6"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- MODAL PARA CREAR / EDITAR / ELIMINAR EVENTO -->
-<div class="modal-overlay" id="modal">
-    <div class="modal">
-        <h3 id="modal-title">Detalles del Evento</h3>
-        <input type="hidden" id="event-id">
-        
-        <div class="form-group">
-            <label>Título</label>
-            <input type="text" id="event-title" placeholder="Ej. Grabación de vídeo">
-        </div>
-
-        <div class="form-group">
-            <label>Fecha</label>
-            <input type="date" id="event-date">
-        </div>
-
-        <label class="checkbox-row">
-            <input type="checkbox" id="event-allday">
-            <span>Todo el día</span>
-        </label>
-
-        <div class="form-row" id="time-inputs-container">
-            <div class="form-group" style="flex:1;">
-                <label>Inicio</label>
-                <input type="time" id="event-start-time" value="10:00">
-            </div>
-            <div class="form-group" style="flex:1;">
-                <label>Fin</label>
-                <input type="time" id="event-end-time" value="12:00">
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label>Categoría</label>
-            <select id="event-category">
-                <option value="grabacion">Grabación (Naranja)</option>
-                <option value="edicion">Edición (Azul)</option>
-                <option value="ocio">Ocio (Marrón)</option>
-                <option value="casa">Casa (Azul claro)</option>
-                <option value="preparacion">Preparación (Rosa)</option>
-                <option value="completado">Completado (Verde)</option>
-                <option value="cumpleanos">Cumpleaños (Morado)</option>
+  <main class="workspace">
+    <!-- PANEL IZQUIERDO -->
+    <section class="panel controls-panel">
+      <div class="card">
+        <div class="card-header">
+          <h2>1. Tu Historia</h2>
+          <div class="preset-row">
+            <select id="presetSelect">
+              <option value="jarron">Referencia: El Jarrón Antiguo de los Dragones</option>
+              <option value="torre_eiffel">Historia: El hombre que vendió la Torre Eiffel</option>
+              <option value="emues">Historia: La guerra contra los emúes</option>
+              <option value="pepsi">Historia: El día que Pepsi tuvo una flota de guerra</option>
             </select>
+            <button id="loadPresetBtn" type="button" class="btn-secondary">Cargar</button>
+          </div>
         </div>
 
-        <div class="modal-actions">
-            <button class="btn-delete" id="delete-btn" style="visibility:hidden;">Eliminar</button>
-            <div>
-                <button class="btn-cancel" id="cancel-btn">Cancelar</button>
-                <button class="btn-save" id="save-btn">Guardar</button>
-            </div>
+        <textarea id="storyInput" rows="5" placeholder="Pega aquí tu historia... Cada frase se convertirá en un plano cinematográfico distinto con escenario, cámara, vestuario y efectos de sonido."></textarea>
+
+        <div class="actions-row">
+          <button id="buildStoryboardBtn" type="button" class="btn-primary" style="width:100%">⚡ Dirigir y Generar Escenas 2.5D</button>
         </div>
-    </div>
-</div>
+      </div>
 
-<script>
-    const START_HOUR = 6;
-    const END_HOUR = 23;
-    const HOUR_HEIGHT = 60; // 60px = 1 hora
+      <div class="card">
+        <h2>2. Música, SFX, Subtítulos y Calidad</h2>
+        <div class="grid-3">
+          <label>
+            Estilo Musical
+            <select id="musicMoodSelect">
+              <option value="epic" selected>Épica / Misterio</option>
+              <option value="quirky">Storyteller Dinámica</option>
+              <option value="none">Sin música</option>
+            </select>
+          </label>
+          <label>
+            Resolución
+            <select id="resolutionSelect">
+              <option value="720x1280" selected>720×1280 (Rápido)</option>
+              <option value="1080x1920">1080×1920 (Full HD)</option>
+            </select>
+          </label>
+          <label>
+            FPS
+            <select id="fpsSelect">
+              <option value="30" selected>30 FPS</option>
+              <option value="60">60 FPS</option>
+            </select>
+          </label>
+        </div>
 
-    const STORAGE_EVENTS_KEY = 'apple_cal_events_v3';
-    const STORAGE_CATS_KEY = 'apple_cal_cats_v3';
+        <div class="toggles-grid">
+          <label class="checkbox-label">
+            <input type="checkbox" id="sfxToggle" checked />
+            Efectos de sonido (SFX)
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="subtitleToggle" checked />
+            Subtítulos estilo RicksClips (opcional)
+          </label>
+        </div>
 
-    // Fecha base inicial del screenshot: 26 de agosto de 2026 (miércoles)
-    let currentWeekStart = new Date(2026, 7, 24); // Lunes 24 de agosto de 2026
+        <div class="grid-2">
+          <label>
+            Formato de Subtítulos
+            <select id="subtitleStyleSelect">
+              <option value="ricks_word" selected>RicksClips (1-2 palabras blancas)</option>
+              <option value="ricks_pop">Palabra destacada amarilla</option>
+              <option value="clean">Frase corta</option>
+            </select>
+          </label>
+          <label>
+            Tamaño de Subtítulos
+            <input type="range" id="subtitleSizeRange" min="52" max="92" value="68" />
+          </label>
+        </div>
+      </div>
 
-    // Eventos exactos de la foto vinculados a fechas reales
-    const DEFAULT_EVENTS = [
-        { id: '1', date: '2026-08-27', title: 'Grabación mobs bebés G2', startTime: '10:45', endTime: '15:00', category: 'grabacion', isAllDay: false },
-        { id: '2', date: '2026-08-27', title: 'Edición y creación de la intro video base perfecta', startTime: '16:00', endTime: '21:00', category: 'edicion', isAllDay: false },
-        { id: '3', date: '2026-08-28', title: 'piscina', startTime: '10:00', endTime: '15:45', category: 'ocio', isAllDay: false },
-        { id: '4', date: '2026-08-28', title: 'Edición y creación de la intro video base perfecta', startTime: '15:45', endTime: '17:30', category: 'edicion', isAllDay: false },
-        { id: '5', date: '2026-08-29', title: 'Edición mobs bebés G2 y G3', startTime: '10:00', endTime: '15:00', category: 'edicion', isAllDay: false },
-        { id: '6', date: '2026-08-29', title: 'Miniaturas del vídeo Base Perfecta', startTime: '16:00', endTime: '21:00', category: 'edicion', isAllDay: false },
-        { id: '7', date: '2026-08-30', title: 'Grabación mobs bebés G5', startTime: '10:05', endTime: '13:45', category: 'grabacion', isAllDay: false },
-        { id: '8', date: '2026-08-30', title: 'Grabación mobs bebés G6', startTime: '16:00', endTime: '20:45', category: 'grabacion', isAllDay: false },
-        { id: '9', date: '2026-08-26', title: 'playa', startTime: '00:00', endTime: '23:59', category: 'ocio', isAllDay: true },
-        { id: '10', date: '2026-08-31', title: 'Papa cumple años', startTime: '00:00', endTime: '23:59', category: 'cumpleanos', isAllDay: true }
-    ];
+      <div class="card">
+        <div class="card-header">
+          <h2>3. Planos del Short (<span id="sceneCount">0</span>)</h2>
+          <button id="addSceneBtn" type="button" class="btn-secondary">+ Añadir Plano</button>
+        </div>
+        <div id="scenesList" class="scenes-list"></div>
+      </div>
+    </section>
 
-    let events = [];
-    let activeCategories = {
-        casa: true, preparacion: true, grabacion: true,
-        completado: true, edicion: true, ocio: true, cumpleanos: true
-    };
+    <!-- PANEL DERECHO -->
+    <section class="panel preview-panel">
+      <div class="card preview-card">
+        <div class="phone-frame">
+          <canvas id="previewCanvas" width="720" height="1280"></canvas>
+        </div>
 
-    // 1. GENERAR CUADRÍCULA DE HORAS
-    const hourLabelsContainer = document.getElementById('hour-labels');
-    const dayColumns = document.querySelectorAll('.day-column');
+        <div class="player-controls">
+          <button id="playPauseBtn" type="button" class="btn-primary">▶ Reproducir Preview</button>
+          <button id="restartBtn" type="button" class="btn-secondary">⟲ Reiniciar</button>
+          <span id="timeDisplay" class="time-display">00.0s / 00.0s</span>
+        </div>
 
-    for (let h = START_HOUR; h <= END_HOUR; h++) {
-        const label = document.createElement('div');
-        label.className = 'time-label';
-        label.textContent = `${h}:00`;
-        hourLabelsContainer.appendChild(label);
+        <input type="range" id="timelineScrubber" min="0" max="100" step="0.01" value="0" class="scrubber" />
+        <p id="statusBanner" class="status-banner">Listo.</p>
 
-        dayColumns.forEach(col => {
-            const line = document.createElement('div');
-            line.className = 'hour-row-line';
-            col.appendChild(line);
-        });
-    }
+        <hr class="divider" />
 
-    // 2. HELPERS DE FECHAS
-    function formatDateISO(date) {
-        const y = date.getFullYear();
-        const m = String(date.getMonth() + 1).padStart(2, '0');
-        const d = String(date.getDate()).padStart(2, '0');
-        return `${y}-${m}-${d}`;
-    }
+        <button id="exportMp4Btn" type="button" class="btn-export">🎬 Exportar Short en MP4 (9:16)</button>
 
-    function timeToMinutes(timeStr) {
-        if (!timeStr) return 0;
-        const [h, m] = timeStr.split(':').map(Number);
-        return h * 60 + m;
-    }
+        <div id="exportProgressWrap" class="progress-wrap hidden">
+          <div class="progress-track">
+            <div id="exportProgressBar" class="progress-fill"></div>
+          </div>
+          <p id="exportProgressText">Preparando...</p>
+        </div>
 
-    function getWeekDays(startDate) {
-        const days = [];
-        for (let i = 0; i < 7; i++) {
-            const d = new Date(startDate);
-            d.setDate(startDate.getDate() + i);
-            days.push(d);
+        <div id="exportResultWrap" class="export-result hidden">
+          <h3>¡Short MP4 listo!</h3>
+          <video id="exportedVideoPreview" controls playsinline></video>
+          <a id="downloadMp4Link" class="btn-primary download-btn" download="ricksclips-pro-short.mp4">⬇ Descargar MP4</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // =========================================================================
+    // 1. MOTOR DE AUDIO: SOLO MÚSICA CINEMATOGRÁFICA + SFX PROCEDURALES
+    // =========================================================================
+    window.RicksAudio = (() => {
+      const SAMPLE_RATE = 48000;
+      let liveCtx = null;
+      const sfxCache = new Map();
+
+      function ensureLiveContext() {
+        if (!liveCtx) {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          liveCtx = new AC({ sampleRate: SAMPLE_RATE });
         }
-        return days;
-    }
+        if (liveCtx.state === 'suspended') liveCtx.resume();
+        return liveCtx;
+      }
 
-    // 3. RENDERIZAR ENCABEZADOS Y TÍTULO
-    const dayNames = ['lun', 'mar', 'mié', 'jue', 'vie', 'sáb', 'dom'];
-    const monthNames = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+      async function synthesizeSFX(type) {
+        if (!type || type === 'none') return null;
+        if (sfxCache.has(type)) return sfxCache.get(type);
 
-    function updateHeaders() {
-        const weekDays = getWeekDays(currentWeekStart);
-        const headerContainer = document.getElementById('days-header');
-        headerContainer.innerHTML = '<div></div>';
-
-        const todayISO = formatDateISO(new Date());
-
-        weekDays.forEach((date, i) => {
-            const iso = formatDateISO(date);
-            const cell = document.createElement('div');
-            const isToday = iso === todayISO;
-            cell.className = `day-header-cell ${isToday ? 'is-today' : ''}`;
-            
-            const dayName = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'][date.getDay()];
-            cell.textContent = `${dayName} ${date.getDate()}`;
-            headerContainer.appendChild(cell);
-
-            // Asociar columnas con sus fechas
-            document.querySelector(`.day-column[data-day-index="${i}"]`).dataset.date = iso;
-            document.querySelector(`.all-day-cell[data-day-index="${i}"]`).dataset.date = iso;
-        });
-
-        // Actualizar título del mes
-        const midWeekDate = weekDays[3];
-        document.getElementById('current-month-title').textContent = 
-            `${monthNames[midWeekDate.getMonth()].charAt(0).toUpperCase() + monthNames[midWeekDate.getMonth()].slice(1)} de ${midWeekDate.getFullYear()}`;
-
-        renderMiniCalendar();
-    }
-
-    // 4. MINICALENDARIO
-    function renderMiniCalendar() {
-        const grid = document.getElementById('mini-calendar-grid');
-        grid.innerHTML = `
-            <span class="mini-day-title">l</span>
-            <span class="mini-day-title">m</span>
-            <span class="mini-day-title">x</span>
-            <span class="mini-day-title">j</span>
-            <span class="mini-day-title">v</span>
-            <span class="mini-day-title">s</span>
-            <span class="mini-day-title">d</span>
-        `;
-
-        const viewDate = new Date(currentWeekStart);
-        const year = viewDate.getFullYear();
-        const month = viewDate.getMonth();
-
-        document.getElementById('mini-month-label').textContent = `${monthNames[month]} de ${year}`;
-
-        const firstDayOfMonth = new Date(year, month, 1);
-        let startDay = firstDayOfMonth.getDay() - 1;
-        if (startDay === -1) startDay = 6;
-
-        const calStartDate = new Date(firstDayOfMonth);
-        calStartDate.setDate(calStartDate.getDate() - startDay);
-
-        const currentWeekISOS = getWeekDays(currentWeekStart).map(formatDateISO);
-        const todayISO = formatDateISO(new Date());
-
-        for (let i = 0; i < 35; i++) {
-            const d = new Date(calStartDate);
-            d.setDate(calStartDate.getDate() + i);
-            const iso = formatDateISO(d);
-
-            const dayDiv = document.createElement('div');
-            dayDiv.className = 'day-num';
-            dayDiv.textContent = d.getDate();
-
-            if (d.getMonth() !== month) dayDiv.classList.add('other-month');
-            if (iso === todayISO) dayDiv.classList.add('current-day');
-            if (currentWeekISOS.includes(iso)) dayDiv.classList.add('in-selected-week');
-
-            dayDiv.onclick = () => {
-                const newStart = new Date(d);
-                let dayOfWeek = newStart.getDay() - 1;
-                if (dayOfWeek === -1) dayOfWeek = 6;
-                newStart.setDate(newStart.getDate() - dayOfWeek);
-                currentWeekStart = newStart;
-                updateHeaders();
-                renderEvents();
-            };
-
-            grid.appendChild(dayDiv);
-        }
-    }
-
-    // 5. RENDERIZADO DE EVENTOS CON GESTIÓN DE SOLAPAMIENTOS
-    function renderEvents() {
-        document.querySelectorAll('.event-card').forEach(el => el.remove());
-        document.querySelectorAll('.all-day-cell').forEach(cell => cell.innerHTML = '');
-
-        const weekDays = getWeekDays(currentWeekStart);
-        const weekISOs = weekDays.map(formatDateISO);
-
-        weekISOs.forEach((iso, dayIndex) => {
-            const dayEvents = events.filter(e => e.date === iso && activeCategories[e.category]);
-
-            // All day events
-            const allDayCell = document.querySelector(`.all-day-cell[data-day-index="${dayIndex}"]`);
-            dayEvents.filter(e => e.isAllDay).forEach(ev => {
-                const chip = document.createElement('div');
-                chip.className = `all-day-chip cat-${ev.category}`;
-                chip.textContent = ev.title;
-                chip.onclick = (e) => { e.stopPropagation(); openEditModal(ev); };
-                allDayCell.appendChild(chip);
-            });
-
-            // Timed events
-            const timedEvents = dayEvents.filter(e => !e.isAllDay);
-            const col = document.querySelector(`.day-column[data-day-index="${dayIndex}"]`);
-
-            // Algoritmo de columnas y solapamiento
-            timedEvents.sort((a, b) => timeToMinutes(a.startTime) - timeToMinutes(b.startTime));
-
-            const clusters = [];
-            timedEvents.forEach(ev => {
-                const evStart = timeToMinutes(ev.startTime);
-                const evEnd = timeToMinutes(ev.endTime);
-
-                let placed = false;
-                for (let cluster of clusters) {
-                    if (evStart < cluster.end) {
-                        cluster.events.push(ev);
-                        cluster.end = Math.max(cluster.end, evEnd);
-                        placed = true;
-                        break;
-                    }
-                }
-                if (!placed) {
-                    clusters.push({ events: [ev], end: evEnd });
-                }
-            });
-
-            clusters.forEach(cluster => {
-                const count = cluster.events.length;
-                cluster.events.forEach((ev, idx) => {
-                    const startMin = timeToMinutes(ev.startTime);
-                    const endMin = timeToMinutes(ev.endTime);
-
-                    const topPos = ((startMin - (START_HOUR * 60)) / 60) * HOUR_HEIGHT;
-                    const height = Math.max(22, ((endMin - startMin) / 60) * HOUR_HEIGHT);
-
-                    const width = 100 / count;
-                    const left = idx * width;
-
-                    const card = document.createElement('div');
-                    card.className = `event-card cat-${ev.category}`;
-                    card.style.top = `${topPos}px`;
-                    card.style.height = `${height}px`;
-                    card.style.left = `${left}%`;
-                    card.style.width = `calc(${width}% - 4px)`;
-
-                    card.innerHTML = `
-                        <span class="event-title-text">${ev.title}</span>
-                        <span class="event-time">🕒 ${ev.startTime} - ${ev.endTime}</span>
-                    `;
-
-                    card.onclick = (e) => {
-                        e.stopPropagation();
-                        openEditModal(ev);
-                    };
-
-                    col.appendChild(card);
-                });
-            });
-        });
-    }
-
-    // 6. MODAL (CREAR / EDITAR / ELIMINAR)
-    const modal = document.getElementById('modal');
-    const modalTitle = document.getElementById('modal-title');
-    const eventIdInput = document.getElementById('event-id');
-    const eventTitleInput = document.getElementById('event-title');
-    const eventDateInput = document.getElementById('event-date');
-    const eventAllDayInput = document.getElementById('event-allday');
-    const eventStartTimeInput = document.getElementById('event-start-time');
-    const eventEndTimeInput = document.getElementById('event-end-time');
-    const eventCatInput = document.getElementById('event-category');
-    const deleteBtn = document.getElementById('delete-btn');
-    const timeInputsContainer = document.getElementById('time-inputs-container');
-
-    eventAllDayInput.addEventListener('change', () => {
-        timeInputsContainer.style.display = eventAllDayInput.checked ? 'none' : 'flex';
-    });
-
-    eventStartTimeInput.addEventListener('change', () => {
-        const startMin = timeToMinutes(eventStartTimeInput.value);
-        const endMin = timeToMinutes(eventEndTimeInput.value);
-        if (endMin <= startMin) {
-            const newEndMin = Math.min(24 * 60 - 1, startMin + 60);
-            const h = String(Math.floor(newEndMin / 60)).padStart(2, '0');
-            const m = String(newEndMin % 60).padStart(2, '0');
-            eventEndTimeInput.value = `${h}:${m}`;
-        }
-    });
-
-    function openCreateModal(dateStr, startHour = 10) {
-        modalTitle.textContent = "Nuevo Evento";
-        eventIdInput.value = "";
-        eventTitleInput.value = "";
-        eventDateInput.value = dateStr || formatDateISO(new Date());
-        eventAllDayInput.checked = false;
-        timeInputsContainer.style.display = 'flex';
-
-        const hStr = String(startHour).padStart(2, '0');
-        const hEndStr = String(Math.min(23, startHour + 1)).padStart(2, '0');
-        eventStartTimeInput.value = `${hStr}:00`;
-        eventEndTimeInput.value = `${hEndStr}:00`;
-        eventCatInput.value = "grabacion";
-
-        deleteBtn.style.visibility = 'hidden';
-        modal.style.display = 'flex';
-        setTimeout(() => eventTitleInput.focus(), 50);
-    }
-
-    function openEditModal(ev) {
-        modalTitle.textContent = "Editar Evento";
-        eventIdInput.value = ev.id;
-        eventTitleInput.value = ev.title;
-        eventDateInput.value = ev.date;
-        eventAllDayInput.checked = !!ev.isAllDay;
-        timeInputsContainer.style.display = ev.isAllDay ? 'none' : 'flex';
-
-        eventStartTimeInput.value = ev.startTime || "10:00";
-        eventEndTimeInput.value = ev.endTime || "11:00";
-        eventCatInput.value = ev.category;
-
-        deleteBtn.style.visibility = 'visible';
-        modal.style.display = 'flex';
-    }
-
-    function closeModal() {
-        modal.style.display = 'none';
-    }
-
-    function saveEvent() {
-        const title = eventTitleInput.value.trim();
-        if (!title) {
-            alert("Por favor escribe un título.");
-            return;
-        }
-
-        const id = eventIdInput.value || Date.now().toString();
-        const newEvent = {
-            id,
-            title,
-            date: eventDateInput.value,
-            isAllDay: eventAllDayInput.checked,
-            startTime: eventAllDayInput.checked ? "00:00" : eventStartTimeInput.value,
-            endTime: eventAllDayInput.checked ? "23:59" : eventEndTimeInput.value,
-            category: eventCatInput.value
+        const durations = {
+          whoosh: 0.34,
+          boom: 1.15,
+          clang: 0.8,
+          chime: 0.75,
+          laugh: 0.85,
+          rumble: 1.25,
+          fail: 0.75,
+          riser: 1.1,
+          pop: 0.18
         };
+        const dur = durations[type] || 0.4;
+        const ctx = new OfflineAudioContext(2, Math.ceil(dur * SAMPLE_RATE), SAMPLE_RATE);
 
-        const idx = events.findIndex(e => e.id === id);
-        if (idx > -1) events[idx] = newEvent;
-        else events.push(newEvent);
+        if (type === 'whoosh') {
+          const len = Math.floor(dur * SAMPLE_RATE);
+          const buf = ctx.createBuffer(1, len, SAMPLE_RATE);
+          const d = buf.getChannelData(0);
+          for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+          const src = ctx.createBufferSource();
+          src.buffer = buf;
+          const f = ctx.createBiquadFilter();
+          f.type = 'bandpass'; f.Q.value = 1.5;
+          f.frequency.setValueAtTime(220, 0);
+          f.frequency.exponentialRampToValueAtTime(2600, 0.14);
+          f.frequency.exponentialRampToValueAtTime(260, dur);
+          const g = ctx.createGain();
+          g.gain.setValueAtTime(0.001, 0);
+          g.gain.linearRampToValueAtTime(0.32, 0.11);
+          g.gain.exponentialRampToValueAtTime(0.001, dur);
+          src.connect(f).connect(g).connect(ctx.destination);
+          src.start(0);
+        } else if (type === 'boom') {
+          const osc = ctx.createOscillator();
+          const g = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(145, 0);
+          osc.frequency.exponentialRampToValueAtTime(28, 0.75);
+          g.gain.setValueAtTime(0.9, 0);
+          g.gain.exponentialRampToValueAtTime(0.001, 1.1);
+          osc.connect(g).connect(ctx.destination);
+          osc.start(0); osc.stop(dur);
 
-        saveToLocalStorage();
-        renderEvents();
-        closeModal();
-    }
-
-    document.getElementById('save-btn').onclick = saveEvent;
-    document.getElementById('cancel-btn').onclick = closeModal;
-
-    deleteBtn.onclick = () => {
-        const id = eventIdInput.value;
-        events = events.filter(e => e.id !== id);
-        saveToLocalStorage();
-        renderEvents();
-        closeModal();
-    };
-
-    // Atajos de teclado para el Modal
-    window.addEventListener('keydown', (e) => {
-        if (modal.style.display === 'flex') {
-            if (e.key === 'Escape') closeModal();
-            if (e.key === 'Enter' && e.target === eventTitleInput) saveEvent();
+          const len = Math.floor(0.28 * SAMPLE_RATE);
+          const nBuf = ctx.createBuffer(1, len, SAMPLE_RATE);
+          const nd = nBuf.getChannelData(0);
+          for (let i = 0; i < len; i++) nd[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 1.8);
+          const nSrc = ctx.createBufferSource();
+          nSrc.buffer = nBuf;
+          const lp = ctx.createBiquadFilter();
+          lp.type = 'lowpass'; lp.frequency.value = 750;
+          const ng = ctx.createGain(); ng.gain.value = 0.65;
+          nSrc.connect(lp).connect(ng).connect(ctx.destination);
+          nSrc.start(0);
+        } else if (type === 'clang') {
+          // Golpe metálico de bronce / armadura (frecuencias inarmónicas)
+          [523, 784, 1187, 1742, 2310].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.type = i % 2 === 0 ? 'triangle' : 'sine';
+            osc.frequency.setValueAtTime(freq, 0);
+            g.gain.setValueAtTime(0.28 / (i + 1), 0);
+            g.gain.exponentialRampToValueAtTime(0.001, dur - i * 0.08);
+            osc.connect(g).connect(ctx.destination);
+            osc.start(0); osc.stop(dur);
+          });
+        } else if (type === 'chime') {
+          [659.25, 987.77, 1318.5, 1975.5].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.type = 'sine';
+            const t0 = i * 0.055;
+            osc.frequency.setValueAtTime(freq, t0);
+            g.gain.setValueAtTime(0.001, t0);
+            g.gain.linearRampToValueAtTime(0.22 / (i + 1), t0 + 0.02);
+            g.gain.exponentialRampToValueAtTime(0.001, dur);
+            osc.connect(g).connect(ctx.destination);
+            osc.start(t0); osc.stop(dur);
+          });
+        } else if (type === 'laugh') {
+          // Risas rítmicas estilizadas ("ja-ja-ja-ja")
+          [0, 0.14, 0.28, 0.42, 0.56].forEach((t0, i) => {
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.type = 'triangle';
+            const base = 360 - i * 24;
+            osc.frequency.setValueAtTime(base, t0);
+            osc.frequency.exponentialRampToValueAtTime(base * 0.72, t0 + 0.11);
+            g.gain.setValueAtTime(0.001, t0);
+            g.gain.linearRampToValueAtTime(0.22, t0 + 0.02);
+            g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.12);
+            osc.connect(g).connect(ctx.destination);
+            osc.start(t0); osc.stop(t0 + 0.13);
+          });
+        } else if (type === 'rumble') {
+          const len = Math.floor(dur * SAMPLE_RATE);
+          const buf = ctx.createBuffer(1, len, SAMPLE_RATE);
+          const d = buf.getChannelData(0);
+          for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+          const src = ctx.createBufferSource();
+          src.buffer = buf;
+          const lp = ctx.createBiquadFilter();
+          lp.type = 'lowpass'; lp.frequency.value = 140;
+          const g = ctx.createGain();
+          g.gain.setValueAtTime(0.01, 0);
+          g.gain.linearRampToValueAtTime(0.75, 0.25);
+          g.gain.exponentialRampToValueAtTime(0.001, dur);
+          src.connect(lp).connect(g).connect(ctx.destination);
+          src.start(0);
+        } else if (type === 'fail') {
+          [290, 240, 185].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.type = 'sawtooth';
+            const t0 = i * 0.19;
+            osc.frequency.setValueAtTime(freq, t0);
+            osc.frequency.linearRampToValueAtTime(freq * 0.85, t0 + 0.18);
+            const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 900;
+            g.gain.setValueAtTime(0.22, t0);
+            g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.22);
+            osc.connect(lp).connect(g).connect(ctx.destination);
+            osc.start(t0); osc.stop(t0 + 0.23);
+          });
+        } else if (type === 'riser') {
+          const osc = ctx.createOscillator();
+          const g = ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(110, 0);
+          osc.frequency.exponentialRampToValueAtTime(660, dur - 0.05);
+          const lp = ctx.createBiquadFilter();
+          lp.type = 'lowpass';
+          lp.frequency.setValueAtTime(300, 0);
+          lp.frequency.exponentialRampToValueAtTime(2400, dur - 0.05);
+          g.gain.setValueAtTime(0.01, 0);
+          g.gain.linearRampToValueAtTime(0.26, dur - 0.08);
+          g.gain.exponentialRampToValueAtTime(0.001, dur);
+          osc.connect(lp).connect(g).connect(ctx.destination);
+          osc.start(0); osc.stop(dur);
+        } else if (type === 'pop') {
+          const osc = ctx.createOscillator();
+          const g = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(260, 0);
+          osc.frequency.exponentialRampToValueAtTime(720, 0.06);
+          g.gain.setValueAtTime(0.001, 0);
+          g.gain.linearRampToValueAtTime(0.36, 0.015);
+          g.gain.exponentialRampToValueAtTime(0.001, 0.16);
+          osc.connect(g).connect(ctx.destination);
+          osc.start(0); osc.stop(dur);
         }
-    });
 
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
-    });
+        const rendered = await ctx.startRendering();
+        sfxCache.set(type, rendered);
+        return rendered;
+      }
 
-    // Clic en columnas para crear evento
-    dayColumns.forEach(col => {
-        col.addEventListener('click', (e) => {
-            const rect = col.getBoundingClientRect();
-            const offsetY = e.clientY - rect.top;
-            const clickedHour = Math.floor(START_HOUR + (offsetY / HOUR_HEIGHT));
-            openCreateModal(col.dataset.date, clickedHour);
-        });
-    });
+      function scheduleMusic(ctx, totalDuration, mood) {
+        if (mood === 'none') return;
+        const masterGain = ctx.createGain();
+        masterGain.gain.value = 0.22;
+        masterGain.connect(ctx.destination);
 
-    // Clic en fila de Todo el día
-    document.querySelectorAll('.all-day-cell').forEach(cell => {
-        cell.addEventListener('click', () => {
-            openCreateModal(cell.dataset.date);
-            eventAllDayInput.checked = true;
-            timeInputsContainer.style.display = 'none';
-        });
-    });
+        if (mood === 'epic') {
+          // Acordes cinematográficos menores + pulso de tensión estilo documental viral
+          const chords = [
+            [110.0, 164.81, 220.0, 261.63], // Am
+            [87.31, 130.81, 174.61, 220.0], // F
+            [98.0, 146.83, 196.0, 246.94],  // G
+            [82.41, 123.47, 164.81, 207.65] // E
+          ];
+          const barDur = 2.0;
+          let barIdx = 0;
 
-    // Botón "+"
-    document.getElementById('open-modal-btn').onclick = () => {
-        openCreateModal(formatDateISO(currentWeekStart));
-    };
+          for (let t = 0; t < totalDuration; t += barDur) {
+            const ch = chords[barIdx % chords.length];
+            const segDur = Math.min(barDur, totalDuration - t);
 
-    // 7. NAVEGACIÓN DE SEMANAS
-    document.getElementById('btn-prev').onclick = () => {
-        currentWeekStart.setDate(currentWeekStart.getDate() - 7);
-        updateHeaders();
-        renderEvents();
-    };
+            // Pad cálido de cuerdas
+            ch.forEach((freq, i) => {
+              const osc = ctx.createOscillator();
+              osc.type = i === 0 ? 'sawtooth' : 'triangle';
+              osc.frequency.setValueAtTime(freq, t);
+              const lp = ctx.createBiquadFilter();
+              lp.type = 'lowpass'; lp.frequency.value = i === 0 ? 320 : 880;
+              const g = ctx.createGain();
+              g.gain.setValueAtTime(0.001, t);
+              g.gain.linearRampToValueAtTime(i === 0 ? 0.22 : 0.09, t + 0.35);
+              g.gain.setValueAtTime(i === 0 ? 0.2 : 0.08, Math.max(t + 0.4, t + segDur - 0.3));
+              g.gain.exponentialRampToValueAtTime(0.001, t + segDur);
+              osc.connect(lp).connect(g).connect(masterGain);
+              osc.start(t); osc.stop(t + segDur + 0.02);
+            });
 
-    document.getElementById('btn-next').onclick = () => {
-        currentWeekStart.setDate(currentWeekStart.getDate() + 7);
-        updateHeaders();
-        renderEvents();
-    };
+            // Pulso pizzicato rítmico cada 0.25s
+            for (let sub = 0; sub < segDur; sub += 0.25) {
+              const pt = t + sub;
+              const note = ch[(Math.floor(sub / 0.25) % 3) + 1] * 2;
+              const pOsc = ctx.createOscillator();
+              pOsc.type = 'sine';
+              pOsc.frequency.setValueAtTime(note, pt);
+              const pg = ctx.createGain();
+              pg.gain.setValueAtTime(0.001, pt);
+              pg.gain.linearRampToValueAtTime(0.14, pt + 0.012);
+              pg.gain.exponentialRampToValueAtTime(0.001, pt + 0.2);
+              pOsc.connect(pg).connect(masterGain);
+              pOsc.start(pt); pOsc.stop(Math.min(totalDuration, pt + 0.22));
+            }
+            barIdx++;
+          }
+        } else {
+          // Quirky storyteller upbeat
+          const bass = [130.81, 130.81, 155.56, 174.61, 130.81, 196.0, 174.61, 155.56];
+          const step = 0.26;
+          let i = 0;
+          for (let t = 0; t < totalDuration; t += step) {
+            const freq = bass[i % bass.length];
+            const osc = ctx.createOscillator();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, t);
+            const g = ctx.createGain();
+            g.gain.setValueAtTime(0.001, t);
+            g.gain.linearRampToValueAtTime(0.28, t + 0.015);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+            osc.connect(g).connect(masterGain);
+            osc.start(t); osc.stop(Math.min(totalDuration, t + 0.24));
 
-    document.getElementById('btn-today').onclick = () => {
-        const today = new Date();
-        let dayOfWeek = today.getDay() - 1;
-        if (dayOfWeek === -1) dayOfWeek = 6;
-        today.setDate(today.getDate() - dayOfWeek);
-        currentWeekStart = today;
-        updateHeaders();
-        renderEvents();
-    };
-
-    // 8. FILTROS DE LA BARRA LATERAL
-    document.querySelectorAll('.calendar-item').forEach(item => {
-        item.addEventListener('click', () => {
-            const cat = item.dataset.cat;
-            activeCategories[cat] = !activeCategories[cat];
-            item.classList.toggle('inactive', !activeCategories[cat]);
-            saveToLocalStorage();
-            renderEvents();
-        });
-    });
-
-    // 9. LOCALSTORAGE
-    function saveToLocalStorage() {
-        localStorage.setItem(STORAGE_EVENTS_KEY, JSON.stringify(events));
-        localStorage.setItem(STORAGE_CATS_KEY, JSON.stringify(activeCategories));
-    }
-
-    function loadFromLocalStorage() {
-        const saved = localStorage.getItem(STORAGE_EVENTS_KEY);
-        const savedCats = localStorage.getItem(STORAGE_CATS_KEY);
-
-        events = saved ? JSON.parse(saved) : [...DEFAULT_EVENTS];
-        if (savedCats) activeCategories = JSON.parse(savedCats);
-
-        document.querySelectorAll('.calendar-item').forEach(item => {
-            const cat = item.dataset.cat;
-            if (activeCategories[cat] === false) item.classList.add('inactive');
-        });
-
-        updateHeaders();
-        renderEvents();
-    }
-
-    // 10. RESTABLECER
-    document.getElementById('btn-reset').onclick = () => {
-        if (confirm('¿Restablecer los datos a los de la imagen original?')) {
-            events = JSON.parse(JSON.stringify(DEFAULT_EVENTS));
-            activeCategories = {
-                casa: true, preparacion: true, grabacion: true,
-                completado: true, edicion: true, ocio: true, cumpleanos: true
-            };
-            currentWeekStart = new Date(2026, 7, 24);
-            saveToLocalStorage();
-            document.querySelectorAll('.calendar-item').forEach(i => i.classList.remove('inactive'));
-            updateHeaders();
-            renderEvents();
+            if (i % 2 === 1) {
+              const hi = ctx.createOscillator();
+              hi.type = 'sine';
+              hi.frequency.setValueAtTime(freq * 4, t);
+              const hg = ctx.createGain();
+              hg.gain.setValueAtTime(0.001, t);
+              hg.gain.linearRampToValueAtTime(0.12, t + 0.01);
+              hg.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
+              hi.connect(hg).connect(masterGain);
+              hi.start(t); hi.stop(Math.min(totalDuration, t + 0.16));
+            }
+            i++;
+          }
         }
-    };
+      }
 
-    // INICIAR
-    loadFromLocalStorage();
-</script>
-</body>
-</html>
+      async function buildMasterAudio({ scenes, enableSFX, musicMood }) {
+        let cursor = 0;
+        for (let i = 0; i < scenes.length; i++) {
+          const sc = scenes[i];
+          sc.startTime = cursor;
+          cursor += sc.duration;
+        }
+
+        const totalDuration = Math.max(1.0, cursor + 0.3);
+        const offline = new OfflineAudioContext(2, Math.ceil(totalDuration * SAMPLE_RATE), SAMPLE_RATE);
+
+        if (enableSFX) await synthesizeSFX('whoosh');
+
+        for (let i = 0; i < scenes.length; i++) {
+          const sc = scenes[i];
+          if (enableSFX) {
+            if (i > 0) {
+              const w = await synthesizeSFX('whoosh');
+              if (w) {
+                const ws = offline.createBufferSource();
+                ws.buffer = w;
+                const wg = offline.createGain(); wg.gain.value = 0.36;
+                ws.connect(wg).connect(offline.destination);
+                ws.start(sc.startTime);
+              }
+            }
+            if (sc.sfx && sc.sfx !== 'none') {
+              const sb = await synthesizeSFX(sc.sfx);
+              if (sb) {
+                const ss = offline.createBufferSource();
+                ss.buffer = sb;
+                const sg = offline.createGain(); sg.gain.value = 0.65;
+                ss.connect(sg).connect(offline.destination);
+                ss.start(sc.startTime + 0.14);
+              }
+            }
+          }
+        }
+
+        scheduleMusic(offline, totalDuration, musicMood);
+        const masterBuffer = await offline.startRendering();
+        return { masterBuffer, totalDuration };
+      }
+
+      return { SAMPLE_RATE, ensureLiveContext, buildMasterAudio };
+    })();
+
+    // =========================================================================
+    // 2. DIRECTOR AUTOMÁTICO DE PLANOS (SIN APIs)
+    // =========================================================================
+    window.RicksDirector = (() => {
+      const PRESETS = {
+        jarron:
+          "Colocó una bola de bronce en la boca de un dragón y avisó al emperador: si alguna vez cae, corred. Toda la corte estalló en carcajadas frente al trono. Pero el emperador tenía el ejército más grande del mundo y no pensaba huir de un jarrón. Semanas después cayó una bola, pero no pasó nada, ni siquiera una onda en su copa de vino. Así que echaron al inventor de la ciudad con su jarrón cuesta arriba hasta una colina solitaria. Una noche cayeron las ocho bolas a la vez y corrió a avisar a los guardias, pero volvieron a reírse de él. A la mañana siguiente, el palacio entero era una pila de escombros. Dentro del jarrón había un péndulo oculto que detectó el terremoto más grande del imperio bajo sus pies.",
+        torre_eiffel:
+          "En 1925, un estafador llamado Victor Lustig leyó que la Torre Eiffel necesitaba reparaciones carísimas. Falsificó papeles oficiales y reunió en secreto a cinco empresarios millonarios. Les aseguró que el gobierno quería vender la torre como chatarra. Uno de ellos mordió el anzuelo y le pagó una maleta llena de dinero en efectivo. Meses después el estafador volvió a París e intentó vender la Torre Eiffel una segunda vez.",
+        emues:
+          "En 1932, Australia declaró la guerra oficial a veinte mil emúes que arrasaban los cultivos. El ejército envió soldados armados con ametralladoras creyendo que sería facilísimo. Pero los pájaros corrían a cincuenta kilómetros por hora y esquivaban todas las balas. Al final los soldados tuvieron que retirarse y los emúes ganaron la guerra.",
+        pepsi:
+          "En 1989, la Unión Soviética quería comprar Pepsi pero su moneda no valía nada fuera del país. Así que propusieron el trato más absurdo de la historia ante sus generales. Pagaron a Pepsi con diecisiete submarinos, un crucero y un destructor de guerra reales. Por un momento, la marca de refrescos tuvo la sexta flota militar más grande del planeta."
+      };
+
+      function buildWordTimingForScene(text, duration) {
+        const words = text.trim().split(/\s+/).filter(Boolean);
+        if (!words.length) return [];
+        const usable = Math.max(0.8, duration - 0.25);
+        const weights = words.map((w) => Math.max(2, w.length) + (/[,.;:!?]$/.test(w) ? 2 : 0));
+        const total = weights.reduce((a, b) => a + b, 0);
+        let cur = 0.12;
+        return words.map((word, i) => {
+          const d = (weights[i] / total) * usable;
+          const out = { word, start: cur, end: cur + d };
+          cur += d;
+          return out;
+        });
+      }
+
+      function inferScenePlan(text, index, total) {
+        const l = text.toLowerCase();
+
+        // Entorno 2.5D
+        let env = 'throne_room';
+        if (/escombros|terremoto|derrumb|guerra|balas|destructor|explos/.test(l)) {
+          env = /debajo|bajo sus pies|tierra|terremoto/.test(l) ? 'earth_cross_section' : 'city_destruction';
+        } else if (/péndulo|interior|dentro|mecanismo|engranaje|diseñ/.test(l)) {
+          env = 'cutaway_mechanism';
+        } else if (/colina|camino|cuesta|atardecer|ech|ciudad.*jarrón|volvió/.test(l)) {
+          env = 'sunset_hill';
+        } else if (/noche|durmi|camp|guardias|luna/.test(l)) {
+          env = 'night_camp';
+        } else if (/ejército|soldados|muralla|puerta|flota|generales|empresarios/.test(l)) {
+          env = 'courtyard_army';
+        } else if (/dragón|jarrón|bola|torre|fórmula|leyó|falsific|dinero|trato/.test(l)) {
+          env = /trono|corte|emperador|rey|gobierno/.test(l) ? 'throne_room' : 'workshop_artifact';
+        }
+
+        // Tipo de plano y cámara
+        let shot = 'medium_dialogue';
+        if (index === 0) shot = 'dramatic_closeup';
+        else if (env === 'courtyard_army') shot = 'establishing_wide';
+        else if (env === 'city_destruction' || env === 'earth_cross_section') shot = 'impact_shake';
+        else if (env === 'cutaway_mechanism') shot = 'overhead_cutaway';
+        else if (env === 'sunset_hill') shot = 'pan_action';
+        else if (/vino|copa|carcajadas|reír|grit/.test(l)) shot = 'dramatic_closeup';
+
+        // Vestuario principal y secundario
+        let role = 'scholar';
+        if (/emperador|rey|gobierno|trono/.test(l)) role = 'emperor';
+        else if (/soldado|ejército|guardia|general/.test(l)) role = 'guard';
+        else if (/estafador|empresario|millonario|pepsi|dinero/.test(l)) role = 'merchant';
+
+        let emotion = 'smug';
+        if (/carcajadas|reír|risa/.test(l)) emotion = 'laughing';
+        else if (/grit|corred|cayeron|escombros|terremoto|absurdo/.test(l)) emotion = 'shocked';
+        else if (/no pensaba|echaron|enfad|guerra|armados/.test(l)) emotion = 'angry';
+        else if (/noche|solitaria/.test(l)) emotion = 'sleeping';
+        else if (/leyó|péndulo|dentro|sabías/.test(l)) emotion = 'thinking';
+
+        let sfx = 'pop';
+        if (env === 'city_destruction' || env === 'earth_cross_section') sfx = 'boom';
+        else if (/carcajadas|reír/.test(l)) sfx = 'laugh';
+        else if (/bola|bronce|moneda|dinero|metal/.test(l)) sfx = 'clang';
+        else if (/péndulo|dentro|secreto|trato/.test(l)) sfx = 'chime';
+        else if (/retirar|no pasó nada|error/.test(l)) sfx = 'fail';
+        else if (index === 0) sfx = 'riser';
+
+        let prop = 'none';
+        if (/dragón|jarrón|bola/.test(l)) prop = 'dragon_jar';
+        else if (/vino|copa/.test(l)) prop = 'goblet';
+        else if (/dinero|maleta|efectivo|moneda|millonario|pepsi/.test(l)) prop = 'money';
+        else if (/torre/.test(l)) prop = 'tower';
+        else if (/papeles|leyó|trato/.test(l)) prop = 'scroll';
+        else if (/emú|pájaro/.test(l)) prop = 'bird';
+        else if (/péndulo/.test(l)) prop = 'pendulum';
+
+        const wordsCount = text.trim().split(/\s+/).length;
+        const duration = Math.max(2.1, Math.min(4.6, wordsCount * 0.23 + 0.8));
+
+        return {
+          id: 'pl_' + Date.now() + '_' + index,
+          text,
+          env,
+          shot,
+          role,
+          emotion,
+          prop,
+          sfx,
+          hasCrowd: /corte|ejército|soldados|empresarios|guardias|generales/.test(l),
+          duration,
+          words: buildWordTimingForScene(text, duration)
+        };
+      }
+
+      function parseStoryToShots(rawText) {
+        const cleaned = rawText.replace(/\s+/g, ' ').trim();
+        if (!cleaned) return [];
+        const rawSentences = cleaned.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [cleaned];
+        const shots = [];
+
+        rawSentences.forEach((s) => {
+          const words = s.trim().split(/\s+/);
+          if (words.length > 18) {
+            const mid = Math.ceil(words.length / 2);
+            shots.push(words.slice(0, mid).join(' '));
+            shots.push(words.slice(mid).join(' '));
+          } else {
+            shots.push(s.trim());
+          }
