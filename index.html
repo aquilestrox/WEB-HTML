@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Short 2.5D Engine — Mundo 3D Real + Cámara Dinámica (Sin APIs)</title>
+  <title>Short 2.5D Studio — Escenarios Únicos, Luces y Sombras desde tu Guion</title>
   <style>
     :root {
-      --bg: #0b0e14;
-      --panel: #141923;
-      --panel-alt: #1c2230;
-      --border: #2b3448;
+      --bg: #0a0d14;
+      --panel: #131823;
+      --panel-alt: #1b2231;
+      --border: #2b354b;
       --text: #eef1f7;
       --muted: #93a1b9;
       --primary: #4f7cff;
@@ -62,10 +62,10 @@
 
     .workspace {
       display: grid;
-      grid-template-columns: minmax(360px, 1.1fr) minmax(320px, 0.9fr);
+      grid-template-columns: minmax(360px, 1.15fr) minmax(320px, 0.85fr);
       gap: 18px;
       padding: 18px;
-      max-width: 1520px;
+      max-width: 1540px;
       margin: 0 auto;
     }
 
@@ -101,9 +101,9 @@
       color: var(--text);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 9px 11px;
+      padding: 8px 10px;
       font: inherit;
-      font-size: 0.88rem;
+      font-size: 0.86rem;
     }
 
     textarea { resize: vertical; line-height: 1.5; }
@@ -112,7 +112,7 @@
       display: flex;
       flex-direction: column;
       gap: 4px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--muted);
     }
 
@@ -125,6 +125,9 @@
     }
 
     .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 10px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 6px; }
+    @media (max-width: 640px) { .grid-4, .grid-3 { grid-template-columns: 1fr 1fr; } }
+
     .toggles-grid { display: flex; flex-wrap: wrap; gap: 16px; margin: 10px 0; }
     .preset-row, .actions-row { display: flex; gap: 8px; align-items: center; }
     .preset-row { flex: 1; min-width: 240px; }
@@ -136,7 +139,7 @@
       padding: 10px 14px;
       font: inherit;
       font-weight: 600;
-      font-size: 0.88rem;
+      font-size: 0.86rem;
       cursor: pointer;
       text-decoration: none;
       text-align: center;
@@ -153,8 +156,8 @@
     .scenes-summary {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      max-height: 360px;
+      gap: 10px;
+      max-height: 440px;
       overflow-y: auto;
     }
 
@@ -162,12 +165,12 @@
       background: var(--panel-alt);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 8px 10px;
+      padding: 10px;
       font-size: 0.82rem;
     }
 
     .scene-pill strong { color: var(--accent); }
-    .scene-pill small { display: block; color: var(--muted); margin-top: 2px; }
+    .scene-pill p { margin: 4px 0; color: var(--text); }
 
     .preview-card { position: sticky; top: 16px; }
 
@@ -233,8 +236,8 @@
 <body>
   <header class="topbar">
     <div>
-      <h1>Short 2.5D Engine <span class="badge">MUNDO 3D REAL + CÁMARA MÓVIL</span></h1>
-      <p class="subtitle">Cada historia genera su propio mundo 3D, cámara orbitando/volando, música + SFX y MP4 9:16</p>
+      <h1>Short 2.5D Studio <span class="badge">14 MUNDOS 2.5D · LUCES Y SOMBRAS</span></h1>
+      <p class="subtitle">Escenarios únicos según tu guion · 5 capas parallax, iluminación volumétrica, música + SFX y MP4 9:16</p>
     </div>
     <div id="codecSupportBadge" class="status-pill">Iniciando...</div>
   </header>
@@ -244,21 +247,20 @@
     <section class="panel controls-panel">
       <div class="card">
         <div class="card-header">
-          <h2>1. Tu Guion o Idea</h2>
+          <h2>1. Tu Guion</h2>
           <div class="preset-row">
             <select id="presetSelect">
-              <option value="boston">Boston 1919: La inundación de melaza</option>
-              <option value="hacker">Un hacker robó un banco con una tostadora</option>
-              <option value="espacio">El astronauta que quedó atrapado en órbita</option>
-              <option value="torre_eiffel">El estafador que vendió la Torre Eiffel</option>
-              <option value="pepsi">El día que Pepsi tuvo submarinos militares</option>
-              <option value="faraon">El secreto enterrado bajo la pirámide</option>
+              <option value="cocinero">Ejemplo: Cocinero, incendio, persecución y tren</option>
+              <option value="hacker">Ejemplo: Hacker en oficina, bóveda de oro y policía</option>
+              <option value="volcan">Ejemplo: Barco en tormenta, volcán y helicóptero</option>
+              <option value="espacio">Ejemplo: Estación espacial, asteroide y desierto</option>
+              <option value="carcel">Ejemplo: Fuga de prisión por el bosque nocturno</option>
             </select>
             <button id="loadPresetBtn" type="button" class="btn-secondary">Cargar</button>
           </div>
         </div>
 
-        <textarea id="storyInput" rows="7" placeholder="Escribe cualquier historia nueva aquí (aunque sea corta). Cada historia genera automáticamente nuevos escenarios 3D, colores, personajes y movimientos de cámara..."></textarea>
+        <textarea id="storyInput" rows="7" placeholder="Escribe cada frase de tu historia... La web crea escenarios completamente distintos para cocina, oficina, banco, calle, tren, océano, volcán, espacio, bosque, desierto, cárcel, hospital, estadio o castillo."></textarea>
 
         <div class="grid-3" style="margin-top:10px;">
           <label>
@@ -296,14 +298,13 @@
         </div>
 
         <div class="actions-row">
-          <button id="buildShortBtn" type="button" class="btn-primary" style="flex:1">⚡ Crear Short 3D desde mi Historia</button>
-          <button id="remixVisualsBtn" type="button" class="btn-secondary" title="Cambia semilla visual si quieres otra estética">🎲 Variar Visuales</button>
+          <button id="buildShortBtn" type="button" class="btn-primary" style="flex:1">⚡ Crear Short desde mi Guion</button>
         </div>
       </div>
 
       <div class="card">
         <div class="card-header">
-          <h2>2. Escenas Generadas Automáticamente (<span id="sceneCount">0</span>)</h2>
+          <h2>2. Escenas Generadas (<span id="sceneCount">0</span>)</h2>
         </div>
         <div id="scenesSummary" class="scenes-summary"></div>
       </div>
@@ -374,7 +375,7 @@
     }
 
     // =========================================================================
-    // 1. AUDIO: SOLO MÚSICA + SFX DINÁMICOS (SIN VOZ)
+    // 1. AUDIO: MÚSICA Y SFX ADAPTADOS (SIN VOZ)
     // =========================================================================
     window.AudioEngine = (() => {
       const SR = 48000;
@@ -395,15 +396,15 @@
         const music = new Float64Array(N);
         const sfx = new Float64Array(N);
 
-        let seed = (seedVal || 42) >>> 0;
+        let seed = (seedVal || 77) >>> 0;
         const rand = () => {
           seed = (seed * 1664525 + 1013904223) >>> 0;
           return (seed / 4294967296) * 2 - 1;
         };
 
         if (enableMusic) {
-          const rootPool = [55, 65.41, 49, 73.42];
-          const root = rootPool[seedVal % rootPool.length];
+          const roots = [55, 65.41, 49, 73.42];
+          const root = roots[seedVal % roots.length];
           const chords = [
             [root, root * 1.5, root * 2],
             [root * 0.89, root * 1.33, root * 1.78],
@@ -416,36 +417,34 @@
             const i1 = Math.min(N, Math.floor((cIdx + 1) * segDur * SR));
             for (let i = i0; i < i1; i++) {
               const tt = (i - i0) / SR;
-              const env = Math.min(1, tt / 1.2) * Math.min(1, (segDur - tt) / 1.0);
+              const env = Math.min(1, tt / 1.0) * Math.min(1, (segDur - tt) / 0.9);
               let v = 0;
               notes.forEach((f, j) => {
                 v += 0.045 * env * Math.sin(2 * Math.PI * f * tt + j * 0.4);
-                v += 0.014 * env * Math.sin(2 * Math.PI * f * 2.01 * tt);
+                v += 0.012 * env * Math.sin(2 * Math.PI * f * 2.01 * tt);
               });
               music[i] += v;
             }
           });
 
-          // Pulso rítmico
           for (let beat = 0; beat < totalDuration; beat += 0.5) {
             const idx = Math.floor(beat * SR);
-            const ln = Math.min(Math.floor(0.24 * SR), N - idx);
+            const ln = Math.min(Math.floor(0.22 * SR), N - idx);
             for (let q = 0; q < ln; q++) {
               const qt = q / SR;
-              music[idx + q] += 0.08 * Math.sin(2 * Math.PI * (beat % 1 === 0 ? 64 : 92) * qt) * Math.exp(-qt * 18);
+              music[idx + q] += 0.075 * Math.sin(2 * Math.PI * (beat % 1 === 0 ? 64 : 92) * qt) * Math.exp(-qt * 18);
             }
           }
 
-          // Notas melódicas espaciadas
           const scale = [1, 1.189, 1.335, 1.498, 1.782, 2.0];
-          for (let k = 0; k < Math.floor(totalDuration / 1.8); k++) {
-            const sec = k * 1.8 + 0.35;
+          for (let k = 0; k < Math.floor(totalDuration / 1.6); k++) {
+            const sec = k * 1.6 + 0.3;
             const idx = Math.floor(sec * SR);
-            const ln = Math.min(Math.floor(1.3 * SR), N - idx);
+            const ln = Math.min(Math.floor(1.2 * SR), N - idx);
             const f = root * 4 * scale[(k * 3 + seedVal) % scale.length];
             for (let q = 0; q < ln; q++) {
               const qt = q / SR;
-              music[idx + q] += 0.045 * Math.sin(2 * Math.PI * f * qt) * Math.exp(-qt * 3.0);
+              music[idx + q] += 0.042 * Math.sin(2 * Math.PI * f * qt) * Math.exp(-qt * 3.0);
             }
           }
         }
@@ -467,26 +466,33 @@
             }
           };
 
+          const addTone = (sec, dur, f0, f1, amp) => {
+            const idx = Math.floor(sec * SR);
+            const ln = Math.min(Math.floor(dur * SR), N - idx);
+            for (let q = 0; q < ln; q++) {
+              const qt = q / SR;
+              const f = f0 + (f1 - f0) * (qt / dur);
+              sfx[idx + q] += amp * Math.sin(2 * Math.PI * f * qt) * Math.exp(-qt * 6);
+            }
+          };
+
           scenes.forEach((sc, idx) => {
-            if (idx > 0) addBand(sc.startTime, 0.35, 0.14, 240, 2600); // Whoosh de cámara en corte
-            if (sc.camType === 'impact_shake' || sc.hazard === 'explosion' || sc.hazard === 'flood') {
-              addBand(sc.startTime + 0.12, 1.6, 0.34, 55, 850);
-            } else if (sc.camType === 'orbit_hero') {
-              // Tono cristalino de revelación
-              const pIdx = Math.floor((sc.startTime + 0.25) * SR);
-              const ln = Math.min(Math.floor(0.65 * SR), N - pIdx);
-              for (let q = 0; q < ln; q++) {
-                const qt = q / SR;
-                sfx[pIdx + q] += 0.11 * Math.sin(2 * Math.PI * 784 * qt) * Math.exp(-qt * 6);
-              }
-            } else {
-              addBand(sc.startTime + 0.15, 0.25, 0.08, 400, 1800);
+            if (idx > 0) addBand(sc.startTime, 0.32, 0.14, 260, 2600);
+            if (sc.fx === 'explosion' || sc.fx === 'fire') addBand(sc.startTime + 0.1, 1.4, 0.35, 50, 750);
+            else if (sc.fx === 'rain' || sc.world === 'ocean') addBand(sc.startTime + 0.05, Math.min(2.5, sc.duration), 0.12, 500, 3200);
+            else if (sc.action === 'celebrate' || sc.prop === 'gold') {
+              addTone(sc.startTime + 0.2, 0.5, 880, 1320, 0.12);
+              addTone(sc.startTime + 0.35, 0.5, 1320, 1760, 0.1);
+            } else if (sc.action === 'alarm' || sc.fx === 'siren') {
+              addTone(sc.startTime + 0.15, 0.4, 620, 920, 0.1);
+              addTone(sc.startTime + 0.6, 0.4, 920, 620, 0.1);
+            } else if (sc.action === 'run') {
+              [0.15, 0.45, 0.75, 1.05].forEach((off) => addBand(sc.startTime + off, 0.12, 0.12, 90, 400));
             }
           });
         }
 
-        const L = buf.getChannelData(0);
-        const R = buf.getChannelData(1);
+        const L = buf.getChannelData(0), R = buf.getChannelData(1);
         const norm = Math.tanh(1.1);
         for (let i = 0; i < N; i++) {
           const comp = Math.tanh((music[i] + sfx[i]) * 1.35) / norm;
@@ -500,123 +506,54 @@
     })();
 
     // =========================================================================
-    // 2. DIRECTOR PROCEDURAL DE HISTORIAS (CERO REPETICIONES, 10 BIOMAS 3D)
+    // 2. COMPOSITOR SEMÁNTICO (14 MUNDOS ÚNICOS + PROPS + ACCIONES)
     // =========================================================================
-    window.StoryBrain = (() => {
+    window.SemanticDirector = (() => {
       const PRESETS = {
-        boston:
-`En 1919, un depósito gigantesco en Boston guardaba dos millones de galones de melaza.
-El quince de enero, el acero empezó a crujir y los remaches saltaron por los aires.
-Una ola marrón avanzó por toda la ciudad a cincuenta y seis kilómetros por hora.
-Los edificios quedaron rodeados y los rescatistas tuvieron que usar agua de mar.`,
+        cocinero:
+`Un cocinero trabajaba de noche dentro de una pequeña cocina preparando una cena secreta.
+De pronto la sartén empezó a arder en llamas y sonó la alarma de incendios.
+Salió corriendo por la calle bajo la lluvia mientras llegaba la policía.
+Saltó encima de un tren en marcha y escapó en la oscuridad.`,
 
         hacker:
-`Un joven hacker prometió que podía vaciar un banco usando solo una tostadora modificada.
-Durante semanas estudió los cables subterráneos y las cámaras acorazadas del edificio.
-Una noche conectó su aparato a la red eléctrica y todas las alarmas de la ciudad saltaron.
-En lugar de robar oro, dejó sin electricidad al barrio entero durante tres horas.`,
+`Un joven hacker trabajaba frente a su ordenador en una oficina oscura llena de luces neón.
+Descubrió la clave de la bóveda del banco y planeó llevarse todo el oro.
+Al entrar en la cámara acorazada saltaron los láseres y sonó la sirena roja.
+Huyó en un coche deportivo por la avenida antes del amanecer.`,
+
+        volcan:
+`Un grupo de exploradores navegaba en un barco hacia una isla con un enorme volcán.
+Al pisar la arena del desierto la montaña empezó a temblar con fuerza.
+Corrieron por el bosque mientras caía fuego y ceniza del cielo.
+Despegaron en un helicóptero justo cuando la lava cubrió la costa.`,
 
         espacio:
-`En plena misión orbital, la cápsula espacial sufrió un fallo en sus propulsores principales.
-La estación espacial quedaba cada vez más lejos mientras el oxígeno bajaba rápido.
-El astronauta improvisó un cálculo de gravedad usando solo una linterna y un cronómetro.
-Logró encender los motores de reserva justo a tiempo y regresar a la Tierra.`,
+`Un astronauta flotaba en el espacio reparando una estación junto a un planeta anillado.
+Un asteroide chocó contra la nave y provocó chispas y fuego en los motores.
+Aterrizó de emergencia en las dunas del desierto al atardecer.
+Al salir de la cápsula celebró mirando el cielo estrellado.`,
 
-        torre_eiffel:
-`En 1925, un estafador en París falsificó documentos oficiales del gobierno francés.
-Reunió en secreto a cinco empresarios millonarios bajo la gran Torre Eiffel.
-Les aseguró que la ciudad quería vender la torre entera como chatarra al mejor postor.
-Uno le pagó una maleta llena de billetes y meses después intentó venderla otra vez.`,
-
-        pepsi:
-`En 1989, la Unión Soviética quería comprar Pepsi pero su moneda no valía fuera del país.
-Sus generales propusieron el intercambio más absurdo en mitad del océano.
-Pagaron a la empresa con diecisiete submarinos, un crucero y un destructor reales.
-Durante unos días, una marca de refrescos tuvo una de las mayores flotas del planeta.`,
-
-        faraon:
-`Un grupo de exploradores encontró una puerta oculta bajo las arenas de una pirámide.
-Al cruzar el túnel iluminado con antorchas descubrieron mecanismos de piedra intactos.
-Una trampa antigua hizo temblar todo el templo mientras las columnas empezaban a caer.
-Consiguieron escapar justo antes de que la cámara secreta se sellara para siempre.`
+        carcel:
+`Un prisionero observaba la luna desde su celda detrás de los barrotes de la cárcel.
+Consiguió abrir una puerta oculta y corrió por el bosque oscuro bajo la lluvia.
+Tras cruzar un puente antiguo llegó hasta un estadio lleno de luces.
+Se escondió entre la multitud mientras todos celebraban la victoria.`
       };
 
-      const BIOMES = [
-        'modern_city',      // Rascacielos modernos, neones, coches/carretera
-        'cyber_lab',        // Laboratorio futurista, servidores, núcleos brillantes
-        'outer_space',      // Espacio profundo, planetas, asteroides, cohete/estación
-        'bank_heist',       // Banco, columnas, cajas fuertes, lingotes de oro
-        'ocean_naval',      // Océano con olas 3D, submarino, barcos
-        'industrial_flood', // Ciudad ladrillo 1919, depósito industrial, ola densa
-        'desert_pyramid',   // Desierto dorado, pirámides, obeliscos, esfinge
-        'forest_night',     // Bosque nocturno con pinos 3D, luna llena, hoguera
-        'medieval_fortress',// Castillo con torres almenadas, murallas, estandartes
-        'paris_avenue'      // Bulevar europeo con Torre Eiffel 3D y farolas
+      const WORLDS = [
+        'kitchen', 'hacker_office', 'bank_vault', 'city_street', 'train_tracks',
+        'ocean', 'volcano', 'outer_space', 'forest', 'desert',
+        'prison', 'hospital', 'stadium', 'castle'
       ];
 
-      const ROLES_BY_BIOME = {
-        modern_city: ['casual', 'exec', 'hacker'],
-        cyber_lab: ['scientist', 'hacker', 'exec'],
-        outer_space: ['astronaut', 'scientist'],
-        bank_heist: ['exec', 'hacker', 'casual'],
-        ocean_naval: ['explorer', 'exec'],
-        industrial_flood: ['worker', 'casual'],
-        desert_pyramid: ['explorer', 'monarch'],
-        forest_night: ['explorer', 'casual'],
-        medieval_fortress: ['knight', 'monarch'],
-        paris_avenue: ['exec', 'casual']
-      };
-
-      function hashString(str) {
+      function hashStr(s) {
         let h = 2166136261;
-        for (let i = 0; i < str.length; i++) {
-          h ^= str.charCodeAt(i);
+        for (let i = 0; i < s.length; i++) {
+          h ^= s.charCodeAt(i);
           h = Math.imul(h, 16777619);
         }
         return h >>> 0;
-      }
-
-      function detectBiome(fullText, seed) {
-        const l = fullText.toLowerCase();
-        if (/espacio|órbita|astronauta|cohete|planeta|galaxia|luna|estrella|marte/.test(l)) return 'outer_space';
-        if (/hacker|tostadora|código|laboratorio|ciencia|robot|ia|servidor|experimento|láser/.test(l)) return 'cyber_lab';
-        if (/banco|bóveda|oro|dinero|estafador|millon|alarma|ladrón|atraco/.test(l)) return 'bank_heist';
-        if (/submarino|océano|mar|barco|flota|pepsi|pirata|isla|tiburón/.test(l)) return 'ocean_naval';
-        if (/melaza|depósito|tanque|boston|remaches|fábrica|inund/.test(l)) return 'industrial_flood';
-        if (/pirámide|faraón|arena|desierto|egipto|templo|momia/.test(l)) return 'desert_pyramid';
-        if (/torre eiffel|parís|francia|bulevar/.test(l)) return 'paris_avenue';
-        if (/castillo|rey|caballero|espada|dragón|medieval|troya|imperio/.test(l)) return 'medieval_fortress';
-        if (/bosque|hoguera|campamento|árbol|lobo|montaña|noche/.test(l)) return 'forest_night';
-        if (/ciudad|calle|coche|policía|edificio|carrera/.test(l)) return 'modern_city';
-        // Si no hay palabras clave reconocibles, elegir un bioma completamente distinto según el hash del texto
-        return BIOMES[seed % BIOMES.length];
-      }
-
-      function detectHazardAndProps(text, biome) {
-        const l = text.toLowerCase();
-        let hazard = 'none';
-        if (/ola|inund|melaza|agua|mar/.test(l)) hazard = 'flood';
-        else if (/explot|saltaron|tembl|caer|trampa|fuego|alarma|destru|accidente|fallo/.test(l)) hazard = 'explosion';
-        else if (/oro|dinero|billetes|millon/.test(l)) hazard = 'gold_rain';
-        else if (/nieve|frío|noche|bosque/.test(l)) hazard = 'particles';
-
-        let prop = 'monolith';
-        if (/tanque|depósito|acero|remaches/.test(l)) prop = 'tank';
-        else if (/cohete|cápsula|nave|propulsor|estación/.test(l)) prop = 'rocket';
-        else if (/submarino|barco|flota/.test(l)) prop = 'submarine';
-        else if (/torre eiffel|torre/.test(l)) prop = 'eiffel';
-        else if (/pirámide|templo/.test(l)) prop = 'pyramid';
-        else if (/bóveda|banco|oro|caja/.test(l)) prop = 'vault';
-        else if (/tostadora|servidor|máquina|aparato|robot/.test(l)) prop = 'machine';
-        else if (biome === 'outer_space') prop = 'rocket';
-        else if (biome === 'ocean_naval') prop = 'submarine';
-        else if (biome === 'desert_pyramid') prop = 'pyramid';
-        else if (biome === 'paris_avenue') prop = 'eiffel';
-        else if (biome === 'bank_heist') prop = 'vault';
-        else if (biome === 'cyber_lab') prop = 'machine';
-        else if (biome === 'industrial_flood') prop = 'tank';
-
-        return { hazard, prop };
       }
 
       function buildWords(text, duration) {
@@ -634,432 +571,647 @@ Consiguieron escapar justo antes de que la cámara secreta se sellara para siemp
         });
       }
 
-      function makeHeadline(text, idx, total) {
+      function analyzeSentence(text, idx, total, seed, prev) {
+        const l = text.toLowerCase();
+
+        // 1. MUNDO / ESCENARIO ÚNICO
+        let world = null;
+        if (/cocin|sartén|horno|restaurante|cena/.test(l)) world = 'kitchen';
+        else if (/bóveda|banco|acorazada|lingote|tesoro/.test(l)) world = 'bank_vault';
+        else if (/hacker|ordenador|computador|oficina|servidor|código|neón/.test(l)) world = 'hacker_office';
+        else if (/cárcel|prisión|celda|barrote/.test(l)) world = 'prison';
+        else if (/hospital|médico|enferm|ambulancia|camilla/.test(l)) world = 'hospital';
+        else if (/estadio|fútbol|partido|multitud|grada/.test(l)) world = 'stadium';
+        else if (/castillo|rey|reina|trono|caballero|medieval/.test(l)) world = 'castle';
+        else if (/tren|vía|estación|ferrocarril/.test(l)) world = 'train_tracks';
+        else if (/espacio|órbita|planeta|asteroide|estación espacial|astronauta/.test(l)) world = 'outer_space';
+        else if (/volcán|lava|erupción/.test(l)) world = 'volcano';
+        else if (/océano|mar|barco|submarino|isla|navega|ola/.test(l)) world = 'ocean';
+        else if (/bosque|árbol|selva/.test(l)) world = 'forest';
+        else if (/desierto|arena|duna|pirámide|egipto/.test(l)) world = 'desert';
+        else if (/calle|avenida|ciudad|coche|policía|puente|edificio/.test(l)) world = 'city_street';
+        else {
+          // Si no hay palabra clave explícita, garantizar rotación diversa de escenarios distintos
+          world = WORLDS[(seed + idx * 5) % WORLDS.length];
+        }
+
+        // 2. ILUMINACIÓN / HORA
+        let lighting = 'day';
+        if (/noche|oscur|luna|madrugada|cárcel|celda/.test(l)) lighting = 'night';
+        else if (/atardecer|ocaso|dorado/.test(l)) lighting = 'sunset';
+        else if (/neón|hacker|ciber|bóveda|láser/.test(l)) lighting = 'neon';
+        else if (/fuego|llama|ard|volcán|lava|incendio|explos/.test(l)) lighting = 'fire';
+        else if (prev && prev.lighting === 'night' && !/amanec|sol|día/.test(l)) lighting = 'night';
+
+        // 3. PERSONAJE Y VESTUARIO
+        let role = 'casual';
+        if (/cocinero|chef/.test(l)) role = 'chef';
+        else if (/policía|guardia|detective/.test(l)) role = 'police';
+        else if (/hacker|programador/.test(l)) role = 'hacker';
+        else if (/astronauta/.test(l)) role = 'astronaut';
+        else if (/médico|doctor|científico/.test(l)) role = 'scientist';
+        else if (/rey|reina|emperador/.test(l)) role = 'monarch';
+        else if (/prisionero|preso/.test(l)) role = 'prisoner';
+        else if (/ladrón|empresario|banquero/.test(l)) role = 'suit';
+        else if (/explorador|pirata/.test(l)) role = 'explorer';
+        else if (prev) role = prev.role;
+
+        // 4. ACCIÓN Y SEGUNDO PERSONAJE
+        let action = 'idle';
+        let hasSecond = false;
+        let secondRole = 'police';
+        if (/corri|huy|escap|persegu|salt/.test(l)) action = 'run';
+        else if (/pele|luch|enfrent|atac/.test(l)) { action = 'fight'; hasSecond = true; }
+        else if (/celebr|victoria|gan|festej/.test(l)) action = 'celebrate';
+        else if (/alarma|sirena|asust|tembl|choqu/.test(l)) action = 'alarm';
+        else if (/plane|pens|observ|descubr|repar/.test(l)) action = 'think';
+
+        if (/policía/.test(l) && role !== 'police') { hasSecond = true; secondRole = 'police'; }
+        else if (/grupo|todos|multitud|exploradores/.test(l)) { hasSecond = true; secondRole = 'casual'; }
+
+        // 5. OBJETO / VEHÍCULO PROTAGONISTA
+        let prop = 'none';
+        let icon = '';
+        if (/coche|deportivo|auto|patrulla/.test(l)) { prop = 'car'; icon = '🚗'; }
+        else if (/helicóptero|despeg/.test(l)) { prop = 'helicopter'; icon = '🚁'; }
+        else if (/tren/.test(l)) { prop = 'train'; icon = '🚆'; }
+        else if (/barco|submarino/.test(l)) { prop = 'boat'; icon = '🚢'; }
+        else if (/cohete|cápsula|nave/.test(l)) { prop = 'rocket'; icon = '🚀'; }
+        else if (/oro|diamante|tesoro|dinero/.test(l)) { prop = 'gold'; icon = '💰'; }
+        else if (/ordenador|pantalla/.test(l)) { icon = '💻'; }
+        else if (/sartén|cena|cocin/.test(l)) { icon = '🍳'; }
+
+        // 6. EFECTOS CLIMÁTICOS / PELIGRO
+        let fx = 'none';
+        if (/fuego|llama|ard|incendio|lava/.test(l)) fx = 'fire';
+        else if (/explot|choc|chispas/.test(l)) fx = 'explosion';
+        else if (/lluvia|tormenta/.test(l)) fx = 'rain';
+        else if (/sirena|alarma|policía/.test(l)) fx = 'siren';
+        else if (/celebr|oro|victoria/.test(l)) fx = 'sparkles';
+
+        // 7. CÁMARA 2.5D (Obligatoriamente distinta en cada corte)
+        const cams = ['dolly_zoom_in', 'pan_left', 'crane_down', 'pan_right', 'chase_track'];
+        let camType = cams[idx % cams.length];
+        if (fx === 'explosion' || action === 'alarm') camType = 'impact_shake';
+        else if (action === 'run') camType = idx % 2 === 0 ? 'chase_track' : 'pan_right';
+
         const num = text.match(/\b(1[0-9]{3}|20[0-2][0-9]|\d+(?:[.,]\d+)?\s?(?:millones|mil|km\/h|horas|días|%))\b/i);
-        if (num) return num[1].toUpperCase();
-        if (idx === 0) return 'EL INICIO';
-        if (idx === total - 1) return 'EL FINAL';
-        const clean = text.replace(/[¿?¡!.,;:]/g, '').split(/\s+/).filter((w) => w.length > 3);
-        return clean.slice(0, 2).join(' ').toUpperCase() || `ESCENA ${idx + 1}`;
+        const title = num ? num[1].toUpperCase() : (text.replace(/[¿?¡!.,;:]/g, '').split(/\s+/).filter((w) => w.length > 4).slice(0, 2).join(' ').toUpperCase() || `ESCENA ${idx + 1}`);
+
+        const wordsCnt = text.trim().split(/\s+/).length;
+        const duration = Math.max(3.0, Math.min(6.0, wordsCnt * 0.27 + 1.4));
+
+        return {
+          id: idx + 1, text, title, world, lighting, role, action, hasSecond, secondRole, prop, icon, fx, camType,
+          duration, words: buildWords(text, duration)
+        };
       }
 
-      function compileStory(rawText, extraSeed = 0) {
+      function compileScript(rawText) {
         const trimmed = rawText.trim();
-        if (!trimmed) return { scenes: [], storySeed: 1 };
-        const storySeed = (hashString(trimmed) + extraSeed * 7919) >>> 0;
+        if (!trimmed) return { scenes: [], seed: 1 };
+        const seed = hashStr(trimmed);
 
         let blocks = trimmed.split(/\n+/).map((b) => b.trim()).filter(Boolean);
         if (blocks.length === 1) {
           const sents = trimmed.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [trimmed];
           blocks = sents.map((s) => s.trim()).filter(Boolean);
         }
-        // Si el usuario escribe solo 1 línea corta (ej: una palabra o idea), la dividimos en 3 actos dinámicos para que haya movimiento y variedad
-        if (blocks.length === 1) {
-          const t = blocks[0];
-          blocks = [
-            t,
-            'De pronto algo inesperado cambió todo el escenario.',
-            'Y el desenlace sorprendió a todos.'
-          ];
+
+        const scenes = [];
+        for (let i = 0; i < blocks.length; i++) {
+          scenes.push(analyzeSentence(blocks[i], i, blocks.length, seed, scenes[i - 1] || null));
         }
-
-        const primaryBiome = detectBiome(trimmed, storySeed);
-        // Secuencia de cámaras obligatoriamente distintas entre escenas consecutivas
-        const camSequence = ['dolly_flyin', 'orbit_hero', 'whip_pan_chase', 'impact_shake', 'crane_up_reveal', 'orbit_reverse'];
-
-        const scenes = blocks.map((text, idx) => {
-          const scSeed = (storySeed + idx * 104729) >>> 0;
-          // Cada escena puede variar o evolucionar de bioma si el texto cambia o en el clímax
-          let biome = idx === 0 ? primaryBiome : detectBiome(text, scSeed);
-          if (idx > 0 && biome === primaryBiome && idx % 2 === 1 && blocks.length >= 3) {
-            // Variar ligeramente entre exterior e interior/detalle manteniendo coherencia
-            biome = primaryBiome;
-          }
-
-          const roles = ROLES_BY_BIOME[biome] || ['casual', 'exec'];
-          const role = roles[scSeed % roles.length];
-          const emotions = ['smug', 'shocked', 'thinking', 'angry', 'laughing'];
-          let emotion = emotions[scSeed % emotions.length];
-          if (/peligro|alarma|atrapad|saltaron|tembl|huir|shock/.test(text.toLowerCase())) emotion = 'shocked';
-          else if (/ri|burl|celebr|victoria/.test(text.toLowerCase())) emotion = 'laughing';
-          else if (/guerra|enfad|luch|robo/.test(text.toLowerCase())) emotion = 'angry';
-
-          const { hazard, prop } = detectHazardAndProps(text, biome);
-          let camType = camSequence[idx % camSequence.length];
-          if (hazard === 'explosion' || hazard === 'flood') camType = 'impact_shake';
-
-          const wordsCnt = text.split(/\s+/).length;
-          const duration = Math.max(3.2, Math.min(6.5, wordsCnt * 0.28 + 1.6));
-
-          return {
-            id: idx + 1,
-            text,
-            title: makeHeadline(text, idx, blocks.length),
-            biome,
-            camType,
-            role,
-            emotion,
-            hazard,
-            prop,
-            seed: scSeed,
-            duration,
-            words: buildWords(text, duration)
-          };
-        });
-
-        return { scenes, storySeed };
+        return { scenes, seed };
       }
 
-      return { PRESETS, compileStory };
+      return { PRESETS, WORLDS, compileScript };
     })();
 
     // =========================================================================
-    // 3. MOTOR 3D REAL POR PROYECCIÓN PERSPECTIVA (Cámara libre + Z-Sort)
+    // 3. MOTOR 2.5D DE 5 CAPAS CON LUCES, SOMBRAS Y 14 ESCENARIOS ÚNICOS
     // =========================================================================
-    window.Engine3D = (() => {
-      const BIOME_PALETTES = {
-        modern_city: { skyA: '#1a2a6c', skyB: '#fdbb2d', groundA: '#334155', groundB: '#1e293b', road: '#0f172a', bldgA: '#64748b', bldgB: '#475569', sun: '#fde047' },
-        cyber_lab: { skyA: '#090d16', skyB: '#312e81', groundA: '#1e1b4b', groundB: '#0f172a', road: '#312e81', bldgA: '#1e293b', bldgB: '#0f172a', sun: '#22d3ee' },
-        outer_space: { skyA: '#020617', skyB: '#1e1b4b', groundA: '#334155', groundB: '#0f172a', road: '#475569', bldgA: '#475569', bldgB: '#334155', sun: '#f43f5e' },
-        bank_heist: { skyA: '#0f172a', skyB: '#475569', groundA: '#78350f', groundB: '#451a03', road: '#991b1b', bldgA: '#cbd5e1', bldgB: '#94a3b8', sun: '#facc15' },
-        ocean_naval: { skyA: '#0369a1', skyB: '#bae6fd', groundA: '#0284c7', groundB: '#0369a1', road: '#0ea5e9', bldgA: '#475569', bldgB: '#334155', sun: '#fef08a' },
-        industrial_flood: { skyA: '#24354c', skyB: '#b48c65', groundA: '#4a4d4e', groundB: '#2d3136', road: '#383b40', bldgA: '#9d674a', bldgB: '#8b6f5a', sun: '#dca669' },
-        desert_pyramid: { skyA: '#9a3412', skyB: '#fde047', groundA: '#eab308', groundB: '#ca8a04', road: '#a16207', bldgA: '#f59e0b', bldgB: '#d97706', sun: '#ffffff' },
-        forest_night: { skyA: '#050816', skyB: '#1e3a8a', groundA: '#14532d', groundB: '#052e16', road: '#78350f', bldgA: '#166534', bldgB: '#14532d', sun: '#fef9c3' },
-        medieval_fortress: { skyA: '#312e81', skyB: '#c084fc', groundA: '#57534e', groundB: '#292524', road: '#7f1d1d', bldgA: '#94a3b8', bldgB: '#64748b', sun: '#fde047' },
-        paris_avenue: { skyA: '#1e3a8a', skyB: '#fbcfe8', groundA: '#475569', groundB: '#334155', road: '#1e293b', bldgA: '#e2e8f0', bldgB: '#cbd5e1', sun: '#fef08a' }
-      };
-
+    window.Engine25D = (() => {
       function rRect(ctx, x, y, w, h, r) {
         if (ctx.roundRect) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); }
-        else { ctx.beginPath(); ctx.rect(x, y, w, h); }
+        else {
+          ctx.beginPath();
+          ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y);
+          ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+          ctx.lineTo(x + w, y + h - r);
+          ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+          ctx.lineTo(x + r, y + h);
+          ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+          ctx.lineTo(x, y + r);
+          ctx.quadraticCurveTo(x, y, x + r, y);
+          ctx.closePath();
+        }
       }
 
-      // Proyección matemática 3D real (yaw, pitch, roll, fov)
-      function project3D(wx, wy, wz, cam) {
-        const dx = wx - cam.x;
-        const dy = wy - cam.y;
-        const dz = wz - cam.z;
+      function layerTransform(ctx, cam, z, fn) {
+        ctx.save();
+        ctx.translate(270 + cam.panX * z, 480 + cam.panY * z);
+        const s = 1 + (cam.zoom - 1) * z;
+        ctx.scale(s, s);
+        ctx.translate(-270, -480);
+        fn();
+        ctx.restore();
+      }
 
-        const cosY = Math.cos(-cam.yaw), sinY = Math.sin(-cam.yaw);
-        const rx = dx * cosY - dz * sinY;
-        const rz = dx * sinY + dz * cosY;
+      // Suelo 2.5D con punto de fuga dinámico según cam.panX / cam.panY
+      function drawPerspectiveGround(ctx, cam, yHoriz, colTop, colBot, gridCol, mode = 'tiles') {
+        const vpX = 270 - cam.panX * 0.45;
+        const g = ctx.createLinearGradient(0, yHoriz, 0, 960);
+        g.addColorStop(0, colTop); g.addColorStop(1, colBot);
+        ctx.fillStyle = g;
+        ctx.fillRect(-350, yHoriz, 1240, 960 - yHoriz + 300);
 
-        const cosP = Math.cos(-cam.pitch), sinP = Math.sin(-cam.pitch);
-        const ry = dy * cosP - rz * sinP;
-        const tz = dy * sinP + rz * cosP;
+        if (mode === 'road') {
+          // Carretera asfaltada con aceras y líneas discontinuas
+          ctx.fillStyle = '#1e293b';
+          ctx.beginPath();
+          ctx.moveTo(vpX - 42, yHoriz); ctx.lineTo(vpX + 42, yHoriz);
+          ctx.lineTo(660, 1080); ctx.lineTo(-120, 1080); ctx.closePath(); ctx.fill();
 
-        if (tz < 0.5) return null;
+          ctx.strokeStyle = '#facc15'; ctx.lineWidth = 4;
+          ctx.setLineDash([28, 24]);
+          ctx.beginPath(); ctx.moveTo(vpX, yHoriz); ctx.lineTo(270, 1080); ctx.stroke();
+          ctx.setLineDash([]);
+        } else if (mode === 'tracks') {
+          // Vías del tren en perspectiva
+          ctx.fillStyle = '#292524';
+          ctx.beginPath();
+          ctx.moveTo(vpX - 50, yHoriz); ctx.lineTo(vpX + 50, yHoriz);
+          ctx.lineTo(640, 1080); ctx.lineTo(-100, 1080); ctx.closePath(); ctx.fill();
 
-        let sx = (rx / tz) * cam.fov;
-        let sy = -(ry / tz) * cam.fov;
+          ctx.strokeStyle = '#78350f'; ctx.lineWidth = 8;
+          for (let f = 0.08; f <= 1; f += 0.12) {
+            const y = yHoriz + (1050 - yHoriz) * f * f;
+            const hw = 40 + f * f * 240;
+            const cx = vpX + (270 - vpX) * f * f;
+            ctx.beginPath(); ctx.moveTo(cx - hw, y); ctx.lineTo(cx + hw, y); ctx.stroke();
+          }
+          ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 5;
+          ctx.beginPath(); ctx.moveTo(vpX - 24, yHoriz); ctx.lineTo(80, 1080); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(vpX + 24, yHoriz); ctx.lineTo(460, 1080); ctx.stroke();
+        } else if (mode === 'tiles' || mode === 'turf') {
+          ctx.strokeStyle = gridCol; ctx.lineWidth = 2;
+          for (let i = -8; i <= 8; i++) {
+            ctx.beginPath(); ctx.moveTo(vpX + i * 35, yHoriz); ctx.lineTo(270 + i * 165, 1080); ctx.stroke();
+          }
+          [0.08, 0.2, 0.36, 0.58, 0.85].forEach((f) => {
+            const y = yHoriz + (960 - yHoriz) * f;
+            ctx.beginPath(); ctx.moveTo(-350, y); ctx.lineTo(890, y); ctx.stroke();
+          });
+        }
+      }
 
-        if (cam.roll) {
-          const cR = Math.cos(cam.roll), sR = Math.sin(cam.roll);
-          const nx = sx * cR - sy * sR;
-          const ny = sx * sR + sy * cR;
-          sx = nx; sy = ny;
+      // Cielo base según iluminación
+      function drawSky(ctx, lighting, cam, world, t) {
+        const palettes = {
+          day: ['#0284c7', '#bae6fd', '#fef08a'],
+          sunset: ['#7c2d12', '#fb923c', '#fde047'],
+          night: ['#040712', '#172554', '#fef9c3'],
+          neon: ['#09061a', '#2e1065', '#22d3ee'],
+          fire: ['#450a0a', '#c2410c', '#fde047']
+        };
+        const [top, bot, astro] = palettes[lighting] || palettes.day;
+        const g = ctx.createLinearGradient(0, 0, 0, 720);
+        g.addColorStop(0, top); g.addColorStop(1, bot);
+        ctx.fillStyle = g; ctx.fillRect(-300, -200, 1140, 1300);
+
+        if (world === 'outer_space') {
+          // Planeta anillado enorme
+          ctx.save(); ctx.translate(340, 260);
+          const pg = ctx.createRadialGradient(-30, -30, 15, 0, 0, 110);
+          pg.addColorStop(0, '#fb7185'); pg.addColorStop(1, '#4c0519');
+          ctx.fillStyle = pg; ctx.beginPath(); ctx.arc(0, 0, 105, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = 'rgba(253, 224, 71, 0.65)'; ctx.lineWidth = 14;
+          ctx.beginPath(); ctx.ellipse(0, 0, 185, 38, -0.25, 0, Math.PI * 2); ctx.stroke();
+          ctx.restore();
+        } else {
+          const sx = 370 - cam.panX * 0.25, sy = 190 - cam.panY * 0.25;
+          const glow = ctx.createRadialGradient(sx, sy, 12, sx, sy, 140);
+          glow.addColorStop(0, astro); glow.addColorStop(0.35, astro); glow.addColorStop(1, 'rgba(255,255,255,0)');
+          ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(sx, sy, 140, 0, Math.PI * 2); ctx.fill();
         }
 
-        return { x: 270 + sx, y: 480 + sy, z: tz };
+        if (lighting === 'night' || lighting === 'neon' || world === 'outer_space') {
+          ctx.fillStyle = '#ffffff';
+          for (let i = 0; i < 40; i++) {
+            const x = ((i * 113) % 720) - 90, y = (i * 67) % 520;
+            ctx.globalAlpha = 0.4 + 0.5 * Math.abs(Math.sin(t * 2 + i));
+            ctx.beginPath(); ctx.arc(x, y, 1.8, 0, Math.PI * 2); ctx.fill();
+          }
+          ctx.globalAlpha = 1;
+        }
       }
 
-      function quadSignedArea(p0, p1, p2) {
-        return (p1.x - p0.x) * (p2.y - p0.y) - (p1.y - p0.y) * (p2.x - p0.x);
-      }
+      // Dibuja los muebles/arquitectura únicos de cada uno de los 14 mundos
+      function drawWorldBackdropAndProps(ctx, sc, cam, t, sceneTime) {
+        const w = sc.world;
+        const isDark = sc.lighting === 'night' || sc.lighting === 'neon' || sc.lighting === 'fire';
 
-      function pushFace(queue, pts3D, cam, fill, stroke = '#181a24', lineWidth = 1.5, skipCull = false) {
-        const p = pts3D.map((v) => project3D(v[0], v[1], v[2], cam));
-        if (p.some((v) => !v)) return;
-        if (!skipCull && quadSignedArea(p[0], p[1], p[2]) <= 0) return;
-        const zAvg = p.reduce((a, b) => a + b.z, 0) / p.length;
-        queue.push({ kind: 'poly', z: zAvg, pts: p, fill, stroke, lineWidth });
-      }
+        // === INTERIORES CERRADOS REALES ===
+        if (w === 'kitchen' || w === 'hacker_office' || w === 'bank_vault' || w === 'prison' || w === 'hospital') {
+          // Paredes en perspectiva 2.5D (pared trasera + laterales en trapecio)
+          const wallColors = {
+            kitchen: ['#fed7aa', '#fdba74', '#9a3412', '#7c2d12'],
+            hacker_office: ['#1e1b4b', '#0f172a', '#090d16', '#05070e'],
+            bank_vault: ['#334155', '#1e293b', '#475569', '#0f172a'],
+            prison: ['#475569', '#334155', '#3f3f46', '#18181b'],
+            hospital: ['#e0f2fe', '#bae6fd', '#cbd5e1', '#94a3b8']
+          }[w];
 
-      // Caja 3D extruida real con 5-6 caras + ventanas proyectadas en 3D
-      function addBox3D(queue, cam, x, y, z, w, h, d, cTop, cFront, cSide, addWindows = false) {
-        const hw = w / 2, hd = d / 2;
-        const x0 = x - hw, x1 = x + hw;
-        const y0 = y, y1 = y + h;
-        const z0 = z - hd, z1 = z + hd;
+          layerTransform(ctx, cam, 0.55, () => {
+            // Pared fondo
+            ctx.fillStyle = wallColors[0]; ctx.fillRect(-100, -100, 740, 720);
+            // Paredes laterales en perspectiva
+            ctx.fillStyle = wallColors[1];
+            ctx.beginPath(); ctx.moveTo(-250, -200); ctx.lineTo(80, 110); ctx.lineTo(80, 620); ctx.lineTo(-250, 960); ctx.closePath(); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(790, -200); ctx.lineTo(460, 110); ctx.lineTo(460, 620); ctx.lineTo(790, 960); ctx.closePath(); ctx.fill();
+            // Techo
+            ctx.fillStyle = wallColors[1];
+            ctx.beginPath(); ctx.moveTo(-250, -200); ctx.lineTo(790, -200); ctx.lineTo(460, 110); ctx.lineTo(80, 110); ctx.closePath(); ctx.fill();
+          });
 
-        // Frente (-Z), Atrás (+Z), Arriba (+Y), Izquierda (-X), Derecha (+X)
-        pushFace(queue, [[x0, y1, z0], [x1, y1, z0], [x1, y0, z0], [x0, y0, z0]], cam, cFront);
-        pushFace(queue, [[x1, y1, z1], [x0, y1, z1], [x0, y0, z1], [x1, y0, z1]], cam, cFront);
-        pushFace(queue, [[x0, y1, z1], [x1, y1, z1], [x1, y1, z0], [x0, y1, z0]], cam, cTop);
-        pushFace(queue, [[x0, y1, z1], [x0, y1, z0], [x0, y0, z0], [x0, y0, z1]], cam, cSide);
-        pushFace(queue, [[x1, y1, z0], [x1, y1, z1], [x1, y0, z1], [x1, y0, z0]], cam, cSide);
+          // Suelo interior 2.5D
+          layerTransform(ctx, cam, 0.78, () => {
+            drawPerspectiveGround(ctx, cam, 600, wallColors[2], wallColors[3], 'rgba(0,0,0,0.22)', 'tiles');
+          });
 
-        if (addWindows && h >= 4) {
-          const rows = Math.min(5, Math.floor(h / 2));
-          for (let r = 0; r < rows; r++) {
-            const wy0 = y + 1.0 + r * 1.8;
-            const wy1 = wy0 + 0.9;
-            // Ventanas en cara frontal (-Z) y lateral interna
-            const winCol = r % 2 === 0 ? '#fde047' : '#38bdf8';
-            pushFace(queue, [[x - hw * 0.6, wy1, z0 - 0.02], [x - hw * 0.15, wy1, z0 - 0.02], [x - hw * 0.15, wy0, z0 - 0.02], [x - hw * 0.6, wy0, z0 - 0.02]], cam, winCol, '#1e293b', 1);
-            pushFace(queue, [[x + hw * 0.15, wy1, z0 - 0.02], [x + hw * 0.6, wy1, z0 - 0.02], [x + hw * 0.6, wy0, z0 - 0.02], [x + hw * 0.15, wy0, z0 - 0.02]], cam, winCol, '#1e293b', 1);
-            if (x < 0) {
-              pushFace(queue, [[x1 + 0.02, wy1, z - hd * 0.45], [x1 + 0.02, wy1, z + hd * 0.45], [x1 + 0.02, wy0, z + hd * 0.45], [x1 + 0.02, wy0, z - hd * 0.45]], cam, winCol, '#1e293b', 1);
-            } else if (x > 0) {
-              pushFace(queue, [[x0 - 0.02, wy1, z + hd * 0.45], [x0 - 0.02, wy1, z - hd * 0.45], [x0 - 0.02, wy0, z - hd * 0.45], [x0 - 0.02, wy0, z + hd * 0.45]], cam, winCol, '#1e293b', 1);
+          // Mobiliario específico en el plano z = 0.95
+          layerTransform(ctx, cam, 0.95, () => {
+            if (w === 'kitchen') {
+              // Azulejos + campana + encimera + sartén con llamas
+              ctx.fillStyle = '#e2e8f0'; ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 3;
+              ctx.fillRect(280, 440, 210, 190); ctx.strokeRect(280, 440, 210, 190); // Nevera
+              ctx.fillStyle = '#94a3b8';
+              ctx.beginPath(); ctx.moveTo(150, 240); ctx.lineTo(260, 240); ctx.lineTo(295, 310); ctx.lineTo(115, 310); ctx.closePath(); ctx.fill(); ctx.stroke(); // Campana
+              ctx.fillStyle = '#f8fafc'; ctx.fillRect(85, 500, 200, 130); ctx.strokeRect(85, 500, 200, 130); // Cocina
+              ctx.fillStyle = '#334155'; ctx.fillRect(115, 488, 120, 14); // Sartén
+              if (sc.fx === 'fire' || sc.lighting === 'fire') {
+                ctx.fillStyle = '#f97316';
+                ctx.beginPath(); ctx.ellipse(175, 465, 28, 36 + Math.sin(t * 20) * 8, 0, 0, Math.PI * 2); ctx.fill();
+              }
+            } else if (w === 'hacker_office') {
+              // Rack servidores + triple monitor neón cian
+              ctx.fillStyle = '#0f172a'; ctx.strokeStyle = '#334155'; ctx.lineWidth = 3;
+              ctx.fillRect(360, 320, 100, 310); ctx.strokeRect(360, 320, 100, 310);
+              for (let ly = 345; ly < 600; ly += 28) {
+                ctx.fillStyle = (Math.floor(t * 8 + ly) % 2 === 0) ? '#22d3ee' : '#ef4444';
+                ctx.fillRect(378, ly, 12, 8);
+              }
+              // Escritorio + 3 monitores
+              ctx.fillStyle = '#1e293b'; ctx.fillRect(100, 520, 240, 110); ctx.strokeRect(100, 520, 240, 110);
+              [115, 185, 255].forEach((mx) => {
+                ctx.fillStyle = '#06b6d4'; ctx.fillRect(mx, 445, 62, 52); ctx.strokeRect(mx, 445, 62, 52);
+              });
+            } else if (w === 'bank_vault') {
+              // Bóveda gigante circular + lingotes + haces láser rojos
+              ctx.fillStyle = '#94a3b8'; ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 6;
+              ctx.beginPath(); ctx.arc(310, 440, 145, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+              ctx.fillStyle = '#facc15';
+              for (let g = 0; g < 6; g++) {
+                ctx.fillRect(320 + (g % 3) * 32, 595 - Math.floor(g / 3) * 18, 28, 14);
+              }
+              ctx.strokeStyle = 'rgba(239, 68, 68, 0.85)'; ctx.lineWidth = 3;
+              ctx.beginPath(); ctx.moveTo(0, 260); ctx.lineTo(540, 560); ctx.moveTo(540, 220); ctx.lineTo(0, 580); ctx.stroke();
+            } else if (w === 'prison') {
+              // Ventana con barrotes y haz de luna
+              ctx.fillStyle = '#1e293b'; ctx.fillRect(310, 190, 110, 130);
+              ctx.fillStyle = '#bae6fd'; ctx.fillRect(320, 200, 90, 110);
+              ctx.fillStyle = '#0f172a';
+              [345, 375].forEach((bx) => ctx.fillRect(bx, 195, 8, 120));
+              // Cama/litera
+              ctx.fillStyle = '#64748b'; ctx.fillRect(85, 535, 140, 90);
+            } else if (w === 'hospital') {
+              // Camilla + monitor cardíaco con onda animada
+              ctx.fillStyle = '#f8fafc'; ctx.strokeStyle = '#64748b'; ctx.lineWidth = 3;
+              ctx.fillRect(210, 520, 210, 90); ctx.strokeRect(210, 520, 210, 90);
+              ctx.fillStyle = '#0f172a'; ctx.fillRect(110, 380, 95, 75);
+              ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 3;
+              ctx.beginPath();
+              for (let x = 118; x < 198; x += 6) {
+                const y = 418 + (Math.floor(x + t * 40) % 24 === 0 ? -20 : 0);
+                if (x === 118) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+              }
+              ctx.stroke();
             }
+          });
+          return;
+        }
+
+        // === EXTERIORES 2.5D MULTICAPA ===
+        layerTransform(ctx, cam, 0.22, () => {
+          drawSky(ctx, sc.lighting, cam, w, t);
+        });
+
+        layerTransform(ctx, cam, 0.48, () => {
+          if (w === 'city_street' || w === 'train_tracks') {
+            // Skyline lejano
+            ctx.fillStyle = isDark ? '#1e293b' : '#64748b';
+            for (let i = -2; i < 10; i++) {
+              const bx = i * 75, bh = 160 + ((i * 53) % 130);
+              ctx.fillRect(bx, 580 - bh, 64, bh);
+              if (isDark) {
+                ctx.fillStyle = '#fde047';
+                for (let wy = 600 - bh; wy < 560; wy += 24) ctx.fillRect(bx + 14, wy, 10, 12);
+                ctx.fillStyle = '#1e293b';
+              }
+            }
+          } else if (w === 'volcano') {
+            ctx.fillStyle = '#44403c';
+            ctx.beginPath(); ctx.moveTo(-40, 620); ctx.lineTo(220, 240); ctx.lineTo(320, 240); ctx.lineTo(580, 620); ctx.closePath(); ctx.fill();
+            ctx.fillStyle = '#f97316';
+            ctx.beginPath(); ctx.moveTo(240, 240); ctx.lineTo(280, 240); ctx.lineTo(320, 620); ctx.lineTo(220, 620); ctx.closePath(); ctx.fill();
+          } else if (w === 'desert') {
+            ctx.fillStyle = '#d97706';
+            ctx.beginPath(); ctx.moveTo(-100, 610); ctx.lineTo(140, 320); ctx.lineTo(360, 610); ctx.closePath(); ctx.fill();
+            ctx.fillStyle = '#b45309';
+            ctx.beginPath(); ctx.moveTo(240, 610); ctx.lineTo(430, 270); ctx.lineTo(650, 610); ctx.closePath(); ctx.fill();
+          } else if (w === 'forest') {
+            ctx.fillStyle = isDark ? '#064e3b' : '#15803d';
+            for (let i = -1; i < 8; i++) {
+              const tx = i * 90;
+              ctx.beginPath(); ctx.moveTo(tx, 610); ctx.lineTo(tx + 45, 340); ctx.lineTo(tx + 90, 610); ctx.closePath(); ctx.fill();
+            }
+          } else if (w === 'castle') {
+            ctx.fillStyle = '#64748b'; ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 3;
+            ctx.fillRect(90, 340, 360, 270); ctx.strokeRect(90, 340, 360, 270);
+            [80, 410].forEach((tx) => {
+              ctx.fillRect(tx, 260, 60, 350);
+              ctx.fillStyle = '#dc2626';
+              ctx.beginPath(); ctx.moveTo(tx - 10, 260); ctx.lineTo(tx + 30, 170); ctx.lineTo(tx + 70, 260); ctx.closePath(); ctx.fill();
+              ctx.fillStyle = '#64748b';
+            });
+          } else if (w === 'stadium') {
+            ctx.fillStyle = '#334155';
+            ctx.fillRect(-100, 360, 740, 240);
+            [110, 430].forEach((fx) => {
+              ctx.fillStyle = '#94a3b8'; ctx.fillRect(fx - 8, 220, 16, 150);
+              ctx.fillStyle = '#fef9c3'; ctx.fillRect(fx - 40, 190, 80, 36);
+            });
+          }
+        });
+
+        // Suelo 3D correspondiente
+        layerTransform(ctx, cam, 0.78, () => {
+          if (w === 'ocean') {
+            // Olas por capas 2.5D
+            for (let row = 0; row < 4; row++) {
+              const yBase = 590 + row * 85;
+              ctx.fillStyle = ['#0369a1', '#0284c7', '#0ea5e9', '#0369a1'][row];
+              ctx.beginPath(); ctx.moveTo(-250, 1080);
+              for (let x = -250; x <= 790; x += 40) {
+                ctx.lineTo(x, yBase + Math.sin(x * 0.03 + t * (3 + row)) * 18);
+              }
+              ctx.lineTo(790, 1080); ctx.closePath(); ctx.fill();
+            }
+          } else if (w === 'city_street') {
+            drawPerspectiveGround(ctx, cam, 590, '#475569', '#334155', '#1e293b', 'road');
+          } else if (w === 'train_tracks') {
+            drawPerspectiveGround(ctx, cam, 590, '#57534e', '#292524', '#1c1917', 'tracks');
+          } else if (w === 'forest') {
+            drawPerspectiveGround(ctx, cam, 590, '#14532d', '#052e16', 'rgba(0,0,0,0.2)', 'turf');
+          } else if (w === 'desert' || w === 'volcano') {
+            drawPerspectiveGround(ctx, cam, 590, w === 'desert' ? '#eab308' : '#44403c', w === 'desert' ? '#a16207' : '#1c1917', 'rgba(0,0,0,0.15)', 'turf');
+          } else if (w === 'stadium') {
+            drawPerspectiveGround(ctx, cam, 590, '#16a34a', '#15803d', 'rgba(255,255,255,0.35)', 'turf');
+          } else if (w === 'outer_space') {
+            drawPerspectiveGround(ctx, cam, 620, '#1e293b', '#090d16', 'rgba(56,189,248,0.25)', 'tiles');
+          } else {
+            drawPerspectiveGround(ctx, cam, 590, '#64748b', '#334155', 'rgba(0,0,0,0.2)', 'tiles');
+          }
+        });
+
+        // Edificios laterales en calle o árboles cercanos en bosque
+        layerTransform(ctx, cam, 0.88, () => {
+          if (w === 'city_street') {
+            ctx.fillStyle = '#9a6b4c'; ctx.strokeStyle = '#181a24'; ctx.lineWidth = 3;
+            ctx.fillRect(-130, 310, 190, 380); ctx.strokeRect(-130, 310, 190, 380);
+            ctx.fillStyle = '#64748b';
+            ctx.fillRect(480, 290, 190, 400); ctx.strokeRect(480, 290, 190, 400);
+          } else if (w === 'forest') {
+            [-40, 510].forEach((tx) => {
+              ctx.fillStyle = '#78350f'; ctx.fillRect(tx, 480, 34, 180);
+              ctx.fillStyle = '#166534';
+              ctx.beginPath(); ctx.moveTo(tx - 45, 500); ctx.lineTo(tx + 17, 240); ctx.lineTo(tx + 79, 500); ctx.closePath(); ctx.fill();
+            });
+          }
+        });
+      }
+
+      // Vehículos / Objetos vectoriales detallados en el escenario (z = 1.0)
+      function drawVehicleOrProp(ctx, sc, t, sceneTime) {
+        const p = sc.prop;
+        if (p === 'none') return;
+        ctx.save();
+
+        if (p === 'car') {
+          const cx = sc.action === 'run' ? 220 + sceneTime * 45 : 340;
+          const cy = 675;
+          ctx.fillStyle = 'rgba(0,0,0,0.4)';
+          ctx.beginPath(); ctx.ellipse(cx, cy + 44, 125, 22, 0, 0, Math.PI * 2); ctx.fill();
+
+          ctx.fillStyle = sc.fx === 'siren' ? '#1e3a8a' : '#ef4444';
+          ctx.strokeStyle = '#141720'; ctx.lineWidth = 4;
+          rRect(ctx, cx - 110, cy - 22, 220, 56, 16); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = '#bae6fd';
+          rRect(ctx, cx - 65, cy - 62, 130, 44, 14); ctx.fill(); ctx.stroke();
+          // Ruedas + faro
+          ctx.fillStyle = '#18181b';
+          [cx - 68, cx + 68].forEach((wx) => { ctx.beginPath(); ctx.arc(wx, cy + 34, 24, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); });
+          ctx.fillStyle = '#fde047';
+          ctx.beginPath(); ctx.arc(cx - 102, cy, 10, 0, Math.PI * 2); ctx.fill();
+        } else if (p === 'train') {
+          const tx = 360 - sceneTime * 18;
+          const ty = 635;
+          ctx.fillStyle = '#3b82f6'; ctx.strokeStyle = '#141720'; ctx.lineWidth = 4;
+          rRect(ctx, tx - 140, ty - 95, 280, 145, 16); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = '#1e293b'; ctx.fillRect(tx - 120, ty - 75, 240, 45);
+          ctx.fillStyle = '#fde047'; ctx.beginPath(); ctx.arc(tx - 80, ty + 10, 18, 0, Math.PI * 2); ctx.fill();
+        } else if (p === 'helicopter') {
+          const hx = 340, hy = 350 + Math.sin(t * 3) * 14;
+          ctx.fillStyle = '#facc15'; ctx.strokeStyle = '#141720'; ctx.lineWidth = 4;
+          ctx.beginPath(); ctx.ellipse(hx, hy, 85, 42, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+          ctx.fillRect(hx + 65, hy - 10, 95, 18); ctx.strokeRect(hx + 65, hy - 10, 95, 18);
+          ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 6;
+          const blade = Math.cos(t * 28) * 140;
+          ctx.beginPath(); ctx.moveTo(hx - blade, hy - 54); ctx.lineTo(hx + blade, hy - 54); ctx.stroke();
+        } else if (p === 'boat') {
+          const bx = 330, by = 650 + Math.sin(t * 2.6) * 12;
+          ctx.fillStyle = '#78350f'; ctx.strokeStyle = '#141720'; ctx.lineWidth = 4;
+          ctx.beginPath(); ctx.moveTo(bx - 120, by); ctx.lineTo(bx + 120, by); ctx.lineTo(bx + 85, by + 55); ctx.lineTo(bx - 85, by + 55); ctx.closePath(); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = '#f8fafc'; ctx.fillRect(bx - 45, by - 45, 90, 45); ctx.strokeRect(bx - 45, by - 45, 90, 45);
+        } else if (p === 'rocket') {
+          const rx = 350, ry = 540 - (sc.fx === 'fire' ? sceneTime * 35 : 0);
+          ctx.fillStyle = '#f8fafc'; ctx.strokeStyle = '#141720'; ctx.lineWidth = 4;
+          rRect(ctx, rx - 38, ry - 110, 76, 170, 34); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = '#ef4444';
+          ctx.beginPath(); ctx.moveTo(rx - 38, ry - 60); ctx.lineTo(rx, ry - 145); ctx.lineTo(rx + 38, ry - 60); ctx.closePath(); ctx.fill(); ctx.stroke();
+        } else if (p === 'gold') {
+          ctx.fillStyle = '#facc15'; ctx.strokeStyle = '#141720'; ctx.lineWidth = 4;
+          for (let i = 0; i < 5; i++) {
+            ctx.fillRect(310 + (i % 3) * 44, 670 - Math.floor(i / 3) * 24, 40, 20);
+            ctx.strokeRect(310 + (i % 3) * 44, 670 - Math.floor(i / 3) * 24, 40, 20);
           }
         }
+        ctx.restore();
       }
 
-      // Cilindro / prisma 3D de 10 caras
-      function addCylinder3D(queue, cam, cx, y, cz, r, h, cSideA, cSideB, cTop) {
-        const segs = 10;
-        for (let i = 0; i < segs; i++) {
-          const a0 = (i / segs) * Math.PI * 2;
-          const a1 = ((i + 1) / segs) * Math.PI * 2;
-          const x0 = cx + Math.cos(a0) * r, z0 = cz + Math.sin(a0) * r;
-          const x1 = cx + Math.cos(a1) * r, z1 = cz + Math.sin(a1) * r;
-          const col = i % 2 === 0 ? cSideA : cSideB;
-          pushFace(queue, [[x0, y + h, z0], [x1, y + h, z1], [x1, y, z1], [x0, y, z0]], cam, col, '#181a24', 1);
-          pushFace(queue, [[cx, y + h, cz], [x1, y + h, z1], [x0, y + h, z0]], cam, cTop, '#181a24', 1);
-        }
-      }
+      // Personaje expresivo con sombra proyectada y luz de borde
+      function drawCharacter(ctx, x, y, scale, cfg, t, lighting) {
+        const { role, action, icon, flip } = cfg;
+        const isRun = action === 'run';
+        const isCeleb = action === 'celebrate';
+        const legSwing = isRun ? Math.sin(t * 16) * 26 : 0;
+        const bob = isRun ? Math.abs(Math.sin(t * 16)) * 14 : isCeleb ? Math.abs(Math.sin(t * 10)) * 18 : Math.sin(t * 3.5) * 2;
 
-      // Pirámide / Cono 3D
-      function addPyramid3D(queue, cam, cx, y, cz, r, h, cFront, cSide) {
-        const top = [cx, y + h, cz];
-        const b0 = [cx - r, y, cz - r], b1 = [cx + r, y, cz - r], b2 = [cx + r, y, cz + r], b3 = [cx - r, y, cz + r];
-        pushFace(queue, [top, b1, b0], cam, cFront);
-        pushFace(queue, [top, b2, b1], cam, cSide);
-        pushFace(queue, [top, b3, b2], cam, cFront);
-        pushFace(queue, [top, b0, b3], cam, cSide);
-      }
-
-      // Personaje 2D cel-shaded insertado en el mundo 3D con escala y profundidad reales
-      function addCharacter3D(queue, cam, cfg) {
-        const pFoot = project3D(cfg.x, cfg.y, cfg.z, cam);
-        const pHead = project3D(cfg.x, cfg.y + 3.0, cfg.z, cam);
-        if (!pFoot || !pHead) return;
-        const pxHeight = Math.abs(pFoot.y - pHead.y);
-        queue.push({ kind: 'char', z: pFoot.z, sx: pFoot.x, sy: pFoot.y, scale: pxHeight / 230, cfg });
-      }
-
-      function draw2DCharacter(ctx, sx, sy, scale, cfg, t) {
-        const { role = 'casual', emotion = 'smug' } = cfg;
-        const bounce = emotion === 'laughing' ? Math.abs(Math.sin(t * 20)) * 10 : Math.sin(t * 4) * 2;
         ctx.save();
-        ctx.translate(sx, sy);
-        ctx.scale(scale, scale);
+        ctx.translate(x, y);
 
-        ctx.fillStyle = 'rgba(0,0,0,0.38)';
-        ctx.beginPath(); ctx.ellipse(0, 4, 52, 12, 0, 0, Math.PI * 2); ctx.fill();
+        // Sombra direccional proyectada en el suelo
+        ctx.fillStyle = 'rgba(0,0,0,0.42)';
+        ctx.beginPath(); ctx.ellipse(18 * scale, 6, 56 * scale, 14 * scale, 0, 0, Math.PI * 2); ctx.fill();
 
-        ctx.translate(0, -bounce);
+        ctx.translate(0, -bob * scale);
+        ctx.scale(scale * (flip ? -1 : 1), scale);
 
         const coats = {
-          casual: '#3b82f6', exec: '#1e293b', scientist: '#f8fafc', astronaut: '#e2e8f0',
-          hacker: '#312e81', worker: '#92400e', explorer: '#b45309', knight: '#64748b', monarch: '#581c87'
+          casual: '#3b82f6', chef: '#ffffff', police: '#1e3a8a', hacker: '#312e81',
+          astronaut: '#e2e8f0', scientist: '#f8fafc', monarch: '#6b21a8',
+          prisoner: '#f97316', suit: '#1e293b', worker: '#d97706', explorer: '#92400e'
         };
         const coat = coats[role] || '#3b82f6';
 
-        // Piernas y botas
-        ctx.strokeStyle = '#181a24'; ctx.lineWidth = 7; ctx.lineCap = 'round';
-        ctx.beginPath(); ctx.moveTo(-14, -46); ctx.lineTo(-16, 0); ctx.moveTo(14, -46); ctx.lineTo(16, 0); ctx.stroke();
+        ctx.strokeStyle = '#141720'; ctx.lineWidth = 8; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(-14, -46); ctx.lineTo(-16 + legSwing, 0); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(14, -46); ctx.lineTo(16 - legSwing, 0); ctx.stroke();
 
-        // Torso
         ctx.fillStyle = coat; ctx.lineWidth = 5;
         rRect(ctx, -32, -125, 64, 82, 20); ctx.fill(); ctx.stroke();
 
-        if (role === 'exec') {
-          ctx.fillStyle = '#ef4444';
-          ctx.beginPath(); ctx.moveTo(-6, -120); ctx.lineTo(6, -120); ctx.lineTo(0, -76); ctx.closePath(); ctx.fill();
-        } else if (role === 'scientist') {
-          ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 3;
-          ctx.beginPath(); ctx.moveTo(0, -120); ctx.lineTo(0, -45); ctx.stroke();
-        }
+        // Luz de borde (Rim light) en lado iluminado
+        ctx.strokeStyle = lighting === 'neon' ? '#22d3ee' : 'rgba(255,250,210,0.45)';
+        ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.moveTo(-28, -116); ctx.lineTo(-28, -50); ctx.stroke();
 
-        // Brazos
-        const wave = Math.sin(t * 5) * 8;
-        ctx.strokeStyle = '#181a24'; ctx.lineWidth = 6;
-        ctx.beginPath(); ctx.moveTo(-32, -108); ctx.quadraticCurveTo(-56, -80 + wave, -44, -55); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(32, -108); ctx.quadraticCurveTo(58, -88 - wave, 52, -112 - wave); ctx.stroke();
+        ctx.strokeStyle = '#141720'; ctx.lineWidth = 7;
+        if (isCeleb) {
+          ctx.beginPath(); ctx.moveTo(-30, -108); ctx.lineTo(-56, -162); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(30, -108); ctx.lineTo(56, -162); ctx.stroke();
+        } else {
+          const w = isRun ? Math.sin(t * 16) * 20 : Math.sin(t * 4) * 6;
+          ctx.beginPath(); ctx.moveTo(-30, -108); ctx.quadraticCurveTo(-55, -80 + w, -42, -55); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(30, -108); ctx.quadraticCurveTo(55, -85 - w, 46, -105 - w); ctx.stroke();
+        }
 
         // Cabeza cel-shaded
         ctx.save();
         ctx.translate(0, -172);
-        const hg = ctx.createRadialGradient(-16, -18, 8, 0, 0, 54);
-        hg.addColorStop(0, '#ffffff'); hg.addColorStop(0.75, '#fbf5ee'); hg.addColorStop(1, '#d6cbc0');
+        const hg = ctx.createRadialGradient(-18, -20, 8, 0, 0, 54);
+        hg.addColorStop(0, '#ffffff'); hg.addColorStop(0.7, '#faf4ec'); hg.addColorStop(1, '#c7bdb2');
         ctx.fillStyle = hg; ctx.lineWidth = 5;
         ctx.beginPath(); ctx.arc(0, 0, 50, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
 
-        // Cascos / Gafas / Pelo según profesión (NO siempre el moño chino!)
-        if (role === 'astronaut') {
-          ctx.strokeStyle = '#38bdf8'; ctx.fillStyle = 'rgba(56, 189, 248, 0.28)'; ctx.lineWidth = 6;
+        if (role === 'chef') {
+          ctx.fillStyle = '#ffffff';
+          rRect(ctx, -34, -84, 68, 42, 10); ctx.fill(); ctx.stroke();
+          ctx.beginPath(); ctx.arc(0, -82, 36, Math.PI, 0); ctx.fill(); ctx.stroke();
+        } else if (role === 'police') {
+          ctx.fillStyle = '#1e3a8a'; rRect(ctx, -40, -68, 80, 32, 8); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = '#facc15'; ctx.beginPath(); ctx.arc(0, -52, 7, 0, Math.PI * 2); ctx.fill();
+        } else if (role === 'astronaut') {
+          ctx.strokeStyle = '#38bdf8'; ctx.fillStyle = 'rgba(56, 189, 248, 0.25)'; ctx.lineWidth = 6;
           ctx.beginPath(); ctx.arc(0, 0, 56, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
         } else if (role === 'hacker') {
-          ctx.fillStyle = '#22d3ee'; ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 4;
-          rRect(ctx, -36, -14, 72, 18, 6); ctx.fill(); ctx.stroke();
-        } else if (role === 'monarch') {
-          ctx.fillStyle = '#facc15'; ctx.strokeStyle = '#181a24'; ctx.lineWidth = 4;
-          ctx.beginPath(); ctx.moveTo(-32, -40); ctx.lineTo(-36, -70); ctx.lineTo(-14, -52); ctx.lineTo(0, -76); ctx.lineTo(14, -52); ctx.lineTo(36, -70); ctx.lineTo(32, -40); ctx.closePath(); ctx.fill(); ctx.stroke();
-        } else if (role === 'worker' || role === 'knight') {
-          ctx.fillStyle = role === 'worker' ? '#facc15' : '#94a3b8';
-          ctx.beginPath(); ctx.arc(0, -10, 52, Math.PI, 0); ctx.closePath(); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = '#22d3ee'; rRect(ctx, -34, -14, 68, 18, 6); ctx.fill(); ctx.stroke();
         } else {
-          // Cabello moderno cartoon
           ctx.fillStyle = '#27272a';
           ctx.beginPath(); ctx.arc(0, -16, 48, Math.PI * 1.05, Math.PI * 1.95); ctx.quadraticCurveTo(0, -32, -46, -16); ctx.fill();
         }
 
-        // Ojos y boca
         if (role !== 'hacker') {
-          ctx.fillStyle = '#181a24'; ctx.strokeStyle = '#181a24'; ctx.lineWidth = 3.5;
-          if (emotion === 'laughing') {
-            ctx.beginPath(); ctx.arc(-16, -4, 9, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke();
-            ctx.beginPath(); ctx.arc(16, -4, 9, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke();
-          } else {
-            ctx.fillStyle = '#ffffff';
-            ctx.beginPath(); ctx.arc(-16, -4, 10, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-            ctx.beginPath(); ctx.arc(16, -4, 10, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-            ctx.fillStyle = '#181a24';
-            ctx.beginPath(); ctx.arc(-15, -4, emotion === 'shocked' ? 3 : 4.5, 0, Math.PI * 2); ctx.fill();
-            ctx.beginPath(); ctx.arc(17, -4, emotion === 'shocked' ? 3 : 4.5, 0, Math.PI * 2); ctx.fill();
-          }
+          ctx.fillStyle = '#ffffff'; ctx.strokeStyle = '#141720'; ctx.lineWidth = 3.5;
+          ctx.beginPath(); ctx.arc(-16, -4, 10, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+          ctx.beginPath(); ctx.arc(16, -4, 10, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = '#141720';
+          ctx.beginPath(); ctx.arc(-14, -4, action === 'alarm' ? 3 : 4.5, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.arc(18, -4, action === 'alarm' ? 3 : 4.5, 0, Math.PI * 2); ctx.fill();
         }
-        ctx.strokeStyle = '#181a24'; ctx.lineWidth = 4;
-        if (emotion === 'shocked') {
-          ctx.fillStyle = '#7f1d1d'; ctx.beginPath(); ctx.ellipse(0, 22, 9, 12, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        ctx.strokeStyle = '#141720'; ctx.lineWidth = 4;
+        if (action === 'alarm' || action === 'fight') {
+          ctx.fillStyle = '#7f1d1d'; ctx.beginPath(); ctx.ellipse(0, 22, 10, 12, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
         } else {
           ctx.beginPath(); ctx.arc(0, 16, 12, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
         }
 
+        if (icon && !flip) {
+          ctx.fillStyle = 'rgba(255,255,255,0.95)'; ctx.strokeStyle = '#141720'; ctx.lineWidth = 4;
+          ctx.beginPath(); ctx.arc(64, -76, 30, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+          ctx.font = '32px system-ui, Apple Color Emoji, Segoe UI Emoji';
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText(icon, 64, -74);
+        }
+
         ctx.restore();
         ctx.restore();
       }
 
-      // Construcción del mundo 3D específico para cada bioma y escena
-      function buildWorld3D(scene, t, sceneTime, cam) {
-        const pal = BIOME_PALETTES[scene.biome] || BIOME_PALETTES.modern_city;
-        const queue = [];
-
-        // 1. Suelo 3D en cuadrícula / carretera real
-        for (let iz = -2; iz < 14; iz++) {
-          const z0 = iz * 4 - 4;
-          const z1 = z0 + 4;
-          const gCol = iz % 2 === 0 ? pal.groundA : pal.groundB;
-          pushFace(queue, [[-26, 0, z1], [-4.5, 0, z1], [-4.5, 0, z0], [-26, 0, z0]], cam, gCol, pal.groundB, 0.5, true);
-          pushFace(queue, [[4.5, 0, z1], [26, 0, z1], [26, 0, z0], [4.5, 0, z0]], cam, gCol, pal.groundB, 0.5, true);
-          pushFace(queue, [[-4.5, 0.01, z1], [4.5, 0.01, z1], [4.5, 0.01, z0], [-4.5, 0.01, z0]], cam, pal.road, '#0f172a', 0.5, true);
-          if (iz % 2 === 0) {
-            pushFace(queue, [[-0.25, 0.03, z1 - 0.8], [0.25, 0.03, z1 - 0.8], [0.25, 0.03, z0 + 0.8], [-0.25, 0.03, z0 + 0.8]], cam, '#fde047', '#fde047', 0.5, true);
-          }
-        }
-
-        // 2. Arquitectura 3D flanqueando la avenida según bioma
-        const hasBuildings = !['outer_space', 'ocean_naval', 'desert_pyramid', 'forest_night'].includes(scene.biome);
-        if (hasBuildings) {
-          for (let i = 0; i < 6; i++) {
-            const zPos = i * 8 + 2;
-            const hL = 6 + ((scene.seed + i * 3) % 9);
-            const hR = 7 + ((scene.seed + i * 5) % 9);
-            addBox3D(queue, cam, -9.5, 0, zPos, 5.5, hL, 5.5, pal.sun, pal.bldgA, pal.bldgB, true);
-            addBox3D(queue, cam, 9.5, 0, zPos, 5.5, hR, 5.5, pal.sun, pal.bldgA, pal.bldgB, true);
-          }
-        } else if (scene.biome === 'forest_night') {
-          for (let i = 0; i < 7; i++) {
-            const zPos = i * 7 + 1;
-            [-8, 8].forEach((tx, side) => {
-              addCylinder3D(queue, cam, tx + (i % 2) * side, 0, zPos, 0.5, 2.5, '#78350f', '#451a03', '#78350f');
-              addPyramid3D(queue, cam, tx + (i % 2) * side, 2.2, zPos, 2.2, 5.5, '#15803d', '#166534');
+      function drawLightingAndForeground(ctx, sc, cam, t) {
+        // Capa z = 1.35: elementos en primer plano y conos de luz
+        layerTransform(ctx, cam, 1.35, () => {
+          if (sc.world === 'prison') {
+            ctx.fillStyle = '#1e293b'; ctx.strokeStyle = '#09090b'; ctx.lineWidth = 4;
+            for (let bx = 70; bx <= 470; bx += 100) {
+              ctx.fillRect(bx, -50, 14, 1060); ctx.strokeRect(bx, -50, 14, 1060);
+            }
+          } else if (sc.world === 'city_street' && (sc.lighting === 'night' || sc.lighting === 'neon')) {
+            // Farolas en primer plano con cono de luz cálida
+            [40, 500].forEach((lx) => {
+              ctx.fillStyle = '#1e293b'; ctx.fillRect(lx - 6, 220, 12, 740);
+              ctx.save(); ctx.globalCompositeOperation = 'lighter';
+              const g = ctx.createRadialGradient(lx, 240, 10, lx, 440, 240);
+              g.addColorStop(0, 'rgba(254, 240, 138, 0.38)'); g.addColorStop(1, 'rgba(254, 240, 138, 0)');
+              ctx.fillStyle = g; ctx.fillRect(lx - 240, 180, 480, 600);
+              ctx.restore();
             });
           }
-        } else if (scene.biome === 'desert_pyramid') {
-          addPyramid3D(queue, cam, -10, 0, 22, 6, 10, '#f59e0b', '#b45309');
-          addPyramid3D(queue, cam, 11, 0, 28, 8, 13, '#fbbf24', '#d97706');
-          addBox3D(queue, cam, -5.5, 0, 6, 1.4, 5.5, 1.4, '#fde047', '#d97706', '#92400e', false);
-          addBox3D(queue, cam, 5.5, 0, 6, 1.4, 5.5, 1.4, '#fde047', '#d97706', '#92400e', false);
-        } else if (scene.biome === 'outer_space') {
-          // Asteroides flotantes en 3D
-          for (let i = 0; i < 6; i++) {
-            const ax = (i % 2 === 0 ? -7 : 7) + Math.sin(t + i) * 1.2;
-            const ay = 2 + (i % 3) * 2.5 + Math.cos(t * 1.5 + i) * 0.5;
-            addBox3D(queue, cam, ax, ay, i * 6 + 4, 1.6, 1.6, 1.6, '#94a3b8', '#64748b', '#475569', false);
+        });
+
+        // Luces globales volumétricas y clima
+        ctx.save();
+        if (sc.world === 'kitchen' || sc.world === 'hacker_office' || sc.world === 'bank_vault') {
+          ctx.globalCompositeOperation = 'lighter';
+          const col = sc.world === 'hacker_office' ? 'rgba(34, 211, 238, 0.22)' : 'rgba(254, 240, 138, 0.24)';
+          const g = ctx.createRadialGradient(270, 90, 10, 270, 520, 460);
+          g.addColorStop(0, col); g.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.fillStyle = g; ctx.fillRect(0, 0, 540, 960);
+        }
+
+        if (sc.fx === 'siren') {
+          ctx.globalCompositeOperation = 'lighter';
+          ctx.fillStyle = Math.sin(t * 14) > 0 ? 'rgba(239, 68, 68, 0.18)' : 'rgba(59, 130, 246, 0.18)';
+          ctx.fillRect(0, 0, 540, 960);
+        } else if (sc.fx === 'fire' || sc.fx === 'explosion') {
+          ctx.globalCompositeOperation = 'lighter';
+          ctx.fillStyle = 'rgba(251, 146, 60, 0.8)';
+          for (let i = 0; i < 24; i++) {
+            const fx = ((i * 79 + Math.sin(t * 5 + i) * 35) % 540);
+            const fy = 820 - ((i * 63 + t * 240) % 680);
+            ctx.beginPath(); ctx.arc(fx, fy, 4 + (i % 6), 0, Math.PI * 2); ctx.fill();
           }
+        } else if (sc.fx === 'rain') {
+          ctx.strokeStyle = 'rgba(186, 230, 253, 0.55)'; ctx.lineWidth = 2;
+          for (let i = 0; i < 34; i++) {
+            const rx = (i * 53 + t * 60) % 540, ry = (i * 97 + t * 520) % 960;
+            ctx.beginPath(); ctx.moveTo(rx, ry); ctx.lineTo(rx - 8, ry + 24); ctx.stroke();
+          }
+        } else if (sc.fx === 'sparkles' || sc.action === 'celebrate') {
+          ctx.fillStyle = '#fde047';
+          for (let i = 0; i < 22; i++) ctx.fillRect((i * 89 + t * 80) % 540, (i * 67 + t * 180) % 860, 7, 7);
         }
-
-        // 3. Objeto protagonista 3D en el centro/fondo
-        if (scene.prop === 'tank') {
-          addCylinder3D(queue, cam, 2.2, 0, 9, 2.6, 7.5, '#94a3b8', '#64748b', '#cbd5e1');
-        } else if (scene.prop === 'rocket') {
-          const lift = scene.hazard === 'explosion' ? Math.min(6, sceneTime * 1.8) : 0;
-          addCylinder3D(queue, cam, 2.4, 0.5 + lift, 10, 1.4, 6.5, '#f8fafc', '#cbd5e1', '#ef4444');
-          addPyramid3D(queue, cam, 2.4, 7.0 + lift, 10, 1.4, 2.8, '#ef4444', '#b91c1c');
-        } else if (scene.prop === 'eiffel') {
-          addPyramid3D(queue, cam, 0, 0, 22, 4.5, 16, '#94a3b8', '#475569');
-        } else if (scene.prop === 'vault') {
-          addBox3D(queue, cam, 2.6, 0, 9, 4.2, 4.5, 3.2, '#cbd5e1', '#94a3b8', '#475569', false);
-          addCylinder3D(queue, cam, 2.6, 1.2, 7.3, 1.3, 0.3, '#facc15', '#eab308', '#fef08a');
-        } else if (scene.prop === 'machine') {
-          addBox3D(queue, cam, 2.4, 0, 8, 2.4, 3.6, 2.2, '#22d3ee', '#1e293b', '#0f172a', false);
-        } else if (scene.prop === 'submarine') {
-          addBox3D(queue, cam, 2.0, 0.4 + Math.sin(t * 2) * 0.3, 11, 6.5, 1.8, 2.2, '#475569', '#334155', '#1e293b', false);
-          addBox3D(queue, cam, 2.0, 2.2 + Math.sin(t * 2) * 0.3, 11, 1.8, 1.3, 1.2, '#ef4444', '#475569', '#334155', false);
-        } else if (scene.prop === 'pyramid') {
-          addPyramid3D(queue, cam, 2.5, 0, 14, 4.8, 7.5, '#f59e0b', '#b45309');
-        } else {
-          addBox3D(queue, cam, 2.6, 0, 9, 2.2, 4.5, 2.2, pal.sun, pal.bldgA, pal.bldgB, false);
-        }
-
-        // 4. Ola / Inundación 3D avanzando si aplica
-        if (scene.hazard === 'flood') {
-          const zWave = 14 - Math.min(12, sceneTime * 3.2);
-          addBox3D(queue, cam, 0, 0, zWave, 14, 2.4 + Math.sin(t * 6) * 0.3, 3.0, '#aa5b26', '#783719', '#532b1a', false);
-        }
-
-        // 5. Personajes en coordenadas 3D reales
-        const walkZ = scene.camType === 'whip_pan_chase' ? 6 - Math.sin(sceneTime) * 2 : 5.5;
-        addCharacter3D(queue, cam, { x: -1.6, y: 0, z: walkZ, role: scene.role, emotion: scene.emotion });
-        if (scene.id % 2 === 0) {
-          addCharacter3D(queue, cam, { x: 1.8, y: 0, z: 7.5, role: 'casual', emotion: 'shocked' });
-        }
-
-        // Ordenar por profundidad Z de atrás hacia adelante (Painter's Algorithm)
-        queue.sort((a, b) => b.z - a.z);
-        return { queue, pal };
-      }
-
-      function drawTopLabel(ctx, title) {
-        if (!title) return;
-        ctx.save();
-        ctx.font = '900 24px system-ui, sans-serif';
-        const tw = ctx.measureText(title).width;
-        ctx.fillStyle = 'rgba(12, 16, 26, 0.72)';
-        rRect(ctx, 270 - tw / 2 - 18, 34, tw + 36, 40, 12);
-        ctx.fill();
-        ctx.fillStyle = '#fde047';
-        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText(title, 270, 54);
-        ctx.restore();
-      }
-
-      function drawSubtitles(ctx, scene, sceneTime) {
-        const words = scene.words;
-        if (!words || !words.length) return;
-        let idx = 0;
-        for (let i = 0; i < words.length; i++) {
-          if (sceneTime >= words[i].start) idx = i;
-        }
-        const start = Math.floor(idx / 2) * 2;
-        const line = words.slice(start, start + 2).map((w) => w.word).join(' ');
-
-        ctx.save();
-        ctx.font = '900 38px "Arial Black", Impact, system-ui, sans-serif';
-        const w = ctx.measureText(line).width;
-        const s = w > 460 ? 460 / w : 1;
-        ctx.translate(270, 740);
-        ctx.scale(s, s);
-        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.lineJoin = 'round'; ctx.lineWidth = 9; ctx.strokeStyle = '#09090b';
-        ctx.strokeText(line, 0, 0);
-        ctx.fillStyle = '#ffffff';
-        ctx.fillText(line, 0, 0);
         ctx.restore();
       }
 
@@ -1069,118 +1221,95 @@ Consiguieron escapar justo antes de que la cámara secreta se sellara para siemp
         ctx.scale(canvasW / 540, canvasH / 960);
 
         if (!scene) {
-          ctx.fillStyle = '#111622'; ctx.fillRect(0, 0, 540, 960);
+          ctx.fillStyle = '#0f131d'; ctx.fillRect(0, 0, 540, 960);
           ctx.restore(); return;
         }
 
         const p = Math.min(1, sceneTime / Math.max(0.5, scene.duration));
         const easeP = 1 - Math.pow(1 - p, 2.2);
-        const pal = BIOME_PALETTES[scene.biome] || BIOME_PALETTES.modern_city;
 
-        // CÁMARA 3D REAL CON MOVIMIENTO VISIBLE EN CADA PLANO
-        const cam = { x: 0, y: 2.6, z: -6, yaw: 0, pitch: -0.06, roll: 0, fov: 480 };
-
-        if (scene.camType === 'dolly_flyin') {
-          // Vuelo rápido entrando por la avenida 3D hacia el personaje
-          cam.y = 8.5 - easeP * 6.0;
-          cam.z = -18 + easeP * 13.5;
-          cam.pitch = -0.28 + easeP * 0.24;
-          cam.yaw = -0.18 + easeP * 0.18;
-        } else if (scene.camType === 'orbit_hero') {
-          // Órbita real de -32° a +32° alrededor del centro (x=0, z=5.5)
-          const ang = -0.55 + p * 1.1;
-          const dist = 11.5;
-          cam.x = Math.sin(ang) * dist;
-          cam.z = 5.5 - Math.cos(ang) * dist;
-          cam.yaw = -ang;
-          cam.y = 2.8 + Math.sin(p * Math.PI) * 1.2;
-          cam.pitch = -0.06;
-        } else if (scene.camType === 'orbit_reverse') {
-          const ang = 0.55 - p * 1.1;
-          const dist = 10.5;
-          cam.x = Math.sin(ang) * dist;
-          cam.z = 5.5 - Math.cos(ang) * dist;
-          cam.yaw = -ang;
-          cam.y = 3.2;
-        } else if (scene.camType === 'whip_pan_chase') {
-          cam.x = -5.5 + p * 11.0;
-          cam.z = -5.5;
-          cam.yaw = (0.5 - p) * 0.45;
-          cam.y = 2.4;
-        } else if (scene.camType === 'crane_up_reveal') {
-          cam.y = 1.6 + easeP * 10.5;
-          cam.z = -3.5 - easeP * 13.0;
-          cam.pitch = 0.05 - easeP * 0.38;
+        // Cámara 2.5D con desplazamiento real de parallax
+        const cam = { zoom: 1.0, panX: 0, panY: 0 };
+        if (scene.camType === 'dolly_zoom_in') {
+          cam.zoom = 1.0 + easeP * 0.24;
+          cam.panY = 40 - easeP * 60;
+        } else if (scene.camType === 'pan_left') {
+          cam.zoom = 1.12;
+          cam.panX = 95 - p * 190;
+        } else if (scene.camType === 'pan_right') {
+          cam.zoom = 1.12;
+          cam.panX = -95 + p * 190;
+        } else if (scene.camType === 'crane_down') {
+          cam.zoom = 1.18 - easeP * 0.14;
+          cam.panY = 85 - easeP * 110;
+        } else if (scene.camType === 'chase_track') {
+          cam.zoom = 1.15;
+          cam.panX = -110 + p * 220;
+          cam.panY = Math.sin(t * 14) * 5;
         } else if (scene.camType === 'impact_shake') {
-          const shk = sceneTime < 1.2 ? (1 - sceneTime / 1.2) * 0.45 : 0;
-          cam.x = Math.sin(t * 48) * shk;
-          cam.y = 2.1 + Math.cos(t * 42) * shk;
-          cam.z = -5.5 + p * 2.5;
-          cam.roll = 0.07 * Math.sin(t * 32) * (1 - p);
-          cam.pitch = 0.04;
+          const shk = sceneTime < 1.2 ? (1 - sceneTime / 1.2) * 14 : 0;
+          cam.zoom = 1.14 + p * 0.08;
+          cam.panX = Math.sin(t * 50) * shk;
+          cam.panY = Math.cos(t * 44) * shk;
         }
 
-        // Cielo + sol/planeta desplazándose con el ángulo yaw de la cámara
-        const sky = ctx.createLinearGradient(0, 0, 0, 960);
-        sky.addColorStop(0, pal.skyA); sky.addColorStop(1, pal.skyB);
-        ctx.fillStyle = sky; ctx.fillRect(0, 0, 540, 960);
+        // 1-3: Cielo, fondo, suelo 3D y props de entorno
+        drawWorldBackdropAndProps(ctx, scene, cam, t, sceneTime);
 
-        const sunX = 330 - cam.yaw * 220;
-        const sunY = 190 - cam.pitch * 300;
-        ctx.fillStyle = pal.sun;
-        ctx.beginPath(); ctx.arc(sunX, sunY, 72, 0, Math.PI * 2); ctx.fill();
+        // 4: Escenario principal (vehículo/prop + personajes en z = 1.0)
+        layerTransform(ctx, cam, 1.0, () => {
+          drawVehicleOrProp(ctx, scene, t, sceneTime);
 
-        // Estrellas si es espacio o noche
-        if (scene.biome === 'outer_space' || scene.biome === 'forest_night' || scene.biome === 'cyber_lab') {
-          ctx.fillStyle = 'rgba(255,255,255,0.75)';
-          for (let s = 0; s < 32; s++) {
-            const sx = ((s * 97 - cam.yaw * 180) % 540 + 540) % 540;
-            const sy = (s * 67) % 480;
-            ctx.beginPath(); ctx.arc(sx, sy, 1.5 + (s % 2), 0, Math.PI * 2); ctx.fill();
+          const charX = scene.prop !== 'none' ? 165 : (scene.hasSecond ? 175 : 270);
+          const moveX = scene.action === 'run' ? charX + Math.sin(sceneTime * 2) * 35 : charX;
+          drawCharacter(ctx, moveX, 710, 0.92, { role: scene.role, action: scene.action, icon: scene.icon }, t, scene.lighting);
+
+          if (scene.hasSecond) {
+            drawCharacter(ctx, 375, 705, 0.88, { role: scene.secondRole, action: scene.action === 'fight' ? 'fight' : 'alarm', icon: '', flip: true }, t, scene.lighting);
           }
-        }
+        });
 
-        // Dibujar geometría 3D ordenada por Z
-        const { queue } = buildWorld3D(scene, t, sceneTime, cam);
-        for (const item of queue) {
-          if (item.kind === 'poly') {
-            ctx.fillStyle = item.fill;
-            ctx.strokeStyle = item.stroke;
-            ctx.lineWidth = item.lineWidth;
-            ctx.beginPath();
-            ctx.moveTo(item.pts[0].x, item.pts[0].y);
-            for (let i = 1; i < item.pts.length; i++) ctx.lineTo(item.pts[i].x, item.pts[i].y);
-            ctx.closePath();
-            ctx.fill();
-            if (item.lineWidth > 0) ctx.stroke();
-          } else if (item.kind === 'char') {
-            draw2DCharacter(ctx, item.sx, item.sy, item.scale, item.cfg, t);
-          }
-        }
+        // 5: Primer plano, luces volumétricas y partículas
+        drawLightingAndForeground(ctx, scene, cam, t);
 
-        // Partículas atmosféricas según evento
-        if (scene.hazard === 'explosion' || scene.hazard === 'gold_rain') {
-          ctx.fillStyle = scene.hazard === 'gold_rain' ? '#facc15' : '#fb923c';
-          for (let i = 0; i < 24; i++) {
-            const px = ((i * 73 + t * 140) % 540);
-            const py = ((i * 59 + t * 210) % 720);
-            ctx.beginPath(); ctx.arc(px, py, 4 + (i % 4), 0, Math.PI * 2); ctx.fill();
-          }
-        }
-
-        // Viñeta + flash sutil en corte
-        const vig = ctx.createRadialGradient(270, 480, 170, 270, 480, 560);
-        vig.addColorStop(0, 'rgba(0,0,0,0)');
-        vig.addColorStop(1, 'rgba(0,0,0,0.42)');
+        // Viñeta cinemática
+        const vig = ctx.createRadialGradient(270, 480, 175, 270, 480, 560);
+        vig.addColorStop(0, 'rgba(0,0,0,0)'); vig.addColorStop(1, 'rgba(0,0,0,0.44)');
         ctx.fillStyle = vig; ctx.fillRect(0, 0, 540, 960);
 
         if (sceneTime < 0.14) {
-          ctx.fillStyle = `rgba(255,255,255,${0.25 * (1 - sceneTime / 0.14)})`;
+          ctx.fillStyle = `rgba(255,255,255,${0.22 * (1 - sceneTime / 0.14)})`;
           ctx.fillRect(0, 0, 540, 960);
         }
 
-        drawTopLabel(ctx, scene.title);
-        if (showSubtitles) drawSubtitles(ctx, scene, sceneTime);
+        // Rótulo superior
+        if (scene.title) {
+          ctx.save();
+          ctx.font = '900 22px system-ui, sans-serif';
+          const tw = ctx.measureText(scene.title).width;
+          ctx.fillStyle = 'rgba(10, 14, 24, 0.72)';
+          rRect(ctx, 270 - tw / 2 - 16, 34, tw + 32, 38, 12); ctx.fill();
+          ctx.fillStyle = '#fde047'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText(scene.title, 270, 53);
+          ctx.restore();
+        }
+
+        // Subtítulos opcionales
+        if (showSubtitles && scene.words && scene.words.length) {
+          let idx = 0;
+          for (let i = 0; i < scene.words.length; i++) { if (sceneTime >= scene.words[i].start) idx = i; }
+          const start = Math.floor(idx / 2) * 2;
+          const line = scene.words.slice(start, start + 2).map((w) => w.word).join(' ');
+          ctx.save();
+          ctx.font = '900 36px "Arial Black", Impact, system-ui, sans-serif';
+          const w = ctx.measureText(line).width;
+          const s = w > 460 ? 460 / w : 1;
+          ctx.translate(270, 775); ctx.scale(s, s);
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.lineJoin = 'round'; ctx.lineWidth = 9; ctx.strokeStyle = '#09090b';
+          ctx.strokeText(line, 0, 0); ctx.fillStyle = '#ffffff'; ctx.fillText(line, 0, 0);
+          ctx.restore();
+        }
 
         ctx.restore();
       }
@@ -1212,15 +1341,11 @@ Consiguieron escapar justo antes de que la cámara secreta se sellara para siemp
 
       async function exportWithMediaRecorderFallback(opts) {
         const { scenes, masterBuffer, totalDuration, width, height, fps, showSubtitles, onProgress } = opts;
-        const canvas = document.createElement('canvas');
-        canvas.width = width; canvas.height = height;
+        const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
         const ctx = canvas.getContext('2d');
-
         const audioCtx = window.AudioEngine.ensureLiveContext();
         const dest = audioCtx.createMediaStreamDestination();
-        const src = audioCtx.createBufferSource();
-        src.buffer = masterBuffer; src.connect(dest);
-
+        const src = audioCtx.createBufferSource(); src.buffer = masterBuffer; src.connect(dest);
         const stream = new MediaStream([...canvas.captureStream(fps).getVideoTracks(), ...dest.stream.getAudioTracks()]);
         const mime = MediaRecorder.isTypeSupported('video/mp4') ? 'video/mp4' : 'video/webm';
         const rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 4_500_000 });
@@ -1231,15 +1356,12 @@ Consiguieron escapar justo antes de que la cámara secreta se sellara para siemp
           rec.onstop = () => resolve({ blob: new Blob(chunks, { type: mime }), ext: mime.includes('mp4') ? 'mp4' : 'webm' });
           const startT = audioCtx.currentTime + 0.05;
           rec.start(); src.start(startT);
-
           const tick = () => {
             const elapsed = Math.max(0, audioCtx.currentTime - startT);
             if (elapsed >= totalDuration) { rec.stop(); try { src.stop(); } catch (_) {} return; }
             let active = scenes[scenes.length - 1];
             for (const s of scenes) { if (elapsed >= s.startTime && elapsed < s.startTime + s.duration) { active = s; break; } }
-            window.Engine3D.drawFrame(ctx, width, height, {
-              t: elapsed, scene: active, sceneTime: Math.max(0, elapsed - active.startTime), showSubtitles
-            });
+            window.Engine25D.drawFrame(ctx, width, height, { t: elapsed, scene: active, sceneTime: Math.max(0, elapsed - active.startTime), showSubtitles });
             if (onProgress) onProgress(Math.min(0.98, elapsed / totalDuration), `Grabando vídeo (${elapsed.toFixed(1)}s)...`);
             requestAnimationFrame(tick);
           };
@@ -1272,8 +1394,7 @@ Consiguieron escapar justo antes de que la cámara secreta se sellara para siemp
 
         if (onProgress) onProgress(0.06, 'Codificando música y SFX...');
         const sr = masterBuffer.sampleRate;
-        const ch0 = masterBuffer.getChannelData(0);
-        const ch1 = masterBuffer.getChannelData(1);
+        const ch0 = masterBuffer.getChannelData(0), ch1 = masterBuffer.getChannelData(1);
         for (let offset = 0; offset < ch0.length; offset += 2048) {
           const n = Math.min(2048, ch0.length - offset);
           const planar = new Float32Array(n * 2);
@@ -1287,8 +1408,7 @@ Consiguieron escapar justo antes de que la cámara secreta se sellara para siemp
           audioEncoder.encode(ad); ad.close();
         }
 
-        const offCanvas = document.createElement('canvas');
-        offCanvas.width = width; offCanvas.height = height;
+        const offCanvas = document.createElement('canvas'); offCanvas.width = width; offCanvas.height = height;
         const offCtx = offCanvas.getContext('2d');
         const totalFrames = Math.ceil(totalDuration * fps);
         const frameDurUs = Math.round(1_000_000 / fps);
@@ -1297,10 +1417,7 @@ Consiguieron escapar justo antes de que la cámara secreta se sellara para siemp
           const t = f / fps;
           let active = scenes[scenes.length - 1];
           for (const s of scenes) { if (t >= s.startTime && t < s.startTime + s.duration) { active = s; break; } }
-
-          window.Engine3D.drawFrame(offCtx, width, height, {
-            t, scene: active, sceneTime: Math.max(0, t - active.startTime), showSubtitles
-          });
+          window.Engine25D.drawFrame(offCtx, width, height, { t, scene: active, sceneTime: Math.max(0, t - active.startTime), showSubtitles });
 
           const frame = new VideoFrame(offCanvas, { timestamp: Math.round((f * 1_000_000) / fps), duration: frameDurUs });
           while (videoEncoder.encodeQueueSize > 8) await sleep(6);
@@ -1308,15 +1425,13 @@ Consiguieron escapar justo antes de que la cámara secreta se sellara para siemp
           frame.close();
 
           if (f % 10 === 0 && onProgress) {
-            onProgress(0.1 + 0.85 * (f / totalFrames), `Renderizando 3D (${f}/${totalFrames})...`);
+            onProgress(0.1 + 0.85 * (f / totalFrames), `Renderizando 2.5D (${f}/${totalFrames})...`);
             await sleep(0);
           }
         }
 
         if (onProgress) onProgress(0.96, 'Finalizando MP4...');
-        await audioEncoder.flush();
-        await videoEncoder.flush();
-        muxer.finalize();
+        await audioEncoder.flush(); await videoEncoder.flush(); muxer.finalize();
         return { blob: new Blob([muxer.target.buffer], { type: 'video/mp4' }), ext: 'mp4' };
       }
 
@@ -1326,7 +1441,7 @@ Consiguieron escapar justo antes de que la cámara secreta se sellara para siemp
     // =========================================================================
     // 5. CONTROLADOR UI
     // =========================================================================
-    function initEngineApp() {
+    function initApp() {
       const el = {
         codecSupportBadge: document.getElementById('codecSupportBadge'),
         presetSelect: document.getElementById('presetSelect'),
@@ -1338,7 +1453,6 @@ Consiguieron escapar justo antes de que la cámara secreta se sellara para siemp
         musicToggle: document.getElementById('musicToggle'),
         sfxToggle: document.getElementById('sfxToggle'),
         buildShortBtn: document.getElementById('buildShortBtn'),
-        remixVisualsBtn: document.getElementById('remixVisualsBtn'),
         sceneCount: document.getElementById('sceneCount'),
         scenesSummary: document.getElementById('scenesSummary'),
         previewCanvas: document.getElementById('previewCanvas'),
@@ -1357,7 +1471,7 @@ Consiguieron escapar justo antes de que la cámara secreta se sellara para siemp
       };
 
       const state = {
-        scenes: [], storySeed: 1, extraSeed: 0, masterBuffer: null, totalDuration: 0,
+        scenes: [], seed: 1, masterBuffer: null, totalDuration: 0,
         isPlaying: false, playOffset: 0, audioStartTime: 0,
         activeSourceNode: null, rafId: null, lastExportUrl: null
       };
@@ -1378,12 +1492,36 @@ Consiguieron escapar justo antes de que la cámara secreta se sellara para siemp
       function renderSummary() {
         el.sceneCount.textContent = state.scenes.length;
         el.scenesSummary.innerHTML = '';
+
+        const lights = ['day', 'sunset', 'night', 'neon', 'fire'];
+        const props = ['none', 'car', 'train', 'helicopter', 'boat', 'rocket', 'gold'];
+        const actions = ['idle', 'run', 'fight', 'celebrate', 'alarm', 'think'];
+
         state.scenes.forEach((sc, idx) => {
-          const div = document.createElement('div');
-          div.className = 'scene-pill';
-          div.innerHTML = `<strong>#${idx + 1} · ${sc.biome} · cámara: ${sc.camType}</strong>` +
-            `<small>${sc.text}</small>`;
-          el.scenesSummary.appendChild(div);
+          const card = document.createElement('div');
+          card.className = 'scene-pill';
+          card.innerHTML = `
+            <strong>Escena #${idx + 1} · ${sc.title}</strong>
+            <p></p>
+            <div class="grid-4">
+              <label>Mundo<select class="ed-world">${window.SemanticDirector.WORLDS.map((w) => `<option value="${w}">${w}</option>`).join('')}</select></label>
+              <label>Luz<select class="ed-light">${lights.map((l) => `<option value="${l}">${l}</option>`).join('')}</select></label>
+              <label>Objeto<select class="ed-prop">${props.map((p) => `<option value="${p}">${p}</option>`).join('')}</select></label>
+              <label>Acción<select class="ed-act">${actions.map((a) => `<option value="${a}">${a}</option>`).join('')}</select></label>
+            </div>
+          `;
+          card.querySelector('p').textContent = sc.text;
+          card.querySelector('.ed-world').value = sc.world;
+          card.querySelector('.ed-light').value = sc.lighting;
+          card.querySelector('.ed-prop').value = sc.prop;
+          card.querySelector('.ed-act').value = sc.action;
+
+          card.querySelector('.ed-world').addEventListener('change', (e) => { sc.world = e.target.value; drawPreviewAt(state.playOffset); });
+          card.querySelector('.ed-light').addEventListener('change', (e) => { sc.lighting = e.target.value; drawPreviewAt(state.playOffset); });
+          card.querySelector('.ed-prop').addEventListener('change', (e) => { sc.prop = e.target.value; drawPreviewAt(state.playOffset); });
+          card.querySelector('.ed-act').addEventListener('change', (e) => { sc.action = e.target.value; drawPreviewAt(state.playOffset); });
+
+          el.scenesSummary.appendChild(card);
         });
       }
 
@@ -1392,9 +1530,9 @@ Consiguieron escapar justo antes de que la cámara secreta se sellara para siemp
         const raw = el.storyInput.value.trim();
         if (!raw) return;
 
-        const compiled = window.StoryBrain.compileStory(raw, state.extraSeed);
+        const compiled = window.SemanticDirector.compileScript(raw);
         state.scenes = compiled.scenes;
-        state.storySeed = compiled.storySeed;
+        state.seed = compiled.seed;
 
         let cursor = 0;
         state.scenes.forEach((sc) => { sc.startTime = cursor; cursor += sc.duration; });
@@ -1407,14 +1545,11 @@ Consiguieron escapar justo antes de que la cámara secreta se sellara para siemp
         renderSummary();
 
         state.masterBuffer = await window.AudioEngine.renderAudioMix({
-          scenes: state.scenes,
-          totalDuration: state.totalDuration,
-          enableMusic: el.musicToggle.checked,
-          enableSFX: el.sfxToggle.checked,
-          seedVal: state.storySeed
+          scenes: state.scenes, totalDuration: state.totalDuration,
+          enableMusic: el.musicToggle.checked, enableSFX: el.sfxToggle.checked, seedVal: state.seed
         });
 
-        setStatus(`✓ Mundo 3D "${state.scenes[0]?.biome}" creado con ${state.scenes.length} cámaras en movimiento (${state.totalDuration.toFixed(1)}s).`);
+        setStatus(`✓ ${state.scenes.length} escenas creadas desde tu guion (${state.totalDuration.toFixed(1)}s).`);
       }
 
       function updateTimeLabel(t) {
@@ -1424,13 +1559,13 @@ Consiguieron escapar justo antes de que la cámara secreta se sellara para siemp
 
       function drawPreviewAt(t) {
         if (!state.scenes.length) {
-          window.Engine3D.drawFrame(previewCtx, el.previewCanvas.width, el.previewCanvas.height, { t: 0, scene: null, sceneTime: 0 });
+          window.Engine25D.drawFrame(previewCtx, el.previewCanvas.width, el.previewCanvas.height, { t: 0, scene: null, sceneTime: 0 });
           return;
         }
         let active = state.scenes[state.scenes.length - 1];
         for (const s of state.scenes) { if (t >= s.startTime && t < s.startTime + s.duration) { active = s; break; } }
 
-        window.Engine3D.drawFrame(previewCtx, el.previewCanvas.width, el.previewCanvas.height, {
+        window.Engine25D.drawFrame(previewCtx, el.previewCanvas.width, el.previewCanvas.height, {
           t, scene: active, sceneTime: Math.max(0, t - active.startTime),
           showSubtitles: el.subtitleModeSelect.value === 'on'
         });
@@ -1448,10 +1583,7 @@ Consiguieron escapar justo antes de que la cámara secreta se sellara para siemp
         const ctx = window.AudioEngine.ensureLiveContext();
         if (state.playOffset >= state.totalDuration - 0.05) state.playOffset = 0;
 
-        const src = ctx.createBufferSource();
-        src.buffer = state.masterBuffer;
-        src.connect(ctx.destination);
-
+        const src = ctx.createBufferSource(); src.buffer = state.masterBuffer; src.connect(ctx.destination);
         const startAt = ctx.currentTime + 0.04;
         src.start(startAt, state.playOffset);
         state.activeSourceNode = src;
@@ -1466,36 +1598,25 @@ Consiguieron escapar justo antes de que la cámara secreta se sellara para siemp
           if (elapsed >= state.totalDuration) {
             stopPlayback(); state.playOffset = 0; updateTimeLabel(0); drawPreviewAt(0); return;
           }
-          drawPreviewAt(elapsed);
-          updateTimeLabel(elapsed);
+          drawPreviewAt(elapsed); updateTimeLabel(elapsed);
           state.rafId = requestAnimationFrame(loop);
         };
         state.rafId = requestAnimationFrame(loop);
       }
 
       el.loadPresetBtn.addEventListener('click', () => {
-        state.extraSeed = 0;
-        el.storyInput.value = window.StoryBrain.PRESETS[el.presetSelect.value] || '';
+        el.storyInput.value = window.SemanticDirector.PRESETS[el.presetSelect.value] || '';
         rebuildShort();
       });
 
-      el.buildShortBtn.addEventListener('click', () => {
-        state.extraSeed = 0;
-        rebuildShort();
-      });
-
-      el.remixVisualsBtn.addEventListener('click', () => {
-        state.extraSeed += 1;
-        rebuildShort();
-      });
+      el.buildShortBtn.addEventListener('click', rebuildShort);
 
       [el.musicToggle, el.sfxToggle].forEach((n) => {
         n.addEventListener('change', async () => {
           if (!state.scenes.length) return;
           state.masterBuffer = await window.AudioEngine.renderAudioMix({
             scenes: state.scenes, totalDuration: state.totalDuration,
-            enableMusic: el.musicToggle.checked, enableSFX: el.sfxToggle.checked,
-            seedVal: state.storySeed
+            enableMusic: el.musicToggle.checked, enableSFX: el.sfxToggle.checked, seedVal: state.seed
           });
         });
       });
@@ -1528,10 +1649,8 @@ Consiguieron escapar justo antes de que la cámara secreta se sellara para siemp
 
         try {
           const { blob, ext } = await window.ExporterMP4.exportToMP4({
-            scenes: state.scenes,
-            masterBuffer: state.masterBuffer,
-            totalDuration: state.totalDuration,
-            width: w, height: h, fps,
+            scenes: state.scenes, masterBuffer: state.masterBuffer,
+            totalDuration: state.totalDuration, width: w, height: h, fps,
             showSubtitles: el.subtitleModeSelect.value === 'on',
             onProgress: (ratio, msg) => {
               el.exportProgressBar.style.width = `${Math.round(ratio * 100)}%`;
@@ -1546,7 +1665,7 @@ Consiguieron escapar justo antes de que la cámara secreta se sellara para siemp
           el.downloadMp4Link.href = url;
           el.downloadMp4Link.download = `short-25d.${ext}`;
           el.exportResultWrap.classList.remove('hidden');
-          setStatus(`¡Short 3D exportado (${(blob.size / 1024 / 1024).toFixed(2)} MB) en .${ext}!`);
+          setStatus(`¡MP4 exportado (${(blob.size / 1024 / 1024).toFixed(2)} MB) en .${ext}!`);
         } catch (err) {
           alert('Error al exportar: ' + err.message);
           setStatus('Error exportando: ' + err.message);
@@ -1556,18 +1675,18 @@ Consiguieron escapar justo antes de que la cámara secreta se sellara para siemp
         }
       });
 
-      el.storyInput.value = window.StoryBrain.PRESETS.hacker;
+      el.storyInput.value = window.SemanticDirector.PRESETS.cocinero;
       rebuildShort();
     }
 
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => {
-        try { initEngineApp(); } catch (e) {
+        try { initApp(); } catch (e) {
           document.getElementById('codecSupportBadge').textContent = 'Error JS: ' + e.message;
         }
       });
     } else {
-      try { initEngineApp(); } catch (e) {
+      try { initApp(); } catch (e) {
         document.getElementById('codecSupportBadge').textContent = 'Error JS: ' + e.message;
       }
     }
