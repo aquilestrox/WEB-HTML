@@ -1124,4 +1124,519 @@ Decenas de soldados salieron del interior y conquistaron la ciudad entera.`
           drawTank(ctx, 270, 750, 0.92, p);
           ctx.fillStyle = '#dbb474';
           for (let j = 0; j < 10; j++) {
-            ctx.beginPath(); ctx.arc(330 + Math.floor(100 * p) + j * 3, 420 + j *
+            ctx.beginPath(); ctx.arc(330 + Math.floor(100 * p) + j * 3, 420 + j * 18, 3, 0, Math.PI * 2); ctx.fill();
+          }
+          ctx.strokeStyle = '#e3be88'; ctx.lineWidth = 2;
+          for (let j = 0; j < 6; j++) {
+            ctx.beginPath(); ctx.moveTo(40 + j * 80, 825); ctx.lineTo(65 + j * 80, 815); ctx.lineTo(83 + j * 80, 829); ctx.stroke();
+          }
+        } else if (scene.type === 'wave_surge') {
+          drawTank(ctx, 450, 570, 0.62, 1);
+          drawWave(ctx, ease(p), 2.1);
+        } else if (scene.type === 'rescue_aftermath') {
+          ctx.fillStyle = '#67341a'; ctx.strokeStyle = '#33231c'; ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.moveTo(0, 740 - 150 * p); ctx.lineTo(540, 700 - 130 * p); ctx.lineTo(540, 960); ctx.lineTo(0, 960);
+          ctx.closePath(); ctx.fill(); ctx.stroke();
+          [120, 220, 390].forEach((px, j) => drawPerson(ctx, px, 790, 0.95, t + j, '#2e3f4e'));
+          // Escalera de rescate
+          ctx.strokeStyle = '#c9ae86'; ctx.lineWidth = 7;
+          ctx.beginPath(); ctx.moveTo(260, 490); ctx.lineTo(330, 805); ctx.moveTo(295, 488); ctx.lineTo(365, 800); ctx.stroke();
+          ctx.lineWidth = 4;
+          for (let y = 530; y < 790; y += 45) {
+            ctx.beginPath(); ctx.moveTo(267 + (y - 490) * 0.1, y); ctx.lineTo(302 + (y - 490) * 0.1, y); ctx.stroke();
+          }
+        } else if (scene.type === 'civic_courthouse') {
+          ctx.fillStyle = '#50392c'; ctx.strokeStyle = '#232227'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(0, 760); ctx.lineTo(540, 720); ctx.lineTo(540, 960); ctx.lineTo(0, 960); ctx.closePath(); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = '#c2ac8b'; ctx.strokeStyle = '#2c2b2f'; ctx.lineWidth = 3;
+          ctx.beginPath(); ctx.moveTo(95, 490); ctx.lineTo(270, 400); ctx.lineTo(445, 490); ctx.closePath(); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = '#ae9777'; ctx.fillRect(105, 490, 330, 270); ctx.strokeRect(105, 490, 330, 270);
+          [150, 220, 290, 360].forEach((cx) => {
+            ctx.fillStyle = '#dccaa8'; ctx.strokeStyle = '#413831'; ctx.lineWidth = 2;
+            ctx.fillRect(cx, 510, 22, 210); ctx.strokeRect(cx, 510, 22, 210);
+          });
+          ctx.fillStyle = '#675344'; ctx.fillRect(80, 740, 380, 20);
+          ctx.strokeStyle = 'rgba(226, 184, 123, 0.55)'; ctx.lineWidth = 2;
+          for (let j = 0; j < 5; j++) {
+            ctx.beginPath(); ctx.moveTo(60 + j * 100, 0); ctx.lineTo(120 + j * 90, 380); ctx.stroke();
+          }
+        } else if (scene.type === 'paris_tower') {
+          ctx.fillStyle = '#7f8c96'; ctx.strokeStyle = INK; ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.moveTo(262, 240); ctx.lineTo(278, 240); ctx.lineTo(295, 520);
+          ctx.lineTo(355, 760); ctx.lineTo(315, 760); ctx.quadraticCurveTo(270, 680, 225, 760);
+          ctx.lineTo(185, 760); ctx.lineTo(245, 520); ctx.closePath(); ctx.fill(); ctx.stroke();
+          [140, 400].forEach((px, j) => drawPerson(ctx, px, 790, 0.85, t + j, '#2e3f4e'));
+        } else if (scene.type === 'ocean_fleet') {
+          ctx.fillStyle = '#24476b';
+          ctx.fillRect(0, 640, 540, 320);
+          ctx.fillStyle = '#475569'; ctx.strokeStyle = INK; ctx.lineWidth = 3;
+          rRect(ctx, 130, 610 + Math.sin(t * 2) * 8, 280, 60, 28); ctx.fill(); ctx.stroke();
+          rRect(ctx, 230, 565 + Math.sin(t * 2) * 8, 80, 48, 8); ctx.fill(); ctx.stroke();
+        } else if (scene.type === 'underground_vault') {
+          ctx.fillStyle = '#3b2c25'; ctx.fillRect(0, 650, 540, 310);
+          ctx.fillStyle = '#94a3b8'; ctx.strokeStyle = INK; ctx.lineWidth = 4;
+          ctx.beginPath(); ctx.arc(270, 540, 110, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = '#efae5b'; ctx.fillRect(190, 720, 160, 55); ctx.strokeRect(190, 720, 160, 55);
+          drawPerson(ctx, 140, 780, 0.9, t, '#36464f');
+        } else if (scene.type === 'dragon_jar') {
+          drawTank(ctx, 270, 720, 0.65, 0);
+          ctx.fillStyle = '#eab308'; ctx.strokeStyle = INK; ctx.lineWidth = 3;
+          [185, 270, 355].forEach((dx) => {
+            ctx.beginPath(); ctx.arc(dx, 580, 16, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+          });
+          drawPerson(ctx, 110, 780, 0.85, t, '#2563eb');
+        }
+
+        ctx.restore(); // Fin cámara
+
+        // Viñeta radial suave (igual que render_short.py)
+        const vig = ctx.createRadialGradient(270, 480, 160, 270, 480, 560);
+        vig.addColorStop(0, 'rgba(0,0,0,0)');
+        vig.addColorStop(1, 'rgba(0,0,0,0.34)');
+        ctx.fillStyle = vig; ctx.fillRect(0, 0, 540, 960);
+
+        // Textura grano de papel determinista
+        ctx.fillStyle = getGrainPattern(ctx);
+        ctx.fillRect(0, 0, 540, 960);
+
+        // Rótulo superior estilo Boston Short + subtítulos inferiores opcionales
+        drawTopLabel(ctx, scene.title, scene.sub);
+        if (showSubtitles) drawBottomSubtitles(ctx, scene, sceneTime);
+
+        ctx.restore();
+      }
+
+      return { drawFrame };
+    })();
+
+    // =========================================================================
+    // 4. EXPORTADOR MP4 DETERMINISTA (WebCodecs + mp4-muxer)
+    // =========================================================================
+    window.ZipExporter = (() => {
+      const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+      async function pickVideoConfig(width, height, fps) {
+        for (const codec of ['avc1.64002a', 'avc1.4d002a', 'avc1.42002a', 'avc1.42001f']) {
+          const cfg = { codec, width, height, bitrate: width >= 1080 ? 5_800_000 : 3_400_000, framerate: fps };
+          if ((await VideoEncoder.isConfigSupported(cfg)).supported) return cfg;
+        }
+        return null;
+      }
+
+      async function pickAudioConfig(sampleRate) {
+        for (const c of [{ codec: 'mp4a.40.2', mux: 'aac' }, { codec: 'opus', mux: 'opus' }]) {
+          const cfg = { codec: c.codec, numberOfChannels: 2, sampleRate, bitrate: 128000 };
+          if ((await AudioEncoder.isConfigSupported(cfg)).supported) return { cfg, mux: c.mux };
+        }
+        return null;
+      }
+
+      async function exportWithMediaRecorderFallback(opts) {
+        const { scenes, masterBuffer, totalDuration, width, height, fps, showSubtitles, onProgress } = opts;
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        const ctx = canvas.getContext('2d');
+
+        const audioCtx = window.ZipAudioEngine.ensureLiveContext();
+        const dest = audioCtx.createMediaStreamDestination();
+        const src = audioCtx.createBufferSource();
+        src.buffer = masterBuffer; src.connect(dest);
+
+        const stream = new MediaStream([...canvas.captureStream(fps).getVideoTracks(), ...dest.stream.getAudioTracks()]);
+        const mime = MediaRecorder.isTypeSupported('video/mp4') ? 'video/mp4' : 'video/webm';
+        const rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 4_500_000 });
+        const chunks = [];
+        rec.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+
+        return new Promise((resolve) => {
+          rec.onstop = () => resolve({ blob: new Blob(chunks, { type: mime }), ext: mime.includes('mp4') ? 'mp4' : 'webm' });
+          const startT = audioCtx.currentTime + 0.05;
+          rec.start(); src.start(startT);
+
+          const tick = () => {
+            const elapsed = Math.max(0, audioCtx.currentTime - startT);
+            if (elapsed >= totalDuration) { rec.stop(); try { src.stop(); } catch (_) {} return; }
+            let active = scenes[scenes.length - 1];
+            for (const s of scenes) { if (elapsed >= s.startTime && elapsed < s.startTime + s.duration) { active = s; break; } }
+            window.ZipRenderer.drawFrame(ctx, width, height, {
+              t: elapsed, totalDuration, scene: active, sceneTime: Math.max(0, elapsed - active.startTime), showSubtitles
+            });
+            if (onProgress) onProgress(Math.min(0.98, elapsed / totalDuration), `Grabando vídeo (${elapsed.toFixed(1)}s)...`);
+            requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        });
+      }
+
+      async function exportToMP4(opts) {
+        const { scenes, masterBuffer, totalDuration, width, height, fps, showSubtitles, onProgress } = opts;
+        if (onProgress) onProgress(0.02, 'Cargando empaquetador MP4...');
+        const hasMuxer = await ensureMp4MuxerLoaded();
+        const hasWebCodecs = typeof VideoEncoder !== 'undefined' && typeof AudioEncoder !== 'undefined';
+
+        if (!hasMuxer || !hasWebCodecs) return await exportWithMediaRecorderFallback(opts);
+        const vConfig = await pickVideoConfig(width, height, fps);
+        const aChoice = await pickAudioConfig(masterBuffer.sampleRate);
+        if (!vConfig || !aChoice) return await exportWithMediaRecorderFallback(opts);
+
+        const muxer = new Mp4Muxer.Muxer({
+          target: new Mp4Muxer.ArrayBufferTarget(),
+          video: { codec: 'avc', width, height },
+          audio: { codec: aChoice.mux, numberOfChannels: 2, sampleRate: masterBuffer.sampleRate },
+          fastStart: 'in-memory'
+        });
+
+        const videoEncoder = new VideoEncoder({ output: (c, m) => muxer.addVideoChunk(c, m), error: console.error });
+        videoEncoder.configure(vConfig);
+        const audioEncoder = new AudioEncoder({ output: (c, m) => muxer.addAudioChunk(c, m), error: console.error });
+        audioEncoder.configure(aChoice.cfg);
+
+        if (onProgress) onProgress(0.06, 'Codificando música y SFX...');
+        const sr = masterBuffer.sampleRate;
+        const ch0 = masterBuffer.getChannelData(0);
+        const ch1 = masterBuffer.getChannelData(1);
+        for (let offset = 0; offset < ch0.length; offset += 2048) {
+          const n = Math.min(2048, ch0.length - offset);
+          const planar = new Float32Array(n * 2);
+          planar.set(ch0.subarray(offset, offset + n), 0);
+          planar.set(ch1.subarray(offset, offset + n), n);
+          const ad = new AudioData({
+            format: 'f32-planar', sampleRate: sr, numberOfFrames: n, numberOfChannels: 2,
+            timestamp: Math.round((offset * 1_000_000) / sr), data: planar
+          });
+          while (audioEncoder.encodeQueueSize > 16) await sleep(4);
+          audioEncoder.encode(ad); ad.close();
+        }
+
+        const offCanvas = document.createElement('canvas');
+        offCanvas.width = width; offCanvas.height = height;
+        const offCtx = offCanvas.getContext('2d');
+        const totalFrames = Math.ceil(totalDuration * fps);
+        const frameDurUs = Math.round(1_000_000 / fps);
+
+        for (let f = 0; f < totalFrames; f++) {
+          const t = f / fps;
+          let active = scenes[scenes.length - 1];
+          for (const s of scenes) { if (t >= s.startTime && t < s.startTime + s.duration) { active = s; break; } }
+
+          window.ZipRenderer.drawFrame(offCtx, width, height, {
+            t, totalDuration, scene: active, sceneTime: Math.max(0, t - active.startTime), showSubtitles
+          });
+
+          const frame = new VideoFrame(offCanvas, { timestamp: Math.round((f * 1_000_000) / fps), duration: frameDurUs });
+          while (videoEncoder.encodeQueueSize > 8) await sleep(6);
+          videoEncoder.encode(frame, { keyFrame: f % (fps * 2) === 0 });
+          frame.close();
+
+          if (f % 10 === 0 && onProgress) {
+            onProgress(0.1 + 0.85 * (f / totalFrames), `Renderizando (${f}/${totalFrames} fotogramas)...`);
+            await sleep(0);
+          }
+        }
+
+        if (onProgress) onProgress(0.96, 'Finalizando MP4...');
+        await audioEncoder.flush();
+        await videoEncoder.flush();
+        muxer.finalize();
+        return { blob: new Blob([muxer.target.buffer], { type: 'video/mp4' }), ext: 'mp4' };
+      }
+
+      return { exportToMP4 };
+    })();
+
+    // =========================================================================
+    // 5. CONTROLADOR PRINCIPAL
+    // =========================================================================
+    function initZipStudio() {
+      const el = {
+        codecSupportBadge: document.getElementById('codecSupportBadge'),
+        presetSelect: document.getElementById('presetSelect'),
+        loadPresetBtn: document.getElementById('loadPresetBtn'),
+        storyInput: document.getElementById('storyInput'),
+        resolutionSelect: document.getElementById('resolutionSelect'),
+        fpsSelect: document.getElementById('fpsSelect'),
+        subtitleModeSelect: document.getElementById('subtitleModeSelect'),
+        musicToggle: document.getElementById('musicToggle'),
+        sfxToggle: document.getElementById('sfxToggle'),
+        buildShortBtn: document.getElementById('buildShortBtn'),
+        sceneCount: document.getElementById('sceneCount'),
+        scenesSummary: document.getElementById('scenesSummary'),
+        genSheetBtn: document.getElementById('genSheetBtn'),
+        qaReportBox: document.getElementById('qaReportBox'),
+        contactSheetGrid: document.getElementById('contactSheetGrid'),
+        previewCanvas: document.getElementById('previewCanvas'),
+        playPauseBtn: document.getElementById('playPauseBtn'),
+        restartBtn: document.getElementById('restartBtn'),
+        timelineScrubber: document.getElementById('timelineScrubber'),
+        timeDisplay: document.getElementById('timeDisplay'),
+        statusBanner: document.getElementById('statusBanner'),
+        exportMp4Btn: document.getElementById('exportMp4Btn'),
+        exportProgressWrap: document.getElementById('exportProgressWrap'),
+        exportProgressBar: document.getElementById('exportProgressBar'),
+        exportProgressText: document.getElementById('exportProgressText'),
+        exportResultWrap: document.getElementById('exportResultWrap'),
+        exportedVideoPreview: document.getElementById('exportedVideoPreview'),
+        downloadMp4Link: document.getElementById('downloadMp4Link')
+      };
+
+      const state = {
+        scenes: [], masterBuffer: null, totalDuration: 0,
+        isPlaying: false, playOffset: 0, audioStartTime: 0,
+        activeSourceNode: null, rafId: null, lastExportUrl: null
+      };
+
+      const previewCtx = el.previewCanvas.getContext('2d');
+
+      if (typeof VideoEncoder !== 'undefined' && typeof AudioEncoder !== 'undefined') {
+        el.codecSupportBadge.textContent = '✓ WebCodecs MP4 1080×1920 listo';
+        el.codecSupportBadge.style.color = '#6ee7b7';
+      } else {
+        el.codecSupportBadge.textContent = '✓ Modo Grabación Directa';
+        el.codecSupportBadge.style.color = '#fde047';
+      }
+
+      ensureMp4MuxerLoaded();
+      const setStatus = (m) => { el.statusBanner.textContent = m; };
+
+      function renderSummaryAndQA() {
+        el.sceneCount.textContent = state.scenes.length;
+        el.scenesSummary.innerHTML = '';
+
+        state.scenes.forEach((sc, idx) => {
+          const div = document.createElement('div');
+          div.className = 'scene-pill';
+          div.innerHTML = `<strong>#${idx + 1} [${sc.startTime.toFixed(1)}s–${(sc.startTime + sc.duration).toFixed(1)}s] · ${sc.title}</strong>` +
+            `<small>${sc.text}</small>`;
+          el.scenesSummary.appendChild(div);
+        });
+
+        const [w, h] = el.resolutionSelect.value.split('x').map(Number);
+        const fps = parseInt(el.fpsSelect.value, 10);
+        const totalFrames = Math.ceil(state.totalDuration * fps);
+
+        let peak = 0;
+        if (state.masterBuffer) {
+          const ch = state.masterBuffer.getChannelData(0);
+          for (let i = 0; i < ch.length; i += 64) {
+            const v = Math.abs(ch[i]);
+            if (v > peak) peak = v;
+          }
+        }
+        const dbfs = peak > 0 ? (20 * Math.log10(peak)).toFixed(1) : '-∞';
+
+        el.qaReportBox.textContent =
+          `SPECS ${w}x${h} ${fps} fps | ${totalFrames} frames | ${state.totalDuration.toFixed(2)} s | audio 48kHz stereo\n` +
+          `PEAK ${dbfs} dBFS | SILENCES none | FROZEN_SPANS none (zoom continuo + grain activo)\n` +
+          `BLOQUES_GUIÓN ${state.scenes.length} planos automáticos`;
+      }
+
+      function generate9FrameContactSheet() {
+        if (!state.scenes.length) return;
+        el.contactSheetGrid.innerHTML = '';
+        el.contactSheetGrid.classList.remove('hidden');
+
+        const c = document.createElement('canvas');
+        c.width = 270; c.height = 480;
+        const cx = c.getContext('2d');
+
+        for (let k = 0; k < 9; k++) {
+          const t = (k / 8) * Math.max(0.1, state.totalDuration - 0.1);
+          let active = state.scenes[state.scenes.length - 1];
+          for (const s of state.scenes) { if (t >= s.startTime && t < s.startTime + s.duration) { active = s; break; } }
+
+          window.ZipRenderer.drawFrame(cx, c.width, c.height, {
+            t, totalDuration: state.totalDuration, scene: active,
+            sceneTime: Math.max(0, t - active.startTime),
+            showSubtitles: el.subtitleModeSelect.value === 'on'
+          });
+          const img = document.createElement('img');
+          img.src = c.toDataURL('image/jpeg', 0.82);
+          img.title = `t = ${t.toFixed(1)}s`;
+          el.contactSheetGrid.appendChild(img);
+        }
+      }
+
+      async function rebuildShort() {
+        stopPlayback();
+        const raw = el.storyInput.value.trim();
+        if (!raw) return;
+
+        state.scenes = window.ZipScriptDirector.compileScript(raw);
+        let cursor = 0;
+        state.scenes.forEach((sc) => { sc.startTime = cursor; cursor += sc.duration; });
+        state.totalDuration = Math.max(1.0, cursor + 0.3);
+        state.playOffset = 0;
+
+        el.timelineScrubber.max = state.totalDuration.toFixed(2);
+        updateTimeLabel(0);
+        drawPreviewAt(0);
+
+        state.masterBuffer = await window.ZipAudioEngine.renderAudioMix({
+          scenes: state.scenes,
+          totalDuration: state.totalDuration,
+          enableMusic: el.musicToggle.checked,
+          enableSFX: el.sfxToggle.checked
+        });
+
+        renderSummaryAndQA();
+        el.contactSheetGrid.classList.add('hidden');
+        setStatus(`✓ Short creado desde tu guion (${state.scenes.length} escenas, ${state.totalDuration.toFixed(1)}s).`);
+      }
+
+      function updateTimeLabel(t) {
+        el.timeDisplay.textContent = `${t.toFixed(1)}s / ${state.totalDuration.toFixed(1)}s`;
+        el.timelineScrubber.value = Math.min(state.totalDuration, t);
+      }
+
+      function drawPreviewAt(t) {
+        if (!state.scenes.length) {
+          window.ZipRenderer.drawFrame(previewCtx, el.previewCanvas.width, el.previewCanvas.height, { t: 0, scene: null, sceneTime: 0 });
+          return;
+        }
+        let active = state.scenes[state.scenes.length - 1];
+        for (const s of state.scenes) { if (t >= s.startTime && t < s.startTime + s.duration) { active = s; break; } }
+
+        window.ZipRenderer.drawFrame(previewCtx, el.previewCanvas.width, el.previewCanvas.height, {
+          t, totalDuration: state.totalDuration, scene: active,
+          sceneTime: Math.max(0, t - active.startTime),
+          showSubtitles: el.subtitleModeSelect.value === 'on'
+        });
+      }
+
+      function stopPlayback() {
+        state.isPlaying = false;
+        el.playPauseBtn.textContent = '▶ Reproducir Preview';
+        if (state.activeSourceNode) {
+          try { state.activeSourceNode.stop(); } catch (_) {}
+          state.activeSourceNode = null;
+        }
+        if (state.rafId) cancelAnimationFrame(state.rafId);
+      }
+
+      async function startPlayback() {
+        if (!state.scenes.length || !state.masterBuffer) return;
+        const ctx = window.ZipAudioEngine.ensureLiveContext();
+        if (state.playOffset >= state.totalDuration - 0.05) state.playOffset = 0;
+
+        const src = ctx.createBufferSource();
+        src.buffer = state.masterBuffer;
+        src.connect(ctx.destination);
+
+        const startAt = ctx.currentTime + 0.04;
+        src.start(startAt, state.playOffset);
+        state.activeSourceNode = src;
+        state.audioStartTime = startAt - state.playOffset;
+        state.isPlaying = true;
+        el.playPauseBtn.textContent = '⏸ Pausar';
+
+        const loop = () => {
+          if (!state.isPlaying) return;
+          const elapsed = Math.max(0, ctx.currentTime - state.audioStartTime);
+          state.playOffset = elapsed;
+          if (elapsed >= state.totalDuration) {
+            stopPlayback(); state.playOffset = 0; updateTimeLabel(0); drawPreviewAt(0); return;
+          }
+          drawPreviewAt(elapsed);
+          updateTimeLabel(elapsed);
+          state.rafId = requestAnimationFrame(loop);
+        };
+        state.rafId = requestAnimationFrame(loop);
+      }
+
+      el.loadPresetBtn.addEventListener('click', () => {
+        el.storyInput.value = window.ZipScriptDirector.PRESETS[el.presetSelect.value] || '';
+        rebuildShort();
+      });
+
+      el.buildShortBtn.addEventListener('click', rebuildShort);
+      el.genSheetBtn.addEventListener('click', generate9FrameContactSheet);
+
+      [el.musicToggle, el.sfxToggle, el.resolutionSelect, el.fpsSelect].forEach((n) => {
+        n.addEventListener('change', async () => {
+          if (!state.scenes.length) return;
+          state.masterBuffer = await window.ZipAudioEngine.renderAudioMix({
+            scenes: state.scenes,
+            totalDuration: state.totalDuration,
+            enableMusic: el.musicToggle.checked,
+            enableSFX: el.sfxToggle.checked
+          });
+          renderSummaryAndQA();
+        });
+      });
+
+      el.subtitleModeSelect.addEventListener('change', () => drawPreviewAt(state.playOffset));
+
+      el.playPauseBtn.addEventListener('click', () => {
+        if (state.isPlaying) stopPlayback(); else startPlayback();
+      });
+
+      el.restartBtn.addEventListener('click', () => {
+        stopPlayback(); state.playOffset = 0; updateTimeLabel(0); drawPreviewAt(0);
+      });
+
+      el.timelineScrubber.addEventListener('input', (e) => {
+        stopPlayback(); state.playOffset = parseFloat(e.target.value);
+        updateTimeLabel(state.playOffset); drawPreviewAt(state.playOffset);
+      });
+
+      el.exportMp4Btn.addEventListener('click', async () => {
+        if (!state.scenes.length || !state.masterBuffer) return alert('Primero crea el Short desde tu guion.');
+        stopPlayback();
+
+        const [w, h] = el.resolutionSelect.value.split('x').map(Number);
+        const fps = parseInt(el.fpsSelect.value, 10);
+
+        el.exportMp4Btn.disabled = true;
+        el.exportProgressWrap.classList.remove('hidden');
+        el.exportResultWrap.classList.add('hidden');
+
+        try {
+          const { blob, ext } = await window.ZipExporter.exportToMP4({
+            scenes: state.scenes,
+            masterBuffer: state.masterBuffer,
+            totalDuration: state.totalDuration,
+            width: w, height: h, fps,
+            showSubtitles: el.subtitleModeSelect.value === 'on',
+            onProgress: (ratio, msg) => {
+              el.exportProgressBar.style.width = `${Math.round(ratio * 100)}%`;
+              el.exportProgressText.textContent = msg;
+            }
+          });
+
+          if (state.lastExportUrl) URL.revokeObjectURL(state.lastExportUrl);
+          const url = URL.createObjectURL(blob);
+          state.lastExportUrl = url;
+          el.exportedVideoPreview.src = url;
+          el.downloadMp4Link.href = url;
+          el.downloadMp4Link.download = `short-animado.${ext}`;
+          el.exportResultWrap.classList.remove('hidden');
+          setStatus(`¡Short exportado (${(blob.size / 1024 / 1024).toFixed(2)} MB) en .${ext}!`);
+        } catch (err) {
+          alert('Error al exportar: ' + err.message);
+          setStatus('Error exportando: ' + err.message);
+        } finally {
+          el.exportMp4Btn.disabled = false;
+          el.exportProgressWrap.classList.add('hidden');
+        }
+      });
+
+      el.storyInput.value = window.ZipScriptDirector.PRESETS.boston_melaza;
+      rebuildShort();
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        try { initZipStudio(); } catch (e) {
+          document.getElementById('codecSupportBadge').textContent = 'Error JS: ' + e.message;
+        }
+      });
+    } else {
+      try { initZipStudio(); } catch (e) {
+        document.getElementById('codecSupportBadge').textContent = 'Error JS: ' + e.message;
+      }
+    }
+  </script>
+</body>
+</html>
