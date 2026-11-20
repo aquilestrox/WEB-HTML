@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RicksClips Studio PRO — Shorts 9:16 Cinematográficos (Sin APIs, Solo Música + SFX)</title>
-  <script src="https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.2/build/mp4-muxer.js"></script>
+  <title>RicksClips Studio PRO — Shorts 9:16 (Sin APIs, Solo Música + SFX)</title>
   <style>
     :root {
       --bg: #0c0e14;
@@ -146,7 +145,7 @@
       margin: 10px 0;
     }
 
-    .preset-row, .inline-form, .actions-row {
+    .preset-row, .actions-row {
       display: flex;
       gap: 8px;
       align-items: center;
@@ -287,7 +286,7 @@
       <h1>RicksClips Studio PRO <span class="badge">MÚSICA + SFX · SIN APIs</span></h1>
       <p class="subtitle">Escenarios 2.5D multicapa, iluminación volumétrica, cámara dinámica, personajes detallados y MP4 9:16</p>
     </div>
-    <div id="codecSupportBadge" class="status-pill">Comprobando WebCodecs...</div>
+    <div id="codecSupportBadge" class="status-pill">Iniciando...</div>
   </header>
 
   <main class="workspace">
@@ -405,15 +404,47 @@
         </div>
 
         <div id="exportResultWrap" class="export-result hidden">
-          <h3>¡Short MP4 listo!</h3>
+          <h3>¡Short listo!</h3>
           <video id="exportedVideoPreview" controls playsinline></video>
-          <a id="downloadMp4Link" class="btn-primary download-btn" download="ricksclips-pro-short.mp4">⬇ Descargar MP4</a>
+          <a id="downloadMp4Link" class="btn-primary download-btn" download="ricksclips-pro-short.mp4">⬇ Descargar Vídeo</a>
         </div>
       </div>
     </section>
   </main>
 
   <script>
+    // =========================================================================
+    // 0. CARGADOR NO BLOQUEANTE DE MP4-MUXER (con respaldo automático)
+    // =========================================================================
+    function loadScriptAsync(url) {
+      return new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = url;
+        s.async = true;
+        s.onload = () => resolve(true);
+        s.onerror = () => reject(new Error('No se pudo cargar ' + url));
+        document.head.appendChild(s);
+      });
+    }
+
+    async function ensureMp4MuxerLoaded() {
+      if (typeof window.Mp4Muxer !== 'undefined') return true;
+      const cdns = [
+        'https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.2/build/mp4-muxer.js',
+        'https://unpkg.com/mp4-muxer@5.2.2/build/mp4-muxer.js'
+      ];
+      for (const url of cdns) {
+        try {
+          await Promise.race([
+            loadScriptAsync(url),
+            new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 6000))
+          ]);
+          if (typeof window.Mp4Muxer !== 'undefined') return true;
+        } catch (_) {}
+      }
+      return false;
+    }
+
     // =========================================================================
     // 1. MOTOR DE AUDIO: SOLO MÚSICA CINEMATOGRÁFICA + SFX PROCEDURALES
     // =========================================================================
@@ -425,7 +456,11 @@
       function ensureLiveContext() {
         if (!liveCtx) {
           const AC = window.AudioContext || window.webkitAudioContext;
-          liveCtx = new AC({ sampleRate: SAMPLE_RATE });
+          try {
+            liveCtx = new AC({ sampleRate: SAMPLE_RATE });
+          } catch (_) {
+            liveCtx = new AC();
+          }
         }
         if (liveCtx.state === 'suspended') liveCtx.resume();
         return liveCtx;
@@ -436,15 +471,8 @@
         if (sfxCache.has(type)) return sfxCache.get(type);
 
         const durations = {
-          whoosh: 0.34,
-          boom: 1.15,
-          clang: 0.8,
-          chime: 0.75,
-          laugh: 0.85,
-          rumble: 1.25,
-          fail: 0.75,
-          riser: 1.1,
-          pop: 0.18
+          whoosh: 0.34, boom: 1.15, clang: 0.8, chime: 0.75,
+          laugh: 0.85, rumble: 1.25, fail: 0.75, riser: 1.1, pop: 0.18
         };
         const dur = durations[type] || 0.4;
         const ctx = new OfflineAudioContext(2, Math.ceil(dur * SAMPLE_RATE), SAMPLE_RATE);
@@ -490,7 +518,6 @@
           nSrc.connect(lp).connect(ng).connect(ctx.destination);
           nSrc.start(0);
         } else if (type === 'clang') {
-          // Golpe metálico de bronce / armadura (frecuencias inarmónicas)
           [523, 784, 1187, 1742, 2310].forEach((freq, i) => {
             const osc = ctx.createOscillator();
             const g = ctx.createGain();
@@ -515,7 +542,6 @@
             osc.start(t0); osc.stop(dur);
           });
         } else if (type === 'laugh') {
-          // Risas rítmicas estilizadas ("ja-ja-ja-ja")
           [0, 0.14, 0.28, 0.42, 0.56].forEach((t0, i) => {
             const osc = ctx.createOscillator();
             const g = ctx.createGain();
@@ -598,12 +624,11 @@
         masterGain.connect(ctx.destination);
 
         if (mood === 'epic') {
-          // Acordes cinematográficos menores + pulso de tensión estilo documental viral
           const chords = [
-            [110.0, 164.81, 220.0, 261.63], // Am
-            [87.31, 130.81, 174.61, 220.0], // F
-            [98.0, 146.83, 196.0, 246.94],  // G
-            [82.41, 123.47, 164.81, 207.65] // E
+            [110.0, 164.81, 220.0, 261.63],
+            [87.31, 130.81, 174.61, 220.0],
+            [98.0, 146.83, 196.0, 246.94],
+            [82.41, 123.47, 164.81, 207.65]
           ];
           const barDur = 2.0;
           let barIdx = 0;
@@ -612,7 +637,6 @@
             const ch = chords[barIdx % chords.length];
             const segDur = Math.min(barDur, totalDuration - t);
 
-            // Pad cálido de cuerdas
             ch.forEach((freq, i) => {
               const osc = ctx.createOscillator();
               osc.type = i === 0 ? 'sawtooth' : 'triangle';
@@ -628,7 +652,6 @@
               osc.start(t); osc.stop(t + segDur + 0.02);
             });
 
-            // Pulso pizzicato rítmico cada 0.25s
             for (let sub = 0; sub < segDur; sub += 0.25) {
               const pt = t + sub;
               const note = ch[(Math.floor(sub / 0.25) % 3) + 1] * 2;
@@ -645,7 +668,6 @@
             barIdx++;
           }
         } else {
-          // Quirky storyteller upbeat
           const bass = [130.81, 130.81, 155.56, 174.61, 130.81, 196.0, 174.61, 155.56];
           const step = 0.26;
           let i = 0;
@@ -754,10 +776,9 @@
         });
       }
 
-      function inferScenePlan(text, index, total) {
+      function inferScenePlan(text, index) {
         const l = text.toLowerCase();
 
-        // Entorno 2.5D
         let env = 'throne_room';
         if (/escombros|terremoto|derrumb|guerra|balas|destructor|explos/.test(l)) {
           env = /debajo|bajo sus pies|tierra|terremoto/.test(l) ? 'earth_cross_section' : 'city_destruction';
@@ -773,7 +794,6 @@
           env = /trono|corte|emperador|rey|gobierno/.test(l) ? 'throne_room' : 'workshop_artifact';
         }
 
-        // Tipo de plano y cámara
         let shot = 'medium_dialogue';
         if (index === 0) shot = 'dramatic_closeup';
         else if (env === 'courtyard_army') shot = 'establishing_wide';
@@ -782,7 +802,6 @@
         else if (env === 'sunset_hill') shot = 'pan_action';
         else if (/vino|copa|carcajadas|reír|grit/.test(l)) shot = 'dramatic_closeup';
 
-        // Vestuario principal y secundario
         let role = 'scholar';
         if (/emperador|rey|gobierno|trono/.test(l)) role = 'emperor';
         else if (/soldado|ejército|guardia|general/.test(l)) role = 'guard';
@@ -817,13 +836,7 @@
 
         return {
           id: 'pl_' + Date.now() + '_' + index,
-          text,
-          env,
-          shot,
-          role,
-          emotion,
-          prop,
-          sfx,
+          text, env, shot, role, emotion, prop, sfx,
           hasCrowd: /corte|ejército|soldados|empresarios|guardias|generales/.test(l),
           duration,
           words: buildWordTimingForScene(text, duration)
@@ -845,3 +858,1244 @@
           } else {
             shots.push(s.trim());
           }
+        });
+
+        return shots.filter(Boolean).map((txt, idx) => inferScenePlan(txt, idx));
+      }
+
+      return { PRESETS, parseStoryToShots, buildWordTimingForScene };
+    })();
+
+    // =========================================================================
+    // 3. RENDERIZADOR CINEMATOGRÁFICO 2.5D (Estilo @RicksClips3000)
+    // =========================================================================
+    window.RicksCinema = (() => {
+      function easeOutCubic(x) { return 1 - Math.pow(1 - x, 3); }
+
+      function rRect(ctx, x, y, w, h, r) {
+        if (ctx.roundRect) {
+          ctx.beginPath();
+          ctx.roundRect(x, y, w, h, r);
+        } else {
+          ctx.beginPath();
+          ctx.moveTo(x + r, y);
+          ctx.lineTo(x + w - r, y);
+          ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+          ctx.lineTo(x + w, y + h - r);
+          ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+          ctx.lineTo(x + r, y + h);
+          ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+          ctx.lineTo(x, y + r);
+          ctx.quadraticCurveTo(x, y, x + r, y);
+          ctx.closePath();
+        }
+      }
+
+      function drawRicksCharacter(ctx, cfg) {
+        const {
+          x, y, scale = 1, role = 'scholar', emotion = 'smug',
+          t = 0, sceneTime = 0, flip = false, holdingProp = 'none', walkSpeed = 0
+        } = cfg;
+
+        const enter = easeOutCubic(Math.min(1, sceneTime / 0.25));
+        const laughBounce = emotion === 'laughing' ? Math.abs(Math.sin(t * 22)) * 18 : 0;
+        const walkBob = walkSpeed > 0 ? Math.abs(Math.sin(t * 9)) * 12 : Math.sin(t * 3.2) * 3;
+        const bodyTilt = emotion === 'laughing' ? -0.09 + Math.sin(t * 22) * 0.04 : walkSpeed > 0 ? Math.sin(t * 9) * 0.04 : 0;
+
+        ctx.save();
+        ctx.translate(x, y);
+
+        ctx.fillStyle = 'rgba(0,0,0,0.4)';
+        ctx.beginPath();
+        ctx.ellipse(0, 12, 105 * scale, 24 * scale, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.translate(0, -laughBounce - walkBob);
+        ctx.scale(scale * (0.9 + 0.1 * enter) * (flip ? -1 : 1), scale * (0.9 + 0.1 * enter));
+        ctx.rotate(bodyTilt);
+
+        if (role === 'emperor') {
+          ctx.fillStyle = '#450a0a';
+          ctx.strokeStyle = '#231f20';
+          ctx.lineWidth = 8;
+          ctx.beginPath();
+          ctx.moveTo(-75, -260); ctx.lineTo(-105, 8); ctx.lineTo(105, 8); ctx.lineTo(75, -260);
+          ctx.closePath(); ctx.fill(); ctx.stroke();
+        }
+
+        const palettes = {
+          scholar: { main: '#2563eb', dark: '#1e3a8a', trim: '#facc15' },
+          emperor: { main: '#2e1065', dark: '#170636', trim: '#fbbf24' },
+          guard: { main: '#64748b', dark: '#334155', trim: '#dc2626' },
+          merchant: { main: '#065f46', dark: '#064e3b', trim: '#f59e0b' }
+        };
+        const pal = palettes[role] || palettes.scholar;
+
+        ctx.lineWidth = 9;
+        ctx.strokeStyle = '#231f20';
+
+        const bodyGrad = ctx.createLinearGradient(-85, -270, 85, 0);
+        bodyGrad.addColorStop(0, pal.main);
+        bodyGrad.addColorStop(1, pal.dark);
+        ctx.fillStyle = bodyGrad;
+        ctx.beginPath();
+        ctx.moveTo(-64, -270);
+        ctx.quadraticCurveTo(-84, -120, -76, 4);
+        ctx.lineTo(76, 4);
+        ctx.quadraticCurveTo(84, -120, 64, -270);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+
+        if (role === 'scholar') {
+          ctx.strokeStyle = '#fef3c7'; ctx.lineWidth = 10;
+          ctx.beginPath(); ctx.moveTo(-26, -260); ctx.lineTo(14, -205); ctx.moveTo(22, -260); ctx.lineTo(-10, -210); ctx.stroke();
+          ctx.fillStyle = pal.trim; ctx.strokeStyle = '#231f20'; ctx.lineWidth = 6;
+          rRect(ctx, -74, -165, 148, 22, 6); ctx.fill(); ctx.stroke();
+        } else if (role === 'emperor') {
+          ctx.strokeStyle = pal.trim; ctx.lineWidth = 8;
+          ctx.beginPath(); ctx.moveTo(-36, -245); ctx.lineTo(36, -155); ctx.moveTo(36, -245); ctx.lineTo(-36, -155); ctx.stroke();
+          ctx.fillStyle = pal.trim; ctx.strokeStyle = '#231f20'; ctx.lineWidth = 6;
+          rRect(ctx, -74, -150, 148, 24, 6); ctx.fill(); ctx.stroke();
+        } else if (role === 'guard') {
+          ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 4;
+          for (let ry = -235; ry <= -90; ry += 28) {
+            for (let rx = -46; rx <= 46; rx += 26) {
+              ctx.beginPath(); ctx.arc(rx, ry, 13, 0, Math.PI); ctx.stroke();
+            }
+          }
+          ctx.fillStyle = pal.trim; ctx.strokeStyle = '#231f20'; ctx.lineWidth = 6;
+          rRect(ctx, -76, -145, 152, 20, 4); ctx.fill(); ctx.stroke();
+        } else if (role === 'merchant') {
+          ctx.fillStyle = '#fef3c7';
+          ctx.beginPath(); ctx.moveTo(-18, -265); ctx.lineTo(0, -185); ctx.lineTo(18, -265); ctx.closePath(); ctx.fill();
+          ctx.fillStyle = pal.trim; ctx.strokeStyle = '#231f20'; ctx.lineWidth = 5;
+          rRect(ctx, -74, -155, 148, 18, 4); ctx.fill(); ctx.stroke();
+        }
+
+        ctx.strokeStyle = '#231f20'; ctx.lineWidth = 10; ctx.lineCap = 'round';
+        const wave = Math.sin(t * 4.5) * 14;
+        ctx.beginPath();
+        ctx.moveTo(-68, -225);
+        ctx.quadraticCurveTo(-125, -175 + wave, -95, -125);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(68, -225);
+        if (holdingProp === 'halberd') {
+          ctx.quadraticCurveTo(118, -195, 112, -165);
+          ctx.stroke();
+          ctx.strokeStyle = '#78350f'; ctx.lineWidth = 10;
+          ctx.beginPath(); ctx.moveTo(112, 10); ctx.lineTo(112, -455); ctx.stroke();
+          ctx.fillStyle = '#e2e8f0'; ctx.strokeStyle = '#231f20'; ctx.lineWidth = 6;
+          ctx.beginPath(); ctx.moveTo(112, -455); ctx.lineTo(148, -410); ctx.lineTo(112, -370); ctx.closePath(); ctx.fill(); ctx.stroke();
+        } else if (holdingProp === 'goblet') {
+          ctx.quadraticCurveTo(130, -210, 128, -245);
+          ctx.stroke();
+          ctx.fillStyle = '#facc15'; ctx.strokeStyle = '#231f20'; ctx.lineWidth = 5;
+          ctx.beginPath(); ctx.moveTo(110, -280); ctx.lineTo(146, -280); ctx.lineTo(136, -245); ctx.lineTo(120, -245); ctx.closePath(); ctx.fill(); ctx.stroke();
+        } else {
+          ctx.quadraticCurveTo(135, -185 - wave, 118, -235 - wave);
+          ctx.stroke();
+        }
+
+        ctx.save();
+        ctx.translate(0, -375);
+
+        const headGrad = ctx.createRadialGradient(-38, -42, 20, 0, 0, 125);
+        headGrad.addColorStop(0, '#ffffff');
+        headGrad.addColorStop(0.72, '#fbf5ee');
+        headGrad.addColorStop(1, '#dfd5cb');
+        ctx.fillStyle = headGrad;
+        ctx.strokeStyle = '#231f20';
+        ctx.lineWidth = 10;
+        ctx.beginPath(); ctx.arc(0, 0, 118, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+        if (role === 'scholar') {
+          ctx.fillStyle = '#1f2937'; ctx.lineWidth = 7;
+          rRect(ctx, -40, -148, 80, 44, 16); ctx.fill(); ctx.stroke();
+          ctx.strokeStyle = '#facc15'; ctx.lineWidth = 7;
+          ctx.beginPath(); ctx.moveTo(-78, -126); ctx.lineTo(78, -126); ctx.stroke();
+          ctx.fillStyle = '#14b8a6'; ctx.strokeStyle = '#231f20'; ctx.lineWidth = 4;
+          ctx.beginPath(); ctx.arc(-80, -126, 11, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        } else if (role === 'emperor') {
+          ctx.fillStyle = '#1e1b4b'; ctx.strokeStyle = '#facc15'; ctx.lineWidth = 6;
+          rRect(ctx, -108, -128, 216, 22, 6); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = '#facc15';
+          for (let cx = -85; cx <= 85; cx += 42) {
+            ctx.beginPath(); ctx.moveTo(cx, -106); ctx.lineTo(cx, -78); ctx.stroke();
+            ctx.beginPath(); ctx.arc(cx, -74, 6, 0, Math.PI * 2); ctx.fill();
+          }
+        } else if (role === 'guard') {
+          ctx.fillStyle = '#94a3b8'; ctx.strokeStyle = '#231f20'; ctx.lineWidth = 8;
+          ctx.beginPath(); ctx.arc(0, -12, 122, Math.PI, 0); ctx.closePath(); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = '#dc2626';
+          rRect(ctx, -14, -158, 28, 34, 8); ctx.fill(); ctx.stroke();
+        } else if (role === 'merchant') {
+          ctx.fillStyle = '#1f2937'; ctx.strokeStyle = '#231f20'; ctx.lineWidth = 7;
+          ctx.beginPath(); ctx.ellipse(0, -96, 115, 16, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+          rRect(ctx, -64, -172, 128, 76, 10); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = '#facc15'; ctx.fillRect(-60, -118, 120, 14);
+        }
+
+        const blink = (t % 3.6) > 3.46;
+        ctx.strokeStyle = '#231f20';
+        ctx.fillStyle = '#231f20';
+        ctx.lineWidth = 7;
+
+        if (emotion === 'laughing') {
+          [-38, 38].forEach((ex) => {
+            ctx.beginPath(); ctx.arc(ex, -8, 22, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke();
+          });
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath(); ctx.arc(0, 26, 48, 0, Math.PI); ctx.closePath(); ctx.fill(); ctx.stroke();
+        } else if (emotion === 'sleeping') {
+          [-38, 38].forEach((ex) => {
+            ctx.beginPath(); ctx.arc(ex, -4, 20, 0.1 * Math.PI, 0.9 * Math.PI); ctx.stroke();
+          });
+          ctx.beginPath(); ctx.moveTo(-14, 42); ctx.lineTo(14, 42); ctx.stroke();
+          ctx.fillStyle = '#bae6fd';
+          ctx.font = '900 38px system-ui, sans-serif';
+          ctx.fillText('Z', 105, -60 - (t * 24) % 45);
+          ctx.font = '900 26px system-ui, sans-serif';
+          ctx.fillText('z', 135, -95 - (t * 24) % 45);
+        } else {
+          [-36, 36].forEach((ex, idx) => {
+            if (blink) {
+              ctx.beginPath(); ctx.moveTo(ex - 20, -10); ctx.lineTo(ex + 20, -10); ctx.stroke();
+            } else {
+              ctx.fillStyle = '#ffffff';
+              ctx.beginPath(); ctx.ellipse(ex, -10, 22, emotion === 'shocked' ? 28 : 20, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+              if (emotion === 'smug' || emotion === 'angry') {
+                ctx.fillStyle = '#fbf5ee';
+                ctx.beginPath(); ctx.rect(ex - 24, -34, 48, 20); ctx.fill();
+                ctx.beginPath(); ctx.moveTo(ex - 22, -14); ctx.lineTo(ex + 22, -14); ctx.stroke();
+              }
+              ctx.fillStyle = '#231f20';
+              const px = emotion === 'thinking' ? ex + 7 : ex + 2;
+              ctx.beginPath(); ctx.arc(px, -8, emotion === 'shocked' ? 6 : 8, 0, Math.PI * 2); ctx.fill();
+            }
+
+            ctx.lineWidth = 7;
+            ctx.beginPath();
+            if (emotion === 'angry') {
+              ctx.moveTo(ex - 22, idx === 0 ? -42 : -28);
+              ctx.lineTo(ex + 22, idx === 0 ? -28 : -42);
+            } else if (emotion === 'shocked') {
+              ctx.moveTo(ex - 22, -48); ctx.lineTo(ex + 22, -48);
+            } else {
+              ctx.moveTo(ex - 20, -36); ctx.lineTo(ex + 20, -38);
+            }
+            ctx.stroke();
+          });
+
+          if (emotion === 'shocked') {
+            ctx.fillStyle = '#7f1d1d';
+            ctx.beginPath(); ctx.ellipse(0, 44, 20, 26, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            ctx.fillStyle = '#7dd3fc'; ctx.lineWidth = 4;
+            ctx.beginPath(); ctx.moveTo(85, -55); ctx.quadraticCurveTo(102, -25, 85, -18); ctx.quadraticCurveTo(68, -25, 85, -55); ctx.fill(); ctx.stroke();
+          } else if (emotion === 'angry') {
+            ctx.beginPath(); ctx.arc(0, 62, 24, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke();
+          } else {
+            ctx.beginPath(); ctx.moveTo(-16, 44); ctx.quadraticCurveTo(4, 52, 20, 40); ctx.stroke();
+          }
+        }
+
+        ctx.restore();
+        ctx.restore();
+      }
+
+      function drawDragonJar(ctx, x, y, scale, t, shakeAmt = 0) {
+        ctx.save();
+        ctx.translate(x + Math.sin(t * 40) * shakeAmt, y);
+        ctx.scale(scale, scale);
+
+        ctx.fillStyle = 'rgba(0,0,0,0.45)';
+        ctx.beginPath(); ctx.ellipse(0, 230, 175, 40, 0, 0, Math.PI * 2); ctx.fill();
+
+        const jarGrad = ctx.createLinearGradient(-155, 0, 155, 0);
+        jarGrad.addColorStop(0, '#64748b');
+        jarGrad.addColorStop(0.28, '#cbd5e1');
+        jarGrad.addColorStop(0.65, '#94a3b8');
+        jarGrad.addColorStop(1, '#475569');
+        ctx.fillStyle = jarGrad;
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 9;
+
+        ctx.beginPath();
+        ctx.moveTo(-125, -180);
+        ctx.quadraticCurveTo(-165, -20, -135, 215);
+        ctx.quadraticCurveTo(0, 245, 135, 215);
+        ctx.quadraticCurveTo(165, -20, 125, -180);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+
+        ctx.beginPath(); ctx.arc(0, -180, 125, Math.PI, 0); ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.arc(0, -320, 26, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+        [-115, 0, 115].forEach((dx, idx) => {
+          const dy = -45 + (idx === 1 ? 25 : 0);
+          ctx.save();
+          ctx.translate(dx, dy);
+
+          const goldGrad = ctx.createLinearGradient(-25, -35, 25, 35);
+          goldGrad.addColorStop(0, '#fef08a');
+          goldGrad.addColorStop(0.5, '#eab308');
+          goldGrad.addColorStop(1, '#854d0e');
+          ctx.fillStyle = goldGrad;
+          ctx.strokeStyle = '#422006';
+          ctx.lineWidth = 6;
+
+          ctx.beginPath(); ctx.ellipse(0, 0, 34, 48, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(-18, -42); ctx.lineTo(-30, -76); ctx.lineTo(-4, -46);
+          ctx.moveTo(18, -42); ctx.lineTo(30, -76); ctx.lineTo(4, -46);
+          ctx.fill(); ctx.stroke();
+
+          ctx.fillStyle = '#450a0a';
+          ctx.beginPath(); ctx.ellipse(0, 24, 18, 22, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = '#f59e0b';
+          ctx.beginPath(); ctx.arc(0, 24, 15, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+          ctx.restore();
+
+          ctx.save();
+          ctx.translate(dx * 1.1, 200);
+          ctx.fillStyle = '#94a3b8'; ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 6;
+          ctx.beginPath(); ctx.ellipse(0, 0, 32, 26, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = '#334155';
+          ctx.beginPath(); ctx.ellipse(0, -4, 18, 13, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+          ctx.restore();
+        });
+
+        ctx.restore();
+      }
+
+      function drawEnvironment(ctx, env, t, sceneTime, blurBg) {
+        ctx.save();
+        if (blurBg && typeof ctx.filter === 'string') {
+          ctx.filter = 'blur(5px)';
+        }
+
+        if (env === 'throne_room') {
+          const bg = ctx.createLinearGradient(0, 0, 0, 1350);
+          bg.addColorStop(0, '#312e59'); bg.addColorStop(1, '#5b4b75');
+          ctx.fillStyle = bg; ctx.fillRect(0, 0, 1080, 1350);
+
+          ctx.fillStyle = '#474363';
+          ctx.fillRect(40, 0, 120, 1350);
+          ctx.fillRect(920, 0, 120, 1350);
+
+          ctx.save();
+          ctx.translate(540, 260);
+          ctx.fillStyle = '#fef08a';
+          ctx.beginPath(); ctx.arc(0, 0, 175, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = '#312e59'; ctx.lineWidth = 14; ctx.stroke();
+          for (let i = 0; i < 8; i++) {
+            ctx.rotate(Math.PI / 4);
+            ctx.fillStyle = i % 2 === 0 ? '#60a5fa' : '#f87171';
+            ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, 155, -0.25, 0.25); ctx.closePath(); ctx.fill();
+          }
+          ctx.restore();
+
+          ctx.fillStyle = '#7f1d1d'; ctx.strokeStyle = '#facc15'; ctx.lineWidth = 8;
+          ctx.beginPath(); ctx.moveTo(180, 180); ctx.quadraticCurveTo(320, 650, 220, 1180); ctx.lineTo(140, 1180); ctx.closePath(); ctx.fill(); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(900, 180); ctx.quadraticCurveTo(760, 650, 860, 1180); ctx.lineTo(940, 1180); ctx.closePath(); ctx.fill(); ctx.stroke();
+
+          ctx.fillStyle = '#b91c1c'; ctx.strokeStyle = '#eab308'; ctx.lineWidth = 12;
+          rRect(ctx, 390, 520, 300, 560, 36); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = '#991b1b';
+          rRect(ctx, 360, 960, 360, 140, 18); ctx.fill(); ctx.stroke();
+
+          [190, 890].forEach((tx) => {
+            const flicker = Math.sin(t * 24 + tx) * 10;
+            ctx.fillStyle = '#fbbf24';
+            ctx.beginPath(); ctx.ellipse(tx, 760, 26, 48 + flicker * 0.4, 0, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath(); ctx.ellipse(tx, 775, 16, 28, 0, 0, Math.PI * 2); ctx.fill();
+          });
+
+          const fl = ctx.createLinearGradient(0, 1180, 0, 1920);
+          fl.addColorStop(0, '#334155'); fl.addColorStop(1, '#1e293b');
+          ctx.fillStyle = fl; ctx.fillRect(0, 1180, 1080, 740);
+
+          ctx.fillStyle = '#991b1b'; ctx.strokeStyle = '#facc15'; ctx.lineWidth = 10;
+          ctx.beginPath();
+          ctx.moveTo(410, 1180); ctx.lineTo(670, 1180); ctx.lineTo(860, 1920); ctx.lineTo(220, 1920);
+          ctx.closePath(); ctx.fill(); ctx.stroke();
+
+        } else if (env === 'courtyard_army') {
+          const sky = ctx.createLinearGradient(0, 0, 0, 1050);
+          sky.addColorStop(0, '#38bdf8'); sky.addColorStop(1, '#bae6fd');
+          ctx.fillStyle = sky; ctx.fillRect(0, 0, 1080, 1050);
+
+          ctx.fillStyle = '#94a3b8';
+          ctx.beginPath(); ctx.moveTo(0, 820); ctx.lineTo(260, 460); ctx.lineTo(540, 760); ctx.lineTo(850, 420); ctx.lineTo(1080, 780); ctx.lineTo(1080, 1050); ctx.lineTo(0, 1050); ctx.fill();
+
+          ctx.fillStyle = '#cbd5e1'; ctx.strokeStyle = '#334155'; ctx.lineWidth = 8;
+          ctx.fillRect(60, 520, 960, 530); ctx.strokeRect(60, 520, 960, 530);
+          ctx.fillStyle = '#475569';
+          ctx.beginPath(); ctx.arc(540, 830, 130, Math.PI, 0); ctx.lineTo(670, 1050); ctx.lineTo(410, 1050); ctx.closePath(); ctx.fill();
+
+          [130, 950].forEach((tx) => {
+            ctx.fillStyle = '#94a3b8'; ctx.fillRect(tx - 80, 340, 160, 710);
+            ctx.fillStyle = '#1e3a8a';
+            ctx.beginPath(); ctx.moveTo(tx - 95, 340); ctx.lineTo(tx, 160); ctx.lineTo(tx + 95, 340); ctx.closePath(); ctx.fill();
+          });
+
+          ctx.fillStyle = '#64748b'; ctx.fillRect(0, 1050, 1080, 870);
+          ctx.fillStyle = '#991b1b';
+          ctx.beginPath(); ctx.moveTo(460, 1050); ctx.lineTo(620, 1050); ctx.lineTo(740, 1920); ctx.lineTo(340, 1920); ctx.closePath(); ctx.fill();
+
+          for (let row = 0; row < 5; row++) {
+            const sy = 1120 + row * 95;
+            const sc = 0.25 + row * 0.05;
+            for (const side of [-1, 1]) {
+              for (let col = 0; col < 4; col++) {
+                const sx = 540 + side * (160 + col * 85);
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(sx - 18 * sc, sy - 60 * sc, 36 * sc, 65 * sc);
+                ctx.fillStyle = '#f8fafc';
+                ctx.beginPath(); ctx.arc(sx, sy - 85 * sc, 24 * sc, 0, Math.PI * 2); ctx.fill();
+              }
+            }
+          }
+
+        } else if (env === 'sunset_hill') {
+          const sky = ctx.createLinearGradient(0, 0, 0, 1300);
+          sky.addColorStop(0, '#c2410c'); sky.addColorStop(0.55, '#fb923c'); sky.addColorStop(1, '#fef08a');
+          ctx.fillStyle = sky; ctx.fillRect(0, 0, 1080, 1920);
+
+          ctx.fillStyle = 'rgba(255, 250, 210, 0.88)';
+          ctx.beginPath(); ctx.arc(720, 860, 310, 0, Math.PI * 2); ctx.fill();
+
+          ctx.fillStyle = '#9a3412';
+          ctx.beginPath(); ctx.moveTo(0, 1280); ctx.quadraticCurveTo(380, 1080, 1080, 1320); ctx.lineTo(1080, 1920); ctx.lineTo(0, 1920); ctx.fill();
+
+          ctx.fillStyle = '#431407';
+          ctx.beginPath(); ctx.moveTo(0, 1460); ctx.quadraticCurveTo(540, 1220, 1080, 1480); ctx.lineTo(1080, 1920); ctx.lineTo(0, 1920); ctx.fill();
+
+        } else if (env === 'night_camp') {
+          const sky = ctx.createLinearGradient(0, 0, 0, 1350);
+          sky.addColorStop(0, '#090d1f'); sky.addColorStop(1, '#1e3a8a');
+          ctx.fillStyle = sky; ctx.fillRect(0, 0, 1080, 1350);
+
+          ctx.fillStyle = '#ffffff';
+          for (let i = 0; i < 45; i++) {
+            const sx = (i * 197) % 1080;
+            const sy = (i * 113) % 980;
+            const tw = 2 + Math.sin(t * 4 + i) * 1.5;
+            ctx.beginPath(); ctx.arc(sx, sy, Math.max(1, tw), 0, Math.PI * 2); ctx.fill();
+          }
+
+          ctx.fillStyle = '#fef9c3';
+          ctx.beginPath(); ctx.arc(240, 290, 115, 0, Math.PI * 2); ctx.fill();
+
+          const fl = ctx.createLinearGradient(0, 1220, 0, 1920);
+          fl.addColorStop(0, '#14532d'); fl.addColorStop(1, '#052e16');
+          ctx.fillStyle = fl; ctx.fillRect(0, 1220, 1080, 700);
+
+          ctx.fillStyle = 'rgba(251, 146, 60, 0.25)';
+          ctx.beginPath(); ctx.arc(210, 1380, 160, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#f97316';
+          ctx.beginPath(); ctx.ellipse(210, 1370, 32, 54 + Math.sin(t * 20) * 8, 0, 0, Math.PI * 2); ctx.fill();
+
+        } else if (env === 'city_destruction') {
+          const sky = ctx.createLinearGradient(0, 0, 0, 1350);
+          sky.addColorStop(0, '#78350f'); sky.addColorStop(0.6, '#ea580c'); sky.addColorStop(1, '#fde047');
+          ctx.fillStyle = sky; ctx.fillRect(0, 0, 1080, 1920);
+
+          ctx.fillStyle = '#3f6212'; ctx.fillRect(0, 1220, 1080, 700);
+          ctx.fillStyle = '#475569';
+          for (let bx = 80; bx < 1020; bx += 90) {
+            const h = 90 + ((bx * 7) % 140);
+            ctx.fillRect(bx, 1220 - h, 72, h);
+          }
+
+          const smokeRise = Math.min(1, sceneTime / 1.1);
+          for (let i = 0; i < 14; i++) {
+            const py = 1150 - i * 82 * smokeRise;
+            const px = 540 + Math.sin(i * 1.4 + t * 2) * 55;
+            const r = 75 + i * 16;
+            ctx.fillStyle = i < 4 ? 'rgba(251, 146, 60, 0.8)' : 'rgba(226, 232, 240, 0.72)';
+            ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI * 2); ctx.fill();
+          }
+
+        } else if (env === 'cutaway_mechanism') {
+          ctx.fillStyle = '#0f172a'; ctx.fillRect(0, 0, 1080, 1920);
+          const radGrad = ctx.createRadialGradient(540, 880, 80, 540, 880, 520);
+          radGrad.addColorStop(0, '#334155'); radGrad.addColorStop(1, '#1e293b');
+          ctx.fillStyle = radGrad;
+          ctx.beginPath(); ctx.arc(540, 880, 490, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 22; ctx.stroke();
+
+          const swing = Math.sin(t * 4.2) * 38;
+          for (let a = 0; a < 8; a++) {
+            const ang = (a * Math.PI) / 4;
+            ctx.strokeStyle = a === 2 && Math.abs(swing) > 25 ? '#facc15' : '#64748b';
+            ctx.lineWidth = 14;
+            ctx.beginPath();
+            ctx.moveTo(540 + Math.cos(ang) * 140, 880 + Math.sin(ang) * 140);
+            ctx.lineTo(540 + Math.cos(ang) * 440, 880 + Math.sin(ang) * 440);
+            ctx.stroke();
+          }
+          ctx.fillStyle = '#eab308'; ctx.strokeStyle = '#713f12'; ctx.lineWidth = 10;
+          ctx.beginPath(); ctx.arc(540 + swing, 880, 95, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+        } else if (env === 'earth_cross_section') {
+          const sky = ctx.createLinearGradient(0, 0, 0, 700);
+          sky.addColorStop(0, '#f97316'); sky.addColorStop(1, '#fef08a');
+          ctx.fillStyle = sky; ctx.fillRect(0, 0, 1080, 700);
+
+          const layers = [
+            { y: 700, h: 160, col: '#65a30d' },
+            { y: 860, h: 240, col: '#d97706' },
+            { y: 1100, h: 260, col: '#3b82f6' },
+            { y: 1360, h: 280, col: '#78350f' },
+            { y: 1640, h: 280, col: '#451a03' }
+          ];
+          layers.forEach((ly) => { ctx.fillStyle = ly.col; ctx.fillRect(0, ly.y, 1080, ly.h); });
+
+          const crackProgress = Math.min(1, sceneTime / 0.8);
+          ctx.strokeStyle = '#fef08a'; ctx.lineWidth = 22;
+          ctx.shadowColor = '#f97316'; ctx.shadowBlur = 28;
+          ctx.beginPath();
+          ctx.moveTo(540, 1920);
+          for (let y = 1920; y >= 1920 - 1240 * crackProgress; y -= 75) {
+            ctx.lineTo(540 + Math.sin(y * 0.05) * 32, y);
+          }
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+
+        } else {
+          const bg = ctx.createLinearGradient(0, 0, 0, 1300);
+          bg.addColorStop(0, '#1e293b'); bg.addColorStop(1, '#475569');
+          ctx.fillStyle = bg; ctx.fillRect(0, 0, 1080, 1300);
+          ctx.fillStyle = '#334155'; ctx.fillRect(0, 1220, 1080, 700);
+        }
+
+        ctx.restore();
+      }
+
+      function drawAtmosphericVFX(ctx, env, t) {
+        ctx.save();
+        if (env === 'throne_room' || env === 'courtyard_army' || env === 'sunset_hill') {
+          ctx.globalCompositeOperation = 'lighter';
+          const grad = ctx.createLinearGradient(150, 0, 820, 1400);
+          grad.addColorStop(0, 'rgba(255, 245, 200, 0.16)');
+          grad.addColorStop(1, 'rgba(255, 245, 200, 0)');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.moveTo(120, 0); ctx.lineTo(420, 0); ctx.lineTo(980, 1450); ctx.lineTo(480, 1450);
+          ctx.closePath(); ctx.fill();
+        }
+
+        if (env === 'throne_room' || env === 'night_camp' || env === 'city_destruction') {
+          ctx.globalCompositeOperation = 'lighter';
+          ctx.fillStyle = 'rgba(253, 186, 116, 0.75)';
+          for (let i = 0; i < 16; i++) {
+            const ex = ((i * 173 + t * 28) % 1080);
+            const ey = 1600 - ((i * 97 + t * 135) % 1400);
+            ctx.beginPath(); ctx.arc(ex, ey, 3 + (i % 4), 0, Math.PI * 2); ctx.fill();
+          }
+        }
+
+        ctx.globalCompositeOperation = 'source-over';
+        const vig = ctx.createRadialGradient(540, 960, 420, 540, 960, 1160);
+        vig.addColorStop(0, 'rgba(0,0,0,0)');
+        vig.addColorStop(1, 'rgba(0,0,0,0.42)');
+        ctx.fillStyle = vig;
+        ctx.fillRect(0, 0, 1080, 1920);
+        ctx.restore();
+      }
+
+      function drawSubtitles(ctx, scene, sceneTime, style, fontSize) {
+        const words = scene.words;
+        if (!words || !words.length) return;
+
+        let activeIdx = 0;
+        for (let i = 0; i < words.length; i++) {
+          if (sceneTime >= words[i].start) activeIdx = i;
+        }
+
+        let slice = [];
+        if (style === 'ricks_word') {
+          const w1 = words[activeIdx];
+          const w2 = words[activeIdx + 1];
+          if (w1.word.length <= 5 && w2 && w2.word.length <= 5 && activeIdx % 2 === 0) {
+            slice = [w1, w2];
+          } else {
+            slice = [w1];
+          }
+        } else if (style === 'ricks_pop') {
+          const idx = Math.floor(activeIdx / 2) * 2;
+          slice = words.slice(idx, idx + 2);
+        } else {
+          const idx = Math.floor(activeIdx / 4) * 4;
+          slice = words.slice(idx, idx + 4);
+        }
+
+        ctx.save();
+        ctx.font = `900 ${fontSize}px "Arial Black", Impact, system-ui, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        const fullLine = slice.map((s) => s.word).join(' ');
+        const lineW = ctx.measureText(fullLine).width;
+        const fitScale = lineW > 920 ? 920 / lineW : 1;
+
+        ctx.translate(540, 1340);
+        ctx.scale(fitScale, fitScale);
+
+        if (style === 'ricks_pop' && slice.length > 1) {
+          const spaceW = ctx.measureText(' ').width + 10;
+          const widths = slice.map((s) => ctx.measureText(s.word).width);
+          const total = widths.reduce((a, b) => a + b, 0) + spaceW * (slice.length - 1);
+          let cx = -total / 2;
+
+          slice.forEach((s) => {
+            const isActive = words.indexOf(s) === activeIdx;
+            const w = widths[slice.indexOf(s)];
+            const px = cx + w / 2;
+            ctx.save();
+            ctx.translate(px, 0);
+            if (isActive) ctx.scale(1.12, 1.12);
+            ctx.lineJoin = 'round';
+            ctx.lineWidth = Math.max(12, fontSize * 0.24);
+            ctx.strokeStyle = '#000000';
+            ctx.strokeText(s.word, 0, 0);
+            ctx.fillStyle = isActive ? '#fde047' : '#ffffff';
+            ctx.fillText(s.word, 0, 0);
+            ctx.restore();
+            cx += w + spaceW;
+          });
+        } else {
+          const pop = 1 + Math.max(0, 0.09 - (sceneTime - slice[0].start) * 0.5);
+          ctx.scale(pop, pop);
+          ctx.shadowColor = 'rgba(0,0,0,0.65)';
+          ctx.shadowBlur = 14;
+          ctx.shadowOffsetY = 6;
+          ctx.lineJoin = 'round';
+          ctx.lineWidth = Math.max(13, fontSize * 0.25);
+          ctx.strokeStyle = '#09090b';
+          ctx.strokeText(fullLine, 0, 0);
+          ctx.shadowBlur = 0;
+          ctx.fillStyle = '#ffffff';
+          ctx.fillText(fullLine, 0, 0);
+        }
+
+        ctx.restore();
+      }
+
+      function drawFrame(ctx, canvasWidth, canvasHeight, state) {
+        const { t, scene, sceneTime, subtitlesEnabled, subtitleStyle, subtitleSize } = state;
+
+        ctx.save();
+        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+        ctx.scale(canvasWidth / 1080, canvasHeight / 1920);
+
+        if (!scene) {
+          ctx.fillStyle = '#141824'; ctx.fillRect(0, 0, 1080, 1920);
+          ctx.restore(); return;
+        }
+
+        let zoom = 1 + Math.min(0.08, sceneTime * 0.02);
+        let camX = 0, camY = 0;
+        if (scene.shot === 'dramatic_closeup') {
+          zoom = 1.24 + Math.min(0.1, sceneTime * 0.03);
+          camY = -120;
+        } else if (scene.shot === 'impact_shake' && sceneTime < 0.65) {
+          const amp = (1 - sceneTime / 0.65) * 24;
+          camX = Math.sin(t * 62) * amp;
+          camY = Math.cos(t * 54) * amp;
+          zoom = 1.08;
+        }
+
+        ctx.save();
+        ctx.translate(540 + camX, 960 + camY);
+        ctx.scale(zoom, zoom);
+        ctx.translate(-540, -960);
+
+        const blurBg = scene.shot === 'dramatic_closeup';
+        drawEnvironment(ctx, scene.env, t, sceneTime, blurBg);
+
+        if (scene.env !== 'city_destruction' && scene.env !== 'cutaway_mechanism' && scene.env !== 'earth_cross_section') {
+          if (scene.prop === 'dragon_jar') {
+            drawDragonJar(ctx, 730, 1050, 1.05, t, scene.emotion === 'shocked' ? 4 : 0);
+          }
+
+          if (scene.env === 'sunset_hill') {
+            const walkX = 280 + Math.min(480, sceneTime * 110);
+            drawRicksCharacter(ctx, {
+              x: walkX, y: 1240, scale: 0.92, role: scene.role,
+              emotion: scene.emotion, t, sceneTime, walkSpeed: 1
+            });
+          } else if (scene.hasCrowd) {
+            drawRicksCharacter(ctx, { x: 240, y: 1250, scale: 0.9, role: 'guard', emotion: scene.emotion, t, sceneTime, holdingProp: 'halberd' });
+            drawRicksCharacter(ctx, { x: 540, y: 1260, scale: 1.02, role: scene.role, emotion: scene.emotion, t, sceneTime, holdingProp: scene.role === 'emperor' ? 'goblet' : 'none' });
+            drawRicksCharacter(ctx, { x: 840, y: 1250, scale: 0.9, role: 'guard', emotion: scene.emotion, t, sceneTime, flip: true, holdingProp: 'halberd' });
+          } else {
+            const cx = scene.prop === 'dragon_jar' ? 330 : 540;
+            drawRicksCharacter(ctx, {
+              x: cx, y: 1280, scale: 1.08, role: scene.role,
+              emotion: scene.emotion, t, sceneTime,
+              holdingProp: scene.role === 'emperor' ? 'goblet' : 'none'
+            });
+          }
+        }
+
+        ctx.restore();
+
+        drawAtmosphericVFX(ctx, scene.env, t);
+
+        if (subtitlesEnabled) {
+          drawSubtitles(ctx, scene, sceneTime, subtitleStyle, subtitleSize);
+        }
+
+        ctx.restore();
+      }
+
+      return { drawFrame };
+    })();
+
+    // =========================================================================
+    // 4. EXPORTADOR DETERMINISTA MP4 (WebCodecs + mp4-muxer bajo demanda, o MediaRecorder)
+    // =========================================================================
+    window.RicksExporter = (() => {
+      const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+      async function pickVideoConfig(width, height, fps) {
+        const candidates = ['avc1.64002a', 'avc1.4d002a', 'avc1.42002a', 'avc1.42001f'];
+        for (const codec of candidates) {
+          const cfg = { codec, width, height, bitrate: width >= 1080 ? 6_000_000 : 3_500_000, framerate: fps };
+          if ((await VideoEncoder.isConfigSupported(cfg)).supported) return cfg;
+        }
+        return null;
+      }
+
+      async function pickAudioConfig(sampleRate) {
+        const candidates = [
+          { codec: 'mp4a.40.2', muxCodec: 'aac', bitrate: 128000 },
+          { codec: 'opus', muxCodec: 'opus', bitrate: 128000 }
+        ];
+        for (const c of candidates) {
+          const cfg = { codec: c.codec, numberOfChannels: 2, sampleRate, bitrate: c.bitrate };
+          if ((await AudioEncoder.isConfigSupported(cfg)).supported) return { cfg, muxCodec: c.muxCodec };
+        }
+        return null;
+      }
+
+      async function exportWithMediaRecorderFallback(options) {
+        const { scenes, masterBuffer, totalDuration, width, height, fps, subtitlesEnabled, subtitleStyle, subtitleSize, onProgress } = options;
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+
+        const audioCtx = window.RicksAudio.ensureLiveContext();
+        const dest = audioCtx.createMediaStreamDestination();
+        const src = audioCtx.createBufferSource();
+        src.buffer = masterBuffer;
+        src.connect(dest);
+
+        const stream = new MediaStream([
+          ...canvas.captureStream(fps).getVideoTracks(),
+          ...dest.stream.getAudioTracks()
+        ]);
+
+        const mime = MediaRecorder.isTypeSupported('video/mp4') ? 'video/mp4' : 'video/webm';
+        const rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 4_000_000 });
+        const chunks = [];
+        rec.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+
+        return new Promise((resolve) => {
+          rec.onstop = () => resolve({ blob: new Blob(chunks, { type: mime }), ext: mime.includes('mp4') ? 'mp4' : 'webm' });
+
+          const startT = audioCtx.currentTime + 0.05;
+          rec.start();
+          src.start(startT);
+
+          const tick = () => {
+            const elapsed = Math.max(0, audioCtx.currentTime - startT);
+            if (elapsed >= totalDuration) {
+              rec.stop();
+              try { src.stop(); } catch (_) {}
+              return;
+            }
+            let active = scenes[scenes.length - 1];
+            for (let i = 0; i < scenes.length; i++) {
+              if (elapsed >= scenes[i].startTime && elapsed < scenes[i].startTime + scenes[i].duration) {
+                active = scenes[i]; break;
+              }
+            }
+            window.RicksCinema.drawFrame(ctx, width, height, {
+              t: elapsed, scene: active, sceneTime: Math.max(0, elapsed - active.startTime),
+              subtitlesEnabled, subtitleStyle, subtitleSize
+            });
+            if (onProgress) onProgress(Math.min(0.98, elapsed / totalDuration), `Grabando vídeo offline (${elapsed.toFixed(1)}s / ${totalDuration.toFixed(1)}s)...`);
+            requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        });
+      }
+
+      async function exportToMP4(options) {
+        const {
+          scenes, masterBuffer, totalDuration, width, height, fps,
+          subtitlesEnabled, subtitleStyle, subtitleSize, onProgress
+        } = options;
+
+        if (onProgress) onProgress(0.02, 'Cargando empaquetador MP4...');
+        const hasMuxer = await ensureMp4MuxerLoaded();
+        const hasWebCodecs = typeof VideoEncoder !== 'undefined' && typeof AudioEncoder !== 'undefined';
+
+        if (!hasMuxer || !hasWebCodecs) {
+          return await exportWithMediaRecorderFallback(options);
+        }
+
+        const vConfig = await pickVideoConfig(width, height, fps);
+        const aChoice = await pickAudioConfig(masterBuffer.sampleRate);
+        if (!vConfig || !aChoice) {
+          return await exportWithMediaRecorderFallback(options);
+        }
+
+        const muxer = new Mp4Muxer.Muxer({
+          target: new Mp4Muxer.ArrayBufferTarget(),
+          video: { codec: 'avc', width, height },
+          audio: { codec: aChoice.muxCodec, numberOfChannels: 2, sampleRate: masterBuffer.sampleRate },
+          fastStart: 'in-memory'
+        });
+
+        const videoEncoder = new VideoEncoder({
+          output: (chunk, meta) => muxer.addVideoChunk(chunk, meta),
+          error: (e) => console.error('VideoEncoder error:', e)
+        });
+        videoEncoder.configure(vConfig);
+
+        const audioEncoder = new AudioEncoder({
+          output: (chunk, meta) => muxer.addAudioChunk(chunk, meta),
+          error: (e) => console.error('AudioEncoder error:', e)
+        });
+        audioEncoder.configure(aChoice.cfg);
+
+        if (onProgress) onProgress(0.05, 'Codificando música y SFX...');
+        const sr = masterBuffer.sampleRate;
+        const ch0 = masterBuffer.getChannelData(0);
+        const ch1 = masterBuffer.numberOfChannels > 1 ? masterBuffer.getChannelData(1) : ch0;
+        const chunkFrames = 2048;
+
+        for (let offset = 0; offset < ch0.length; offset += chunkFrames) {
+          const n = Math.min(chunkFrames, ch0.length - offset);
+          const planar = new Float32Array(n * 2);
+          planar.set(ch0.subarray(offset, offset + n), 0);
+          planar.set(ch1.subarray(offset, offset + n), n);
+
+          const audioData = new AudioData({
+            format: 'f32-planar',
+            sampleRate: sr,
+            numberOfFrames: n,
+            numberOfChannels: 2,
+            timestamp: Math.round((offset * 1_000_000) / sr),
+            data: planar
+          });
+
+          while (audioEncoder.encodeQueueSize > 16) await sleep(4);
+          audioEncoder.encode(audioData);
+          audioData.close();
+        }
+
+        const offCanvas = document.createElement('canvas');
+        offCanvas.width = width;
+        offCanvas.height = height;
+        const offCtx = offCanvas.getContext('2d');
+
+        const totalFrames = Math.ceil(totalDuration * fps);
+        const frameDurUs = Math.round(1_000_000 / fps);
+
+        for (let f = 0; f < totalFrames; f++) {
+          const t = f / fps;
+          let activeScene = scenes[scenes.length - 1];
+          for (let i = 0; i < scenes.length; i++) {
+            if (t >= scenes[i].startTime && t < scenes[i].startTime + scenes[i].duration) {
+              activeScene = scenes[i];
+              break;
+            }
+          }
+
+          window.RicksCinema.drawFrame(offCtx, width, height, {
+            t, scene: activeScene, sceneTime: Math.max(0, t - activeScene.startTime),
+            subtitlesEnabled, subtitleStyle, subtitleSize
+          });
+
+          const frame = new VideoFrame(offCanvas, {
+            timestamp: Math.round((f * 1_000_000) / fps),
+            duration: frameDurUs
+          });
+
+          while (videoEncoder.encodeQueueSize > 8) await sleep(6);
+          videoEncoder.encode(frame, { keyFrame: f % (fps * 2) === 0 });
+          frame.close();
+
+          if (f % 10 === 0 && onProgress) {
+            onProgress(0.1 + 0.85 * (f / totalFrames), `Renderizando plano (${f}/${totalFrames} frames)...`);
+            await sleep(0);
+          }
+        }
+
+        if (onProgress) onProgress(0.96, 'Empaquetando MP4...');
+        await audioEncoder.flush();
+        await videoEncoder.flush();
+        muxer.finalize();
+
+        return { blob: new Blob([muxer.target.buffer], { type: 'video/mp4' }), ext: 'mp4' };
+      }
+
+      return { exportToMP4 };
+    })();
+
+    // =========================================================================
+    // 5. ARRANQUE SEGURO DE LA APLICACIÓN (No depende de CDN ni de evento tardío)
+    // =========================================================================
+    function initRicksApp() {
+      const el = {
+        codecSupportBadge: document.getElementById('codecSupportBadge'),
+        presetSelect: document.getElementById('presetSelect'),
+        loadPresetBtn: document.getElementById('loadPresetBtn'),
+        storyInput: document.getElementById('storyInput'),
+        buildStoryboardBtn: document.getElementById('buildStoryboardBtn'),
+        musicMoodSelect: document.getElementById('musicMoodSelect'),
+        resolutionSelect: document.getElementById('resolutionSelect'),
+        fpsSelect: document.getElementById('fpsSelect'),
+        sfxToggle: document.getElementById('sfxToggle'),
+        subtitleToggle: document.getElementById('subtitleToggle'),
+        subtitleStyleSelect: document.getElementById('subtitleStyleSelect'),
+        subtitleSizeRange: document.getElementById('subtitleSizeRange'),
+        scenesList: document.getElementById('scenesList'),
+        sceneCount: document.getElementById('sceneCount'),
+        addSceneBtn: document.getElementById('addSceneBtn'),
+        previewCanvas: document.getElementById('previewCanvas'),
+        playPauseBtn: document.getElementById('playPauseBtn'),
+        restartBtn: document.getElementById('restartBtn'),
+        timelineScrubber: document.getElementById('timelineScrubber'),
+        timeDisplay: document.getElementById('timeDisplay'),
+        statusBanner: document.getElementById('statusBanner'),
+        exportMp4Btn: document.getElementById('exportMp4Btn'),
+        exportProgressWrap: document.getElementById('exportProgressWrap'),
+        exportProgressBar: document.getElementById('exportProgressBar'),
+        exportProgressText: document.getElementById('exportProgressText'),
+        exportResultWrap: document.getElementById('exportResultWrap'),
+        exportedVideoPreview: document.getElementById('exportedVideoPreview'),
+        downloadMp4Link: document.getElementById('downloadMp4Link')
+      };
+
+      const state = {
+        scenes: [],
+        masterBuffer: null,
+        totalDuration: 0,
+        isPlaying: false,
+        playOffset: 0,
+        audioStartTime: 0,
+        activeSourceNode: null,
+        rafId: null,
+        lastExportUrl: null
+      };
+
+      const previewCtx = el.previewCanvas.getContext('2d');
+
+      if (typeof VideoEncoder !== 'undefined' && typeof AudioEncoder !== 'undefined') {
+        el.codecSupportBadge.textContent = '✓ WebCodecs MP4 listo';
+        el.codecSupportBadge.style.color = '#6ee7b7';
+      } else {
+        el.codecSupportBadge.textContent = '✓ Modo Grabación Directa';
+        el.codecSupportBadge.style.color = '#fde047';
+      }
+
+      // Precarga silenciosa en segundo plano del muxer (nunca bloquea la web)
+      ensureMp4MuxerLoaded();
+
+      const setStatus = (m) => { el.statusBanner.textContent = m; };
+
+      function renderScenesList() {
+        el.sceneCount.textContent = state.scenes.length;
+        el.scenesList.innerHTML = '';
+
+        const envs = ['throne_room', 'courtyard_army', 'workshop_artifact', 'sunset_hill', 'night_camp', 'city_destruction', 'cutaway_mechanism', 'earth_cross_section'];
+        const shots = ['dramatic_closeup', 'medium_dialogue', 'establishing_wide', 'pan_action', 'impact_shake', 'overhead_cutaway'];
+        const roles = ['scholar', 'emperor', 'guard', 'merchant'];
+        const emotions = ['smug', 'laughing', 'shocked', 'angry', 'thinking', 'sleeping'];
+        const sfxList = ['riser', 'whoosh', 'boom', 'clang', 'chime', 'laugh', 'rumble', 'fail', 'pop', 'none'];
+
+        state.scenes.forEach((sc, idx) => {
+          const card = document.createElement('div');
+          card.className = 'scene-card';
+          card.innerHTML = `
+            <div class="scene-card-top">
+              <span class="beat-badge"></span>
+              <button type="button" class="btn-danger delete-scene-btn">Eliminar</button>
+            </div>
+            <textarea class="scene-text-input" rows="2"></textarea>
+            <div class="scene-meta-grid">
+              <label>Escenario 2.5D<select class="sc-env">${envs.map((v) => `<option value="${v}">${v}</option>`).join('')}</select></label>
+              <label>Cámara<select class="sc-shot">${shots.map((v) => `<option value="${v}">${v}</option>`).join('')}</select></label>
+              <label>Vestuario<select class="sc-role">${roles.map((v) => `<option value="${v}">${v}</option>`).join('')}</select></label>
+              <label>Emoción<select class="sc-emotion">${emotions.map((v) => `<option value="${v}">${v}</option>`).join('')}</select></label>
+              <label>SFX<select class="sc-sfx">${sfxList.map((v) => `<option value="${v}">${v}</option>`).join('')}</select></label>
+              <label>Duración (s)<input type="number" class="sc-dur" step="0.2" min="1" max="12" /></label>
+            </div>
+          `;
+
+          card.querySelector('.beat-badge').textContent = `Plano #${idx + 1} · ${sc.env}`;
+          const ta = card.querySelector('.scene-text-input');
+          ta.value = sc.text;
+          card.querySelector('.sc-env').value = sc.env;
+          card.querySelector('.sc-shot').value = sc.shot;
+          card.querySelector('.sc-role').value = sc.role;
+          card.querySelector('.sc-emotion').value = sc.emotion;
+          card.querySelector('.sc-sfx').value = sc.sfx;
+          card.querySelector('.sc-dur').value = sc.duration.toFixed(1);
+
+          ta.addEventListener('input', (e) => {
+            sc.text = e.target.value;
+            sc.words = window.RicksDirector.buildWordTimingForScene(sc.text, sc.duration);
+            drawPreviewAt(state.playOffset);
+          });
+          card.querySelector('.sc-env').addEventListener('change', (e) => { sc.env = e.target.value; drawPreviewAt(state.playOffset); });
+          card.querySelector('.sc-shot').addEventListener('change', (e) => { sc.shot = e.target.value; drawPreviewAt(state.playOffset); });
+          card.querySelector('.sc-role').addEventListener('change', (e) => { sc.role = e.target.value; drawPreviewAt(state.playOffset); });
+          card.querySelector('.sc-emotion').addEventListener('change', (e) => { sc.emotion = e.target.value; drawPreviewAt(state.playOffset); });
+          card.querySelector('.sc-sfx').addEventListener('change', async (e) => { sc.sfx = e.target.value; await rebuildMix(); });
+          card.querySelector('.sc-dur').addEventListener('change', async (e) => {
+            sc.duration = Math.max(1.0, parseFloat(e.target.value) || 2.5);
+            sc.words = window.RicksDirector.buildWordTimingForScene(sc.text, sc.duration);
+            await rebuildMix();
+          });
+          card.querySelector('.delete-scene-btn').addEventListener('click', async () => {
+            state.scenes.splice(idx, 1);
+            renderScenesList();
+            await rebuildMix();
+          });
+
+          el.scenesList.appendChild(card);
+        });
+      }
+
+      async function rebuildMix() {
+        if (!state.scenes.length) {
+          state.masterBuffer = null;
+          state.totalDuration = 0;
+          drawPreviewAt(0);
+          return;
+        }
+        // Asignar tiempos de inmediato para que el canvas dibuje aunque el audio tarde unos ms
+        let cursor = 0;
+        state.scenes.forEach((sc) => { sc.startTime = cursor; cursor += sc.duration; });
+        state.totalDuration = Math.max(1.0, cursor + 0.3);
+        el.timelineScrubber.max = state.totalDuration.toFixed(2);
+        updateTimeLabel(state.playOffset);
+        drawPreviewAt(state.playOffset);
+
+        const { masterBuffer, totalDuration } = await window.RicksAudio.buildMasterAudio({
+          scenes: state.scenes,
+          enableSFX: el.sfxToggle.checked,
+          musicMood: el.musicMoodSelect.value
+        });
+        state.masterBuffer = masterBuffer;
+        state.totalDuration = totalDuration;
+        el.timelineScrubber.max = totalDuration.toFixed(2);
+        updateTimeLabel(state.playOffset);
+      }
+
+      function updateTimeLabel(t) {
+        el.timeDisplay.textContent = `${t.toFixed(1)}s / ${state.totalDuration.toFixed(1)}s`;
+        el.timelineScrubber.value = Math.min(state.totalDuration, t);
+      }
+
+      function drawPreviewAt(t) {
+        if (!state.scenes.length) {
+          window.RicksCinema.drawFrame(previewCtx, el.previewCanvas.width, el.previewCanvas.height, { t: 0, scene: null, sceneTime: 0 });
+          return;
+        }
+
+        let active = state.scenes[state.scenes.length - 1];
+        for (let i = 0; i < state.scenes.length; i++) {
+          if (t >= state.scenes[i].startTime && t < state.scenes[i].startTime + state.scenes[i].duration) {
+            active = state.scenes[i];
+            break;
+          }
+        }
+
+        window.RicksCinema.drawFrame(previewCtx, el.previewCanvas.width, el.previewCanvas.height, {
+          t,
+          scene: active,
+          sceneTime: Math.max(0, t - active.startTime),
+          subtitlesEnabled: el.subtitleToggle.checked,
+          subtitleStyle: el.subtitleStyleSelect.value,
+          subtitleSize: parseInt(el.subtitleSizeRange.value, 10)
+        });
+      }
+
+      function stopPlayback() {
+        state.isPlaying = false;
+        el.playPauseBtn.textContent = '▶ Reproducir Preview';
+        if (state.activeSourceNode) {
+          try { state.activeSourceNode.stop(); } catch (_) {}
+          state.activeSourceNode = null;
+        }
+        if (state.rafId) cancelAnimationFrame(state.rafId);
+      }
+
+      async function startPlayback() {
+        if (!state.scenes.length) return;
+        if (!state.masterBuffer) await rebuildMix();
+
+        const ctx = window.RicksAudio.ensureLiveContext();
+        if (state.playOffset >= state.totalDuration - 0.05) state.playOffset = 0;
+
+        const src = ctx.createBufferSource();
+        src.buffer = state.masterBuffer;
+        src.connect(ctx.destination);
+
+        const startAt = ctx.currentTime + 0.04;
+        src.start(startAt, state.playOffset);
+        state.activeSourceNode = src;
+        state.audioStartTime = startAt - state.playOffset;
+        state.isPlaying = true;
+        el.playPauseBtn.textContent = '⏸ Pausar';
+
+        const loop = () => {
+          if (!state.isPlaying) return;
+          const elapsed = Math.max(0, ctx.currentTime - state.audioStartTime);
+          state.playOffset = elapsed;
+          if (elapsed >= state.totalDuration) {
+            stopPlayback();
+            state.playOffset = 0;
+            updateTimeLabel(0);
+            drawPreviewAt(0);
+            return;
+          }
+          drawPreviewAt(elapsed);
+          updateTimeLabel(elapsed);
+          state.rafId = requestAnimationFrame(loop);
+        };
+        state.rafId = requestAnimationFrame(loop);
+      }
+
+      el.loadPresetBtn.addEventListener('click', () => {
+        el.storyInput.value = window.RicksDirector.PRESETS[el.presetSelect.value] || '';
+        el.buildStoryboardBtn.click();
+      });
+
+      el.buildStoryboardBtn.addEventListener('click', async () => {
+        stopPlayback();
+        const raw = el.storyInput.value.trim();
+        if (!raw) return;
+        state.scenes = window.RicksDirector.parseStoryToShots(raw);
+        state.playOffset = 0;
+        renderScenesList();
+        await rebuildMix();
+        setStatus(`✓ ${state.scenes.length} planos 2.5D generados con música y SFX (${state.totalDuration.toFixed(1)}s).`);
+      });
+
+      el.addSceneBtn.addEventListener('click', async () => {
+        const dur = 2.6;
+        const text = 'Nuevo plano del short...';
+        state.scenes.push({
+          id: 'pl_' + Date.now(), text, env: 'throne_room', shot: 'medium_dialogue',
+          role: 'scholar', emotion: 'smug', prop: 'none', sfx: 'pop', hasCrowd: false,
+          duration: dur, words: window.RicksDirector.buildWordTimingForScene(text, dur)
+        });
+        renderScenesList();
+        await rebuildMix();
+      });
+
+      el.playPauseBtn.addEventListener('click', () => {
+        if (state.isPlaying) stopPlayback();
+        else startPlayback();
+      });
+
+      el.restartBtn.addEventListener('click', () => {
+        stopPlayback();
+        state.playOffset = 0;
+        updateTimeLabel(0);
+        drawPreviewAt(0);
+      });
+
+      el.timelineScrubber.addEventListener('input', (e) => {
+        stopPlayback();
+        state.playOffset = parseFloat(e.target.value);
+        updateTimeLabel(state.playOffset);
+        drawPreviewAt(state.playOffset);
+      });
+
+      [el.subtitleToggle, el.subtitleStyleSelect, el.subtitleSizeRange].forEach((n) => {
+        n.addEventListener('input', () => drawPreviewAt(state.playOffset));
+      });
+
+      [el.sfxToggle, el.musicMoodSelect].forEach((n) => {
+        n.addEventListener('change', rebuildMix);
+      });
+
+      el.exportMp4Btn.addEventListener('click', async () => {
+        if (!state.scenes.length) return alert('Primero genera los planos de tu historia.');
+        stopPlayback();
+        await rebuildMix();
+
+        const [w, h] = el.resolutionSelect.value.split('x').map(Number);
+        const fps = parseInt(el.fpsSelect.value, 10);
+
+        el.exportMp4Btn.disabled = true;
+        el.exportProgressWrap.classList.remove('hidden');
+        el.exportResultWrap.classList.add('hidden');
+
+        try {
+          const { blob, ext } = await window.RicksExporter.exportToMP4({
+            scenes: state.scenes,
+            masterBuffer: state.masterBuffer,
+            totalDuration: state.totalDuration,
+            width: w,
+            height: h,
+            fps,
+            subtitlesEnabled: el.subtitleToggle.checked,
+            subtitleStyle: el.subtitleStyleSelect.value,
+            subtitleSize: parseInt(el.subtitleSizeRange.value, 10),
+            onProgress: (ratio, msg) => {
+              el.exportProgressBar.style.width = `${Math.round(ratio * 100)}%`;
+              el.exportProgressText.textContent = msg;
+            }
+          });
+
+          if (state.lastExportUrl) URL.revokeObjectURL(state.lastExportUrl);
+          const url = URL.createObjectURL(blob);
+          state.lastExportUrl = url;
+          el.exportedVideoPreview.src = url;
+          el.downloadMp4Link.href = url;
+          el.downloadMp4Link.download = `ricksclips-pro-short.${ext}`;
+          el.exportResultWrap.classList.remove('hidden');
+          setStatus(`¡Vídeo exportado (${(blob.size / 1024 / 1024).toFixed(2)} MB) en .${ext}!`);
+        } catch (err) {
+          alert('Error al exportar: ' + err.message);
+          setStatus('Error exportando: ' + err.message);
+        } finally {
+          el.exportMp4Btn.disabled = false;
+          el.exportProgressWrap.classList.add('hidden');
+        }
+      });
+
+      el.storyInput.value = window.RicksDirector.PRESETS.jarron;
+      el.buildStoryboardBtn.click();
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        try { initRicksApp(); } catch (e) {
+          document.getElementById('codecSupportBadge').textContent = 'Error JS: ' + e.message;
+        }
+      });
+    } else {
+      try { initRicksApp(); } catch (e) {
+        document.getElementById('codecSupportBadge').textContent = 'Error JS: ' + e.message;
+      }
+    }
+  </script>
+</body>
+</html>
